@@ -20,38 +20,36 @@ const WorkoutCard = ({ workout }) => {
       : calculateTenSets(workout.oneRM);
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
+    <div className="card">
       <div className="flex justify-between items-center">
-        <div className="flex-1">
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center gap-2 hover:opacity-75 transition"
-          >
-            <ChevronDown
-              className={`w-5 h-5 transition-transform ${
-                isExpanded ? "rotate-180" : ""
-              }`}
-            />
-            <div>
-              <h3 className="text-xl font-bold text-gray-800 text-left">
-                {workout.name}
-              </h3>
-              <p
-                className="text-sm text-gray-600 width-fit"
-                style={{ width: "fit-content" }}
-              >
-                {workout.type === "reverse"
-                  ? "Reverse Pyramid (6 sets)"
-                  : workout.type === "tensetslight"
-                  ? "10 Sets Plan (Light)"
-                  : "10 Sets Plan"}
-              </p>
-            </div>
-          </button>
-        </div>
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="flex items-center gap-2 p-3 transition-all duration-150 flex-1 text-left"
+        >
+          <ChevronDown
+            className={`w-5 h-5 transition-transform ${
+              isExpanded ? "rotate-180" : ""
+            }`}
+          />
+          <div>
+            <h3 className="text-xl font-bold text-text-primary text-left">
+              {workout.name}
+            </h3>
+            <p
+              className="text-sm text-text-secondary width-fit"
+              style={{ width: "fit-content" }}
+            >
+              {workout.type === "reverse"
+                ? "Reverse Pyramid (6 sets)"
+                : workout.type === "tensetslight"
+                ? "UFpwrLifter Program (Light)"
+                : "UFpwrLifter Program"}
+            </p>
+          </div>
+        </button>
         <button
           onClick={() => deleteExercise(workout.id)}
-          className="text-red-600 hover:text-red-800"
+          className="text-red-600 hover:bg-[rgba(0,0,0,0.3)] p-3 ml-2 transition-all duration-150"
         >
           <Trash2 className="w-5 h-5" />
         </button>
@@ -62,7 +60,7 @@ const WorkoutCard = ({ workout }) => {
           <div className="mb-4 mt-4 flex gap-4">
             {workout.type === "reverse" ? (
               <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-text-primary mb-1">
                   6 Rep Max (lbs)
                 </label>
                 <input
@@ -71,12 +69,12 @@ const WorkoutCard = ({ workout }) => {
                   onChange={(e) =>
                     updateExercise(workout.id, "sixRM", e.target.value)
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input w-full"
                 />
               </div>
             ) : (
               <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-text-primary mb-1">
                   1 Rep Max (lbs)
                 </label>
                 <input
@@ -85,24 +83,24 @@ const WorkoutCard = ({ workout }) => {
                   onChange={(e) =>
                     updateExercise(workout.id, "oneRM", e.target.value)
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input w-full"
                 />
               </div>
             )}
           </div>
 
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="font-semibold mb-3 text-gray-700">Workout Plan</h4>
+          <div className="bg-dark-lighter p-4 border-2 border-dark-border">
+            <h4 className="font-semibold mb-3 text-text-primary">Workout Plan</h4>
             <div className="space-y-2">
               {plan.map((set, idx) => (
                 <div
                   key={idx}
-                  className="flex justify-between items-center py-2 border-b border-gray-200 last:border-0"
+                  className="flex justify-between items-center py-2 border-b border-dark-border last:border-0"
                 >
-                  <span className="font-medium text-gray-700">
+                  <span className="font-medium text-text-primary">
                     Set {idx + 1}
                   </span>
-                  <span className="text-gray-600">
+                  <span className="text-text-secondary">
                     {set.reps} reps @ {set.weight} lbs
                   </span>
                 </div>

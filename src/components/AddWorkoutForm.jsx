@@ -43,8 +43,8 @@ const AddWorkoutForm = ({ onClose }) => {
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="reverse">Reverse Pyramid (6 sets)</option>
-          <option value="tensets">10 Sets Plan</option>
-          <option value="tensetslight">10 Sets Plan (Light)</option>
+          <option value="tensets">UFpwrLifter Program Plan</option>
+          <option value="tensetslight">UFpwrLifter Program Plan (Light)</option>
         </select>
         
         {newWorkout.type === 'reverse' ? (

@@ -53,24 +53,24 @@ const SchedulePage = () => {
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">My Schedule</h2>
+        <h2 className="text-2xl font-bold uppercase tracking-wider">My Schedule</h2>
         <div className="flex gap-2">
           <button
             onClick={() => setView('weekly')}
-            className={`px-4 py-2 rounded-lg transition ${
+            className={`px-4 py-2 font-semibold uppercase tracking-wider transition ${
               view === 'weekly'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                ? 'bg-accent-blue text-white'
+                : 'bg-dark-lighter text-text-secondary hover:bg-dark-border'
             }`}
           >
             Weekly
           </button>
           <button
             onClick={() => setView('daily')}
-            className={`px-4 py-2 rounded-lg transition ${
+            className={`px-4 py-2 font-semibold uppercase tracking-wider transition ${
               view === 'daily'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                ? 'bg-accent-blue text-white'
+                : 'bg-dark-lighter text-text-secondary hover:bg-dark-border'
             }`}
           >
             Daily
@@ -78,31 +78,31 @@ const SchedulePage = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="card">
         {view === 'weekly' ? (
           <>
             <div className="flex justify-between items-center mb-6">
               <button
                 onClick={handlePrevWeek}
                 disabled={weekOffset === 0}
-                className={`p-2 rounded-lg transition ${
+                className={`p-3 transition-all duration-150 ${
                   weekOffset === 0
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                    ? 'bg-dark-lighter text-text-dim cursor-not-allowed'
+                    : 'bg-accent-blue text-white hover:bg-accent-blue-dim'
                 }`}
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               
-              <h3 className="text-lg font-semibold text-gray-800">{getWeekLabel()}</h3>
+              <h3 className="text-lg font-semibold uppercase tracking-wider">{getWeekLabel()}</h3>
               
               <button
                 onClick={handleNextWeek}
                 disabled={weekOffset === 5}
-                className={`p-2 rounded-lg transition ${
+                className={`p-3 transition-all duration-150 ${
                   weekOffset === 5
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                    ? 'bg-dark-lighter text-text-dim cursor-not-allowed'
+                    : 'bg-accent-blue text-white hover:bg-accent-blue-dim'
                 }`}
               >
                 <ChevronRight className="w-5 h-5" />

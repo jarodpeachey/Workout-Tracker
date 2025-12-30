@@ -9,10 +9,10 @@ const ExercisesPage = () => {
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">My Exercises</h2>
+        <h2 className="text-2xl font-bold uppercase tracking-wider">My Exercises</h2>
         <button
           onClick={() => setShowAddExercise(true)}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+          className="btn-primary flex items-center gap-2"
         >
           <Plus className="w-5 h-5" />
           Add Exercise

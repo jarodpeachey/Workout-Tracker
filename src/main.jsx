@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import './index.css';
 import { WorkoutProvider } from './context/WorkoutContext';
-import './utils/storagePolyfill'; // Import this before app renders
+import './utils/migrateLocalToSupabase'; // attach migration helper to window for console use
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

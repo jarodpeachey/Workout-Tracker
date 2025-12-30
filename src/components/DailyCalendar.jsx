@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const DailyCalendar = ({ weekDays, workouts, schedule, onSetWorkout, exercises, calculateReversePyramid, calculateTenSets, calculateTenSetsLight, currentDayIndex, onDayChange }) => {
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -51,43 +52,74 @@ const DailyCalendar = ({ weekDays, workouts, schedule, onSetWorkout, exercises, 
         <button
           onClick={handlePrevDay}
           disabled={currentDayIndex === 0}
-          className={`p-2 rounded-lg transition ${
+          className={`p-3 transition-all duration-150 ${
             currentDayIndex === 0
-              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 text-white hover:bg-blue-700'
+              ? 'bg-dark-lighter text-text-dim cursor-not-allowed'
+              : 'bg-accent-blue text-white hover:bg-accent-blue-dim'
           }`}
         >
-          ← Prev
+          <ChevronLeft className="w-5 h-5" />
         </button>
         
         <div className="text-center">
-          <h3 className="text-lg font-semibold text-gray-800">{dayName}</h3>
-          <p className="text-gray-600">{month} {dayNum}</p>
+          <h3 className="text-lg font-semibold text-text-primary">{dayName}</h3>
+          <p className="text-text-secondary">{month} {dayNum}</p>
         </div>
         
         <button
           onClick={handleNextDay}
           disabled={currentDayIndex === 6}
-          className={`p-2 rounded-lg transition ${
+          className={`p-3 transition-all duration-150 ${
             currentDayIndex === 6
-              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 text-white hover:bg-blue-700'
+              ? 'bg-dark-lighter text-text-dim cursor-not-allowed'
+              : 'bg-accent-blue text-white hover:bg-accent-blue-dim'
           }`}
         >
-          Next →
+          <ChevronRight className="w-5 h-5" />
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg p-6 min-h-96">
-        {scheduledWorkout ? (
+      <div className="min-h-96 relative">
+        {showWorkoutPicker ? (
+          <div className="">
+            <div className="flex justify-between items-center mb-3">
+              <div className="font-semibold text-text-primary">Select a workout</div>
+              <button
+                onClick={() => setShowWorkoutPicker(false)}
+                className="text-text-secondary hover:bg-[rgba(0,0,0,0.3)] p-2 transition-all duration-150 text-lg"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="space-y-2">
+              <button
+                onClick={() => handleSelectWorkout('none')}
+                className={`w-full px-3 py-2 text-left text-sm border-2 transition ${scheduledWorkoutId == null ? 'bg-green-600 border-green-600 text-white' : 'bg-dark-lighter border-dark-border text-text-primary hover:bg-dark-border'}`}
+              >
+                No workout
+              </button>
+              {workouts.length > 0 ? (
+                workouts.map(workout => (
+                  <button
+                    key={workout.id}
+                    onClick={() => handleSelectWorkout(workout.id)}
+                    className={`w-full px-3 py-2 text-left text-sm border-2 transition ${workout.id === scheduledWorkoutId ? 'bg-green-600 border-green-600 text-white' : 'bg-dark-lighter border-dark-border text-text-primary hover:bg-dark-border'}`}
+                  >
+                    {workout.name}
+                  </button>
+                ))
+              ) : (
+                <div className="text-sm text-text-dim py-2">No workouts created yet.</div>
+              )}
+            </div>
+          </div>
+        ) : scheduledWorkout ? (
           <div className="space-y-4">
-            <div className="flex justify-between items-start">
-              <div>
-                <h4 className="text-xl font-bold text-gray-800 mb-4">{scheduledWorkout.name}</h4>
-              </div>
+            <div className="flex items-center gap-3">
+              <h4 className="text-xl font-bold text-text-primary">{scheduledWorkout.name}</h4>
               <button
                 onClick={() => setShowWorkoutPicker(true)}
-                className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                className="text-sm text-text-secondary hover:text-text-primary transition"
               >
                 Change
               </button>
@@ -100,9 +132,9 @@ const DailyCalendar = ({ weekDays, workouts, schedule, onSetWorkout, exercises, 
                 const { exercise, plan } = details;
                 
                 return (
-                  <div key={exerciseId} className="border-l-4 border-blue-600 pl-4">
-                    <h5 className="text-lg font-bold text-gray-800 mb-2">{exercise.name}</h5>
-                    <div className="space-y-1 text-sm text-gray-700">
+                  <div key={exerciseId} className="border-l-4 border-accent-blue pl-4">
+                    <h5 className="text-lg font-bold text-text-primary mb-2">{exercise.name}</h5>
+                    <div className="space-y-1 text-sm text-text-primary">
                       {plan.map((set, i) => (
                         <div key={i} className="flex justify-between">
                           <span>Set {i + 1}:</span>
@@ -117,51 +149,16 @@ const DailyCalendar = ({ weekDays, workouts, schedule, onSetWorkout, exercises, 
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-center">
-            <div className="text-gray-500 mb-4">No workout scheduled</div>
+            <div className="text-text-dim mb-4">No workout scheduled</div>
             <button
               onClick={() => setShowWorkoutPicker(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="btn-primary px-4 py-2"
             >
               Add Workout
             </button>
           </div>
         )}
       </div>
-
-      {showWorkoutPicker && (
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <div className="flex justify-between items-center mb-3">
-            <div className="font-semibold text-gray-800">Select a workout</div>
-            <button
-              onClick={() => setShowWorkoutPicker(false)}
-              className="text-gray-600 hover:text-gray-800 text-lg"
-            >
-              ✕
-            </button>
-          </div>
-          <div className="space-y-2">
-            <button
-              onClick={() => handleSelectWorkout('none')}
-              className="w-full px-3 py-2 text-left text-sm bg-white border border-gray-300 rounded hover:bg-gray-50 transition"
-            >
-              No workout
-            </button>
-            {workouts.length > 0 ? (
-              workouts.map(workout => (
-                <button
-                  key={workout.id}
-                  onClick={() => handleSelectWorkout(workout.id)}
-                  className="w-full px-3 py-2 text-left text-sm bg-white border border-gray-300 rounded hover:bg-blue-50 hover:border-blue-300 transition"
-                >
-                  {workout.name}
-                </button>
-              ))
-            ) : (
-              <div className="text-sm text-gray-500 py-2">No workouts created yet.</div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

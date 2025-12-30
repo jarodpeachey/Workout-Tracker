@@ -6,7 +6,7 @@ const CustomWorkoutCard = ({ workout }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(workout.name);
   const [editExercises, setEditExercises] = useState(workout.exerciseIds || []);
-  const { exercises, deleteCustomWorkout, updateWorkout } = useWorkout();
+  const { exercises, deleteWorkout, updateWorkout } = useWorkout();
 
   const items = workout.exerciseIds?.map(id => exercises.find(e => e.id === id)).filter(Boolean);
 
@@ -22,24 +22,24 @@ const CustomWorkoutCard = ({ workout }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
+    <div className="card">
       <div className="flex justify-between items-center mb-3">
         {isEditing ? (
           <input
             type="text"
             value={editName}
             onChange={(e) => setEditName(e.target.value)}
-            className="flex-1 px-3 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input flex-1"
           />
         ) : (
-          <h3 className="text-lg font-bold">{workout.name}</h3>
+          <h3 className="text-lg font-bold text-text-primary">{workout.name}</h3>
         )}
         <div className="flex items-center gap-2 ml-3">
           {isEditing ? (
             <>
               <button
                 onClick={handleSave}
-                className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                className="btn-primary px-4 py-2 text-sm"
               >
                 Save
               </button>
@@ -49,7 +49,7 @@ const CustomWorkoutCard = ({ workout }) => {
                   setEditName(workout.name);
                   setEditExercises(workout.exerciseIds || []);
                 }}
-                className="px-3 py-1 bg-gray-300 text-gray-700 rounded text-sm hover:bg-gray-400"
+                className="btn-secondary px-4 py-2 text-sm"
               >
                 Cancel
               </button>
@@ -58,14 +58,14 @@ const CustomWorkoutCard = ({ workout }) => {
             <>
               <button
                 onClick={() => setIsEditing(true)}
-                className="text-blue-600 hover:text-blue-800"
+                className="text-accent-blue hover:bg-[rgba(0,0,0,0.3)] p-3 transition-all duration-150"
                 title="Edit workout"
               >
                 <Edit2 className="w-4 h-4" />
               </button>
               <button
-                onClick={() => deleteCustomWorkout(workout.id)}
-                className="text-red-600 hover:text-red-800"
+                onClick={() => deleteWorkout(workout.id)}
+                className="text-red-600 hover:bg-[rgba(0,0,0,0.3)] p-3 transition-all duration-150"
                 title="Delete workout"
               >
                 <Trash2 className="w-4 h-4" />
@@ -77,18 +77,20 @@ const CustomWorkoutCard = ({ workout }) => {
 
       {isEditing ? (
         <div className="space-y-3">
-          <div className="text-sm font-medium text-gray-700">Select exercises:</div>
+          <div className="text-sm font-medium text-text-primary">Select exercises:</div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-64 overflow-auto">
             {exercises.map(ex => (
-              <label key={ex.id} className="flex items-center gap-2 p-2 border rounded hover:bg-gray-50">
+              <label key={ex.id} className="flex items-center gap-2 p-2 border-2 border-dark-border bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.2)] cursor-pointer transition-colors">
                 <input
                   type="checkbox"
                   checked={editExercises.includes(ex.id)}
                   onChange={() => toggleExercise(ex.id)}
+                  className="w-5 h-5 accent-green-600 cursor-pointer"
+                  style={{ borderRadius: '0' }}
                 />
                 <div>
-                  <div className="font-medium text-sm">{ex.name}</div>
-                  <div className="text-xs text-gray-500">{ex.type === 'reverse' ? 'Reverse Pyramid' : ex.type === 'tensetslight' ? '10 Sets (Light)' : '10 Sets'}</div>
+                  <div className="font-medium text-sm text-text-primary">{ex.name}</div>
+                  <div className="text-xs text-text-dim">{ex.type === 'reverse' ? 'Reverse Pyramid' : ex.type === 'tensetslight' ? 'UFpwrLifter Program (Light)' : 'UFpwrLifter Program'}</div>
                 </div>
               </label>
             ))}
@@ -97,13 +99,13 @@ const CustomWorkoutCard = ({ workout }) => {
       ) : (
         <>
           {items && items.length > 0 ? (
-            <ul className="list-disc pl-5 space-y-1 text-gray-700">
+            <ul className="list-disc pl-5 space-y-1 text-text-primary">
               {items.map(it => (
-                <li key={it.id}>{it.name} — {it.type === 'reverse' ? 'Reverse Pyramid' : it.type === 'tensetslight' ? '10 Sets (Light)' : '10 Sets'}</li>
+                <li key={it.id}>{it.name} — {it.type === 'reverse' ? 'Reverse Pyramid' : it.type === 'tensetslight' ? 'UFpwrLifter Program (Light)' : 'UFpwrLifter Program'}</li>
               ))}
             </ul>
           ) : (
-            <div className="text-gray-500">No exercises selected.</div>
+            <div className="text-text-dim">No exercises selected.</div>
           )}
         </>
       )}

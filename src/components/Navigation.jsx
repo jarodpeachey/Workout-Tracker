@@ -5,35 +5,35 @@ const Navigation = () => {
   const { currentTab, setCurrentTab } = useWorkout();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-blue-600 text-white shadow-2xl">
+    <div className="fixed bottom-0 left-0 right-0 bg-black border-t-2 border-dark-border shadow-gym">
       <div className="max-w-6xl mx-auto px-4 py-3">
-        <div className="flex items-center gap-2 bg-blue-700 rounded w-full justify-center">
+        <div className="flex items-center gap-2 w-full justify-center">
           <button
             onClick={() => setCurrentTab('workouts')}
-            className={`flex-1 px-4 py-3 text-center font-medium transition ${
+            className={`flex-1 px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider transition ${
               currentTab === 'workouts' 
-                ? 'bg-white text-blue-700 rounded' 
-                : 'text-white hover:bg-blue-600'
+                ? 'bg-accent-blue text-white' 
+                : 'bg-dark-lighter text-text-secondary hover:bg-dark-border'
             }`}
           >
             Workouts
           </button>
           <button
             onClick={() => setCurrentTab('exercises')}
-            className={`flex-1 px-4 py-3 text-center font-medium transition ${
+            className={`flex-1 px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider transition ${
               currentTab === 'exercises' 
-                ? 'bg-white text-blue-700 rounded' 
-                : 'text-white hover:bg-blue-600'
+                ? 'bg-accent-blue text-white' 
+                : 'bg-dark-lighter text-text-secondary hover:bg-dark-border'
             }`}
           >
             Exercises
           </button>
           <button
             onClick={() => setCurrentTab('schedule')}
-            className={`flex-1 px-4 py-3 text-center font-medium transition ${
+            className={`flex-1 px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider transition ${
               currentTab === 'schedule' 
-                ? 'bg-white text-blue-700 rounded' 
-                : 'text-white hover:bg-blue-600'
+                ? 'bg-accent-blue text-white' 
+                : 'bg-dark-lighter text-text-secondary hover:bg-dark-border'
             }`}
           >
             Schedule
