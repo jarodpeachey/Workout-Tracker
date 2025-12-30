@@ -57,29 +57,29 @@ const AuthForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md">
+    <div className="min-h-screen bg-dark-bg flex items-center justify-center p-4">
+      <div className="card w-full max-w-md">
         <div className="flex items-center justify-center mb-6">
-          <Dumbbell className="w-12 h-12 text-blue-600" />
+          <Dumbbell className="w-12 h-12 text-accent-blue" />
         </div>
-        <h1 className="text-3xl font-bold text-center mb-2 text-gray-800">
+        <h1 className="text-3xl font-bold text-center mb-2 text-text-primary">
           Project 1,000
         </h1>
-        <p className="text-center text-gray-600 mb-6">
+        <p className="text-center text-text-secondary mb-6">
           {isRegistering ? 'Create your account' : 'Sign in to continue'}
         </p>
         
         <div className="space-y-4">
           {showConfirmation && (
             <div className="fixed inset-0 z-50 flex items-center justify-center">
-              <div className="absolute inset-0 bg-black opacity-40" onClick={() => setShowConfirmation(false)} />
-              <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-sm z-10">
-                <h3 className="text-lg font-semibold mb-2">Check your email</h3>
-                <p className="text-sm text-gray-700 mb-4">Please check your inbox for a confirmation email</p>
+              <div className="absolute inset-0 bg-black opacity-60" onClick={() => setShowConfirmation(false)} />
+              <div className="relative bg-dark-card border-2 border-dark-border shadow-gym p-6 w-full max-w-sm z-10">
+                <h3 className="text-lg font-semibold mb-2 text-text-primary">Check your email</h3>
+                <p className="text-sm text-text-secondary mb-4">Please check your inbox for a confirmation email</p>
                 <div className="text-right">
                   <button
                     onClick={() => setShowConfirmation(false)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    className="btn-primary"
                   >
                     OK
                   </button>
@@ -88,7 +88,7 @@ const AuthForm = () => {
             </div>
           )}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-text-primary mb-1">
               Email
             </label>
             <input
@@ -96,12 +96,12 @@ const AuthForm = () => {
               placeholder="Enter email"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="input w-full"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-text-primary mb-1">
               Password
             </label>
             <input
@@ -110,13 +110,13 @@ const AuthForm = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && (isRegistering ? handleRegister() : handleLogin())}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="input w-full"
             />
           </div>
           
           <button
             onClick={isRegistering ? handleRegister : handleLogin}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+            className="w-full btn-primary"
           >
             {isRegistering ? 'Create Account' : 'Sign In'}
           </button>
@@ -124,7 +124,7 @@ const AuthForm = () => {
           <div className="text-center">
             <button
               onClick={() => setIsRegistering(!isRegistering)}
-              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+              className="text-accent-blue hover:text-accent-blue-dim text-sm font-medium transition"
             >
               {isRegistering ? 'Already have an account? Sign in' : 'Need an account? Register'}
             </button>
