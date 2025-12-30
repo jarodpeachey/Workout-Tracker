@@ -1,12 +1,16 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { setCookie, getCookie, deleteCookie } from '../utils/cookieUtils';
 
 const WorkoutContext = createContext();
 
 export const WorkoutProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(() => {
+    return getCookie('currentUser') || null;
+  });
   const [exercises, setExercises] = useState([]);
   const [workouts, setWorkouts] = useState([]);
   const [currentTab, setCurrentTab] = useState('workouts');
+  const [schedule, setSchedule] = useState({});
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -18,6 +22,9 @@ export const WorkoutProvider = ({ children }) => {
 
         const workoutsResult = await window.storage.get(`user_${currentUser}_workouts`);
         if (workoutsResult) setWorkouts(JSON.parse(workoutsResult.value));
+
+        const scheduleResult = await window.storage.get(`user_${currentUser}_schedule`);
+        if (scheduleResult) setSchedule(JSON.parse(scheduleResult.value));
       } catch (error) {
         console.log('No existing workout data');
       }
@@ -40,22 +47,30 @@ export const WorkoutProvider = ({ children }) => {
           `user_${currentUser}_workouts`,
           JSON.stringify(workouts)
         );
+
+        await window.storage.set(
+          `user_${currentUser}_schedule`,
+          JSON.stringify(schedule)
+        );
       } catch (error) {
         console.error('Error saving data:', error);
       }
     };
 
     saveUserData();
-  }, [workoutTypes, currentUser]);
+  }, [exercises, workouts, schedule, currentUser]);
 
   const login = (username) => {
     setCurrentUser(username);
+    setCookie('currentUser', username);
   };
 
   const logout = () => {
     setCurrentUser(null);
     setExercises([]);
     setWorkouts([]);
+    setSchedule({});
+    deleteCookie('currentUser');
   };
 
   const addExercise = (exercise) => {
@@ -76,8 +91,25 @@ export const WorkoutProvider = ({ children }) => {
     setWorkouts([...workouts, { ...workout, id: Date.now() }]);
   };
 
+  const updateWorkout = (id, updates) => {
+    setWorkouts(workouts.map(w =>
+      w.id === id ? { ...w, ...updates } : w
+    ));
+  };
+
   const deleteCustomWorkout = (id) => {
     setWorkouts(workouts.filter(w => w.id !== id));
+  };
+
+  const setScheduleWorkout = (dateKey, workoutId) => {
+    setSchedule(prev => {
+      if (workoutId === null) {
+        const updated = { ...prev };
+        delete updated[dateKey];
+        return updated;
+      }
+      return { ...prev, [dateKey]: workoutId };
+    });
   };
 
   const calculateReversePyramid = (sixRM) => {
@@ -108,12 +140,29 @@ export const WorkoutProvider = ({ children }) => {
     ];
   };
 
+  const calculateTenSetsLight = (oneRM) => {
+    const rm = parseFloat(oneRM);
+    return [
+      { sets: 1, reps: 10, weight: Math.round(rm * 0.05) },
+      { sets: 1, reps: 10, weight: Math.round(rm * 0.10) },
+      { sets: 1, reps: 10, weight: Math.round(rm * 0.33) },
+      { sets: 1, reps: 8, weight: Math.round(rm * 0.60) },
+      { sets: 1, reps: 6, weight: Math.round(rm * 0.85) },
+      { sets: 1, reps: 3, weight: Math.round(rm * 0.96) },
+      { sets: 1, reps: 6, weight: Math.round(rm * 0.85) },
+      { sets: 1, reps: 8, weight: Math.round(rm * 0.85) },
+      { sets: 1, reps: 10, weight: Math.round(rm * 0.60) },
+      { sets: 1, reps: 10, weight: Math.round(rm * 0.33) }
+    ];
+  };
+
   return (
     <WorkoutContext.Provider value={{
       currentUser,
       exercises,
       workouts,
       currentTab,
+      schedule,
       setCurrentTab,
       login,
       logout,
@@ -121,9 +170,12 @@ export const WorkoutProvider = ({ children }) => {
       updateExercise,
       deleteExercise,
       addWorkout,
+      updateWorkout,
       deleteCustomWorkout,
+      setScheduleWorkout,
       calculateReversePyramid,
-      calculateTenSets
+      calculateTenSets,
+      calculateTenSetsLight
     }}>
       {children}
     </WorkoutContext.Provider>

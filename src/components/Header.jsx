@@ -3,7 +3,7 @@ import { User, Dumbbell, LogOut } from 'lucide-react';
 import { useWorkout } from '../context/WorkoutContext';
 
 const Header = () => {
-  const { currentUser, logout, currentTab, setCurrentTab } = useWorkout();
+  const { currentUser, logout } = useWorkout();
 
   return (
     <div className="bg-blue-600 text-white p-4 shadow-lg">
@@ -13,25 +13,9 @@ const Header = () => {
           <h1 className="text-2xl font-bold">Workout Tracker</h1>
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <User className="w-5 h-5" />
-              <span>{currentUser}</span>
-            </div>
-            <div className="flex items-center gap-2 bg-blue-700 rounded">
-              <button
-                onClick={() => setCurrentTab('workouts')}
-                className={`px-3 py-2 ${currentTab === 'workouts' ? 'bg-white text-blue-700 rounded' : 'text-white'}`}
-              >
-                Workouts
-              </button>
-              <button
-                onClick={() => setCurrentTab('exercises')}
-                className={`px-3 py-2 ${currentTab === 'exercises' ? 'bg-white text-blue-700 rounded' : 'text-white'}`}
-              >
-                Exercises
-              </button>
-            </div>
+          <div className="flex items-center gap-2">
+            <User className="w-5 h-5" />
+            <span>{currentUser}</span>
           </div>
           <button
             onClick={logout}

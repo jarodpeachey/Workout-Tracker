@@ -36,7 +36,7 @@ const AddCustomWorkoutForm = ({ onClose }) => {
             <input type="checkbox" checked={selected.includes(ex.id)} onChange={() => toggleSelect(ex.id)} />
             <div>
               <div className="font-medium">{ex.name}</div>
-              <div className="text-sm text-gray-500">{ex.type === 'reverse' ? 'Reverse Pyramid' : '10 Sets'}</div>
+              <div className="text-sm text-gray-500">{ex.type === 'reverse' ? 'Reverse Pyramid' : ex.type === 'tensetslight' ? '10 Sets (Light)' : '10 Sets'}</div>
             </div>
           </label>
         ))}

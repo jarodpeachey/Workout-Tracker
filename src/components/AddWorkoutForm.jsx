@@ -16,7 +16,7 @@ const AddWorkoutForm = ({ onClose }) => {
     const exercise = {
       name: newWorkout.name,
       type: newWorkout.type,
-      oneRM: newWorkout.type === 'tensets' ? parseFloat(newWorkout.oneRM) : null,
+      oneRM: (newWorkout.type === 'tensets' || newWorkout.type === 'tensetslight') ? parseFloat(newWorkout.oneRM) : null,
       sixRM: newWorkout.type === 'reverse' ? parseFloat(newWorkout.sixRM) : null
     };
 
@@ -44,6 +44,7 @@ const AddWorkoutForm = ({ onClose }) => {
         >
           <option value="reverse">Reverse Pyramid (6 sets)</option>
           <option value="tensets">10 Sets Plan</option>
+          <option value="tensetslight">10 Sets Plan (Light)</option>
         </select>
         
         {newWorkout.type === 'reverse' ? (
@@ -69,7 +70,7 @@ const AddWorkoutForm = ({ onClose }) => {
             onClick={handleSubmit}
             className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
           >
-            Add Workout
+            Add Exercise
           </button>
           <button
             onClick={onClose}
