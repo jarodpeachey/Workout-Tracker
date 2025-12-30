@@ -34,7 +34,7 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white pb-24">
+    <div className="min-h-screen pb-24">
       <Toaster position="top-center" toastOptions={{
         style: {
           background: '#1a1a1a',

@@ -6,11 +6,16 @@
   *:not(.loading-spinner) {
     /* border-radius: 0 !important; */
   }
+
   body {
     @apply bg-white text-black font-gym min-h-screen antialiased;
     font-size: 16px;
     line-height: 1.6;
     overflow-y: scroll;
+  }
+  html,
+  body {
+    background-color: #eaebeb;
   }
   /* Custom scrollbar styling */
   body::-webkit-scrollbar {
@@ -86,20 +91,25 @@
      BUTTON STYLES - Edit all buttons here
      ======================================== */
 
-  .btn, .btn.btn-primary {
-    @apply bg-primary text-white border-2 rounded-md border-primary px-8 py-3 text-[14px] font-medium uppercase tracking-wider transition-all duration-150 active:scale-[0.97];
+  .btn,
+  .btn.btn-primary {
+    @apply text-white rounded-md px-8 py-3 text-[14px] font-medium uppercase tracking-wider transition-all duration-150 active:scale-[0.97];
+    background: linear-gradient(135deg, #bc3908 0%, #f6aa1c 100%);
     box-shadow: 4px 4px 20px -10px rgb(110, 110, 110);
   }
   .btn.btn-primary:hover {
-    @apply bg-primary-dim border-primary-dim;
+    filter: brightness(0.9);
   }
 
   .btn.btn-secondary {
-    @apply bg-transparent text-black border-2 border-gray rounded-md px-8 py-3 text-[14px] font-medium uppercase tracking-wider transition-all duration-150 active:scale-[0.97];
+    @apply bg-gray-light text-black rounded-md px-8 py-3 text-[14px] font-medium uppercase tracking-wider transition-all duration-150 active:scale-[0.97];
     box-shadow: none;
+    background: #00000022;
   }
   .btn.btn-secondary:hover {
-    @apply bg-primary border-primary text-white;
+    @apply text-white border-primary;
+    background: linear-gradient(135deg, #bc3908 0%, #f6aa1c 100%);
+    box-shadow: 4px 4px 20px -10px rgb(110, 110, 110);
   }
 
   .btn.btn-sm {
@@ -129,10 +139,13 @@
     transform: none;
   }
   .tab.active {
-    @apply bg-primary text-white font-semibold;
+    @apply text-white font-medium;
+    background: linear-gradient(135deg, #bc3908 0%, #f6aa1c 100%);
   }
   .tab.active:hover {
-    @apply bg-primary text-white;
+    @apply text-white;
+    background: linear-gradient(135deg, #bc3908 0%, #f6aa1c 100%);
+    filter: brightness(0.9);
   }
 
   /* ======================================== */
@@ -177,6 +190,22 @@
   }
 
   /* ======================================== */
+}
+
+/* Checkbox styling */
+input[type="checkbox"] {
+  accent-color: #BC3908;
+  cursor: pointer;
+}
+
+input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 /* Make number input arrows visible */

@@ -89,7 +89,7 @@ const WorkoutCard = ({ workout }) => {
             )}
           </div>
 
-          <div className="bg-white p-3 border-2 border-gray-light">
+          <div className="">
             <h4 className="font-semibold mb-3 text-black">Workout Plan</h4>
             <div className="space-y-2">
               {plan.map((set, idx) => (
@@ -100,7 +100,7 @@ const WorkoutCard = ({ workout }) => {
                   <span className="font-medium text-black">
                     Set {idx + 1}
                   </span>
-                  <span className="text-gray">
+                  <span className="text-gray-dark">
                     {set.reps} reps @ {set.weight} lbs
                   </span>
                 </div>

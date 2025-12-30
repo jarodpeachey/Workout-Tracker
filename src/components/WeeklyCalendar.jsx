@@ -72,24 +72,33 @@ const WeeklyCalendar = ({
           const monthName = date.toLocaleString('default', { month: 'short' });
 
           const isToday = new Date().toDateString() === date.toDateString();
+          
+          // Check if date is in the past
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const dateOnly = new Date(date);
+          dateOnly.setHours(0, 0, 0, 0);
+          const isPastDate = dateOnly < today;
 
           return (
             <div
               key={idx}
-              onClick={() => setSelectedDay(isSelected ? null : idx)}
-              className={`card card-sm cursor-pointer transition ${
-                isToday
-                  ? "border-success shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+              onClick={() => !isPastDate && setSelectedDay(isSelected ? null : idx)}
+              className={`card card-sm transition ${
+                isPastDate
+                  ? "bg-gray-light cursor-not-allowed"
+                  : isToday
+                  ? "border-success shadow-[0_4px_12px_rgba(0,0,0,0.5)] cursor-pointer"
                   : isSelected
-                  ? "border-primary shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
-                  : "border-gray hover:bg-white"
+                  ? "border-primary shadow-[0_4px_12px_rgba(0,0,0,0.5)] cursor-pointer"
+                  : "border-gray hover:bg-white cursor-pointer"
               }`}
             >
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <div
                     className={`font-semibold ${
-                      isToday ? "text-success" : "text-black"
+                      isPastDate ? "text-gray-dark" : isToday ? "text-success" : "text-black"
                     }`}
                   >
                     {dayName}, {monthName} {dayNum}
@@ -97,7 +106,7 @@ const WeeklyCalendar = ({
                   {scheduledWorkout ? (
                     <div
                       className={`mt-2 text-sm break-words ${
-                        isToday ? "text-success" : "text-gray-dark"
+                        isPastDate ? "text-gray-dark" : isToday ? "text-success" : "text-gray-dark"
                       }`}
                     >
                       {scheduledWorkout.name}
@@ -105,7 +114,7 @@ const WeeklyCalendar = ({
                   ) : (
                     <div
                       className={`mt-2 text-sm break-words ${
-                        isToday ? "text-success" : "text-gray-dark"
+                        isPastDate ? "text-gray-dark" : isToday ? "text-success" : "text-gray-dark"
                       }`}
                     >
                       No workout selected
@@ -118,7 +127,14 @@ const WeeklyCalendar = ({
                       e.stopPropagation();
                       onStartWorkout(idx);
                     }}
-                    className="md:hidden ml-3 btn btn-sm bg-success shadow-none border-success text-white hover:bg-success-dim hover:border-success-dim transition font-semibold uppercase tracking-wider whitespace-nowrap self-start"
+                    className="md:hidden ml-3 btn btn-sm shadow-none text-white transition font-semibold uppercase tracking-wider whitespace-nowrap self-start"
+                    style={{ background: "linear-gradient(135deg, #567335 0%, #7a8f4a 100%)" }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.filter = "brightness(0.9)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.filter = "";
+                    }}
                   >
                     Start
                   </button>
@@ -131,7 +147,14 @@ const WeeklyCalendar = ({
                     e.stopPropagation();
                     onStartWorkout(idx);
                   }}
-                  className="hidden md:block w-full mt-3 btn btn-sm bg-success shadow-none border-success text-white hover:bg-success-dim hover:border-success-dim transition font-semibold uppercase tracking-wider"
+                  className="hidden md:block w-full mt-3 btn btn-sm shadow-none text-white transition font-semibold uppercase tracking-wider"
+                  style={{ background: "linear-gradient(135deg, #567335 0%, #7a8f4a 100%)" }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.filter = "brightness(0.9)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.filter = "";
+                  }}
                 >
                   Start
                 </button>
@@ -150,9 +173,14 @@ const WeeklyCalendar = ({
                     }}
                     className={`w-full px-3 py-2 text-sm border rounded-sm shadow-none normal-case transition text-left ${
                       scheduledWorkoutId == null
-                        ? "bg-primary border-primary text-white hover:bg-primary hover:border-primary"
+                        ? "border-primary text-white"
                         : "bg-white border-gray text-black hover:bg-white"
                     }`}
+                    style={
+                      scheduledWorkoutId == null
+                        ? { background: "linear-gradient(135deg, #BC3908 0%, #F6AA1C 100%)" }
+                        : {}
+                    }
                   >
                     No workout
                   </button>
@@ -166,15 +194,20 @@ const WeeklyCalendar = ({
                         }}
                         className={`w-full px-3 py-2 text-sm border shadow-none rounded-sm normal-case transition text-left ${
                           workout.id == scheduledWorkoutId
-                            ? "bg-primary border-primary text-white hover:bg-primary hover:border-primary"
+                            ? "border-primary text-white"
                             : "bg-white border-gray text-black hover:bg-white"
                         }`}
+                        style={
+                          workout.id == scheduledWorkoutId
+                            ? { background: "linear-gradient(135deg, #BC3908 0%, #F6AA1C 100%)" }
+                            : {}
+                        }
                       >
                         {workout.name}
                       </button>
                     ))
                   ) : (
-                    <div className="text-sm text-gray py-2">
+                    <div className="text-sm text-gray-dark py-2">
                       No workouts created yet.
                     </div>
                   )}
@@ -197,9 +230,14 @@ const WeeklyCalendar = ({
               onClick={() => handleSelectWorkout("none")}
               className={`w-full px-3 py-2 text-left text-sm border rounded-sm shadow-none normal-case transition ${
                 selectedScheduledWorkoutId == null
-                  ? "bg-primary border-primary text-white hover:bg-primary hover:border-primary"
+                  ? "border-primary text-white"
                   : "bg-white border-gray text-black hover:bg-white"
               }`}
+              style={
+                selectedScheduledWorkoutId == null
+                  ? { background: "linear-gradient(135deg, #BC3908 0%, #F6AA1C 100%)" }
+                  : {}
+              }
             >
               No workout
             </button>
@@ -210,15 +248,20 @@ const WeeklyCalendar = ({
                   onClick={() => handleSelectWorkout(workout.id)}
                   className={`w-full px-3 py-2 text-left rounded-sm text-sm border shadow-none normal-case transition ${
                     workout.id == selectedScheduledWorkoutId
-                      ? "bg-primary border-primary text-white hover:bg-primary hover:border-primary"
+                      ? "border-primary text-white"
                       : "bg-white border-gray text-black hover:bg-white"
                   }`}
+                  style={
+                    workout.id == selectedScheduledWorkoutId
+                      ? { background: "linear-gradient(135deg, #BC3908 0%, #F6AA1C 100%)" }
+                      : {}
+                  }
                 >
                   {workout.name}
                 </button>
               ))
             ) : (
-              <div className="text-sm text-gray py-2">
+              <div className="text-sm text-gray-dark py-2">
                 No workouts created yet.
               </div>
             )}

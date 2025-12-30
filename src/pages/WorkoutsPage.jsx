@@ -3,7 +3,6 @@ import { Plus } from 'lucide-react';
 import { useWorkout } from '../context/WorkoutContext';
 import AddCustomWorkoutForm from '../components/AddCustomWorkoutForm';
 import CustomWorkoutCard from '../components/CustomWorkoutCard';
-import Loading from '../components/Loading';
 
 const WorkoutsPage = () => {
   const [showAdd, setShowAdd] = useState(false);
@@ -23,7 +22,7 @@ const WorkoutsPage = () => {
           }`}
         >
           <Plus className="w-5 h-5" />
-          <span className="hidden md:inline">Add Exercise</span>
+          <span className="hidden md:inline">Add Workout</span>
         </button>
       </div>
 
@@ -31,7 +30,9 @@ const WorkoutsPage = () => {
 
       <div className="space-y-4">
         {workouts.length === 0 ? (
-          <Loading />
+          <div className="text-center py-12 text-gray">
+            <p className="text-lg">No workouts yet. Add your first workout to get started!</p>
+          </div>
         ) : (
           workouts.map(w => <CustomWorkoutCard key={w.id} workout={w} />)
         )}

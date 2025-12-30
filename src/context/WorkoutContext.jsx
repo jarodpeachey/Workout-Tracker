@@ -103,10 +103,23 @@ export const WorkoutProvider = ({ children }) => {
   async function saveSchedule(dateId, workoutId, data = {}) {
     try {
       const user_id = await getCurrentUserId();
-      const payload = { id: dateId, user_id, workout_id: workoutId, data };
+      const payload = { 
+        id: dateId, 
+        user_id, 
+        workout_id: workoutId, 
+        data,
+        completed: data.completed || false,
+        completed_at: data.completed ? new Date().toISOString() : null
+      };
       const { data: upserted, error } = await supabase.from('schedules').upsert([payload], { onConflict: 'id' }).select().single();
       if (error) throw error;
       setSchedule(prev => ({ ...prev, [dateId]: upserted }));
+      
+      // If workout is being marked as completed, increment workoutsCompleted
+      if (data.completed) {
+        await updateProfileCounters('workouts_completed', 1);
+      }
+      
       return upserted;
     } catch (err) {
       console.error('saveSchedule error', err);
@@ -252,6 +265,8 @@ export const WorkoutProvider = ({ children }) => {
 
   const setScheduleWorkout = (dateKey, workoutId) => {
     setSchedule(prev => {
+      const wasAssigned = prev[dateKey] !== undefined;
+      
       if (workoutId === null) {
         const updated = { ...prev };
         delete updated[dateKey];
@@ -263,6 +278,10 @@ export const WorkoutProvider = ({ children }) => {
           } else {
             const date = new Date(dateKey).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             toast.success(`Workout removed from ${date}`);
+            // Decrement workoutsAssigned if there was a workout assigned
+            if (wasAssigned) {
+              await updateProfileCounters('workouts_assigned', -1);
+            }
           }
         })();
         return updated;
@@ -278,6 +297,10 @@ export const WorkoutProvider = ({ children }) => {
         } else {
           const date = new Date(dateKey).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
           toast.success(`Workout ${isUpdating ? 'updated' : 'added'} to ${date}`);
+          // Increment workoutsAssigned only if this is a new assignment (not an update)
+          if (!isUpdating) {
+            await updateProfileCounters('workouts_assigned', 1);
+          }
         }
       })();
       return updated;
@@ -285,6 +308,41 @@ export const WorkoutProvider = ({ children }) => {
   };
 
   const roundToNearestFive = (value) => Math.round(value / 5) * 5;
+
+  // Helper function to update profile counters
+  const updateProfileCounters = async (field, increment) => {
+    try {
+      const user_id = await getCurrentUserId();
+      const { data: profile, error: fetchError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user_id)
+        .single();
+      
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        console.error('Error fetching profile:', fetchError);
+        return;
+      }
+
+      if (!profile) {
+        // Create profile if it doesn't exist
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert([{ id: user_id, [field]: increment }]);
+        if (insertError) console.error('Error creating profile:', insertError);
+      } else {
+        // Update existing profile
+        const newValue = Math.max(0, (profile[field] || 0) + increment);
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ [field]: newValue })
+          .eq('id', user_id);
+        if (updateError) console.error('Error updating profile:', updateError);
+      }
+    } catch (err) {
+      console.error('Error in updateProfileCounters:', err);
+    }
+  };
 
   const calculateReversePyramid = (sixRM) => {
     const rm = parseFloat(sixRM);

@@ -67,9 +67,20 @@ const SchedulePage = () => {
             onClick={() => setView("weekly")}
             className={`px-6 py-2 text-[14px] font-medium rounded-sm normal-case transition-all duration-150 ${
               view === "weekly"
-                ? "bg-primary text-white shadow border-primary hover:bg-primary hover:border-primary"
+                ? "text-white shadow border-primary hover:border-primary"
                 : "bg-transparent text-black hover:bg-gray hover:border-transparent shadow-none border-transparent"
             }`}
+            style={
+              view === "weekly"
+                ? { background: "linear-gradient(135deg, #BC3908 0%, #F6AA1C 100%)" }
+                : {}
+            }
+            onMouseEnter={(e) => {
+              if (view === "weekly") e.currentTarget.style.filter = "brightness(0.9)";
+            }}
+            onMouseLeave={(e) => {
+              if (view === "weekly") e.currentTarget.style.filter = "";
+            }}
           >
             Weekly
           </button>
@@ -77,9 +88,20 @@ const SchedulePage = () => {
             onClick={() => setView("daily")}
             className={`px-6 py-2 text-[14px] font-medium rounded-sm normal-case transition-all duration-150 ${
               view === "daily"
-                ? "bg-primary text-white shadow border-primary hover:bg-primary hover:border-primary"
+                ? "text-white shadow border-primary hover:border-primary"
                 : "bg-transparent text-black hover:bg-gray hover:border-transparent shadow-none border-transparent"
             }`}
+            style={
+              view === "daily"
+                ? { background: "linear-gradient(135deg, #BC3908 0%, #F6AA1C 100%)" }
+                : {}
+            }
+            onMouseEnter={(e) => {
+              if (view === "daily") e.currentTarget.style.filter = "brightness(0.9)";
+            }}
+            onMouseLeave={(e) => {
+              if (view === "daily") e.currentTarget.style.filter = "";
+            }}
           >
             Daily
           </button>
@@ -96,8 +118,19 @@ const SchedulePage = () => {
                 className={`sm p-3 rounded-md transition-all duration-150 shadow-none ${
                   weekOffset === 0
                     ? "bg-gray-light text-gray border-gray-light cursor-not-allowed hover:bg-gray-light hover:text-gray hover:border-gray-light"
-                    : "bg-primary text-white hover:bg-primary-dim"
+                    : "text-white"
                 }`}
+                style={
+                  weekOffset !== 0
+                    ? { background: "linear-gradient(135deg, #BC3908 0%, #F6AA1C 100%)" }
+                    : {}
+                }
+                onMouseEnter={(e) => {
+                  if (weekOffset !== 0) e.currentTarget.style.filter = "brightness(0.9)";
+                }}
+                onMouseLeave={(e) => {
+                  if (weekOffset !== 0) e.currentTarget.style.filter = "";
+                }}
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -112,8 +145,19 @@ const SchedulePage = () => {
                 className={`sm p-3 rounded-md transition-all duration-150 shadow-none ${
                   weekOffset === 5
                     ? "bg-gray-light text-gray border-gray-light cursor-not-allowed hover:bg-gray-light hover:text-gray hover:border-gray-light"
-                    : "bg-primary text-white hover:bg-primary-dim"
+                    : "text-white"
                 }`}
+                style={
+                  weekOffset !== 5
+                    ? { background: "linear-gradient(135deg, #BC3908 0%, #F6AA1C 100%)" }
+                    : {}
+                }
+                onMouseEnter={(e) => {
+                  if (weekOffset !== 5) e.currentTarget.style.filter = "brightness(0.9)";
+                }}
+                onMouseLeave={(e) => {
+                  if (weekOffset !== 5) e.currentTarget.style.filter = "";
+                }}
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
