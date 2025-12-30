@@ -2,35 +2,17 @@ import React, { useState } from 'react';
 import { Dumbbell } from 'lucide-react';
 import { supabase } from '../utils/supabaseClient';
 import { useWorkout } from '../context/WorkoutContext';
+import backgroundImage from '../blurry-gradient-haikei.png';
+import Loading from './Loading';
 
 const AuthForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [isRegistering, setIsRegistering] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { /* login removed - auth handled by Supabase */ } = useWorkout();
 
-  const handleLogin = async () => {
-    if (!username || !password) {
-      return;
-    }
-    
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: username,
-        password
-      });
-      if (error) {
-        return;
-      }
-      // onAuthStateChange in context will pick up the logged-in user
-      setPassword('');
-    } catch (error) {
-      console.error('Login error', error);
-    }
-  };
-
-  const handleRegister = async () => {
+  const handleAuth = async () => {
     if (!username || !password) {
       return;
     }
@@ -39,47 +21,73 @@ const AuthForm = () => {
       return;
     }
     
+    setIsLoading(true);
+    
     try {
-      const { data, error } = await supabase.auth.signUp({
+      // Try to sign in first
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email: username,
         password
       });
-      if (error) {
+      
+      // If sign in succeeds, we're done (loading will stay until app changes)
+      if (!signInError) {
+        setPassword('');
         return;
       }
-      // Supabase may send a confirmation email depending on your project settings.
+      
+      // If sign in fails, try to register
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email: username,
+        password
+      });
+      
+      if (signUpError) {
+        console.error('Registration error:', signUpError);
+        setIsLoading(false);
+        return;
+      }
+      
+      // Registration successful
       setPassword('');
-      setIsRegistering(false);
+      setIsLoading(false);
       setShowConfirmation(true);
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error('Auth error:', error);
+      setIsLoading(false);
     }
   };
 
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
-    <div className="min-h-screen bg-dark-bg flex items-center justify-center p-4">
+    <div 
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
       <div className="card w-full max-w-md">
         <div className="flex items-center justify-center mb-6">
-          <Dumbbell className="w-12 h-12 text-accent-blue" />
+          <Dumbbell className="w-12 h-12 mt-4 mb-4 text-primary" />
         </div>
-        <h1 className="text-3xl font-bold text-center mb-2 text-text-primary">
-          Project 1,000
-        </h1>
-        <p className="text-center text-text-secondary mb-6">
-          {isRegistering ? 'Create your account' : 'Sign in to continue'}
-        </p>
         
         <div className="space-y-4">
           {showConfirmation && (
             <div className="fixed inset-0 z-50 flex items-center justify-center">
               <div className="absolute inset-0 bg-black opacity-60" onClick={() => setShowConfirmation(false)} />
-              <div className="relative bg-dark-card border-2 border-dark-border shadow-gym p-6 w-full max-w-sm z-10">
-                <h3 className="text-lg font-semibold mb-2 text-text-primary">Check your email</h3>
-                <p className="text-sm text-text-secondary mb-4">Please check your inbox for a confirmation email</p>
-                <div className="text-right">
+              <div className="relative card w-full max-w-sm z-10 items-center justify-center">
+                <h3 className="mb-2 text-center">Check your email</h3>
+                <p className="mb-4 text-center">Please check your inbox for a confirmation email</p>
+                <div className="text-center">
                   <button
                     onClick={() => setShowConfirmation(false)}
-                    className="btn-primary"
+                    className="btn btn-primary"
                   >
                     OK
                   </button>
@@ -88,7 +96,7 @@ const AuthForm = () => {
             </div>
           )}
           <div>
-            <label className="block text-sm font-medium text-text-primary mb-1">
+            <label className="block mb-1">
               Email
             </label>
             <input
@@ -96,12 +104,12 @@ const AuthForm = () => {
               placeholder="Enter email"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="input w-full"
+              className="w-full"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-text-primary mb-1">
+            <label className="block mb-1">
               Password
             </label>
             <input
@@ -109,26 +117,17 @@ const AuthForm = () => {
               placeholder="Enter password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && (isRegistering ? handleRegister() : handleLogin())}
-              className="input w-full"
+              onKeyPress={(e) => e.key === 'Enter' && handleAuth()}
+              className="w-full"
             />
           </div>
           
           <button
-            onClick={isRegistering ? handleRegister : handleLogin}
-            className="w-full btn-primary"
+            onClick={handleAuth}
+            className="w-full btn btn-primary"
           >
-            {isRegistering ? 'Create Account' : 'Sign In'}
+            Sign Up/Sign In
           </button>
-          
-          <div className="text-center">
-            <button
-              onClick={() => setIsRegistering(!isRegistering)}
-              className="text-accent-blue hover:text-accent-blue-dim text-sm font-medium transition"
-            >
-              {isRegistering ? 'Already have an account? Sign in' : 'Need an account? Register'}
-            </button>
-          </div>
         </div>
       </div>
     </div>

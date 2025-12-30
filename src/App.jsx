@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { useWorkout } from './context/WorkoutContext';
 import AuthForm from './components/AuthForm';
+import LandingPage from './pages/LandingPage';
 import Header from './components/Header';
 import Navigation from './components/Navigation';
 import WorkoutsPage from './pages/WorkoutsPage';
@@ -12,6 +13,7 @@ import Loading from './components/Loading';
 const App = () => {
   const { currentUser, currentTab } = useWorkout();
   const [initialLoading, setInitialLoading] = useState(true);
+  const [showAuthForm, setShowAuthForm] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setInitialLoading(false), 2000);
@@ -20,29 +22,30 @@ const App = () => {
 
   if (initialLoading) {
     return (
-      <div style={{ minHeight: '100vh', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Loading timeout={2000} />
-      </div>
+      <Loading timeout={2000} />
     );
   }
 
   if (!currentUser) {
-    return <AuthForm />;
+    if (showAuthForm) {
+      return <AuthForm />;
+    }
+    return <LandingPage onGetStarted={() => setShowAuthForm(true)} />;
   }
 
   return (
-    <div className="min-h-screen bg-dark-bg pb-24">
+    <div className="min-h-screen bg-white pb-24">
       <Toaster position="top-center" toastOptions={{
         style: {
           background: '#1a1a1a',
-          color: '#ffffffF2',
-          border: '2px solid #2a2a2a',
+          color: '#f7f7f7',
+          border: '2px solid #3a3a3a',
           fontSize: '14px',
           fontWeight: '600',
         },
         success: {
           iconTheme: {
-            primary: '#22c55e',
+            primary: '#90a959',
             secondary: '#1a1a1a',
           },
         },

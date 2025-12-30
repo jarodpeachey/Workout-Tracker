@@ -4,74 +4,194 @@
 
 @layer base {
   *:not(.loading-spinner) {
-    border-radius: 0 !important;
+    /* border-radius: 0 !important; */
   }
   body {
-    @apply bg-dark-bg text-text-primary font-gym min-h-screen antialiased;
+    @apply bg-white text-black font-gym min-h-screen antialiased;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-y: scroll;
   }
-  h1, h2, h3, h4, h5, h6 {
-    @apply text-text-primary font-bold tracking-tight;
+  /* Custom scrollbar styling */
+  body::-webkit-scrollbar {
+    width: 2px !important;
+  }
+  body::-webkit-scrollbar-track {
+    background: transparent !important;
+  }
+  body::-webkit-scrollbar-thumb {
+    background: #c6c6c6 !important;
+    border-radius: 1px !important;
+  }
+  body::-webkit-scrollbar-thumb:hover {
+    background: #adadad !important;
+  }
+  /* Firefox scrollbar */
+  body {
+    scrollbar-width: thin;
+    scrollbar-color: #c6c6c6 transparent;
+  }
+  h1 {
+    @apply text-black font-bold tracking-tight;
+    font-size: 48px;
+    line-height: 1.2;
+  }
+  h2 {
+    @apply text-black font-bold tracking-tight;
+    font-size: 32px;
+    line-height: 1.2;
+  }
+  h3 {
+    @apply text-black font-bold tracking-tight;
+    font-size: 20px;
+    line-height: 1.3;
+  }
+  h4 {
+    @apply text-black font-bold tracking-tight;
+    font-size: 16px;
+    line-height: 1.1;
+  }
+  h5 {
+    @apply text-black font-bold tracking-tight;
+    font-size: 16px;
+    line-height: 1.1;
+  }
+  h6 {
+    @apply text-black font-bold tracking-tight;
+    font-size: 16px;
+    line-height: 1.1;
+  }
+  p {
+    @apply text-black;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  label {
+    @apply text-black font-bold;
+    font-size: 16px;
+    line-height: 1.6;
   }
   button {
-    border-radius: 0 !important;
+    /* border-radius: 0 !important; */
   }
-  input, select, textarea {
-    border-radius: 0 !important;
+  input,
+  select,
+  textarea {
+    /* border-radius: 0 !important; */
   }
 }
 
 @layer components {
-  .btn-primary {
-    @apply text-white px-6 py-3 text-sm font-semibold uppercase tracking-wider transition-all duration-150 active:scale-[0.97];
-    background: #5b9aef;
-    border: 2px solid #5b9aef;
+  /* ========================================
+     BUTTON STYLES - Edit all buttons here
+     ======================================== */
+
+  .btn, .btn.btn-primary {
+    @apply bg-primary text-white border-2 rounded-md border-primary px-8 py-3 text-[14px] font-semibold uppercase tracking-wider transition-all duration-150 active:scale-[0.97];
+    box-shadow: 4px 4px 20px -10px rgb(110, 110, 110);
   }
-  .btn-primary:hover {
-    background: #3b82f6;
-    border-color: #3b82f6;
+  .btn.btn-primary:hover {
+    @apply bg-primary-dim border-primary-dim;
   }
-  .btn-secondary {
-    @apply text-text-primary px-6 py-3 text-sm font-semibold uppercase tracking-wider transition-all duration-150 active:scale-[0.97];
-    background: rgb(37, 37, 37);
-    border: 2px solid rgb(37, 37, 37);
+
+  .btn.btn-secondary {
+    @apply bg-transparent text-black border-2 border-gray rounded-md px-8 py-3 text-[14px] font-semibold uppercase tracking-wider transition-all duration-150 active:scale-[0.97];
+    box-shadow: none;
   }
-  .btn-secondary:hover {
-    background: #3b82f6;
-    border-color: #3b82f6;
-    color: white;
+  .btn.btn-secondary:hover {
+    @apply bg-primary border-primary text-white;
   }
-  .btn-accent {
-    @apply bg-accent-blue text-white hover:bg-accent-blue-dim px-6 py-3 text-sm font-semibold uppercase tracking-wider transition-all duration-150 active:scale-[0.97];
+
+  .btn.btn-sm {
+    @apply px-4 py-2 rounded-sm;
+    font-size: 12px;
   }
+
+  .btn.btn-text {
+    @apply bg-transparent text-primary border-0 px-0 py-0 text-sm font-medium normal-case tracking-normal transition-colors duration-150;
+    box-shadow: none;
+  }
+  .btn.btn-text:hover {
+    @apply text-primary-dim;
+  }
+
+  .tab {
+    @apply text-center tracking-wider transition text-black;
+    width: 33.333%;
+    padding: 16px 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .tab:hover {
+    background: rgba(0, 0, 0, 0.05);
+    transform: none;
+  }
+  .tab.active {
+    @apply bg-primary text-white font-semibold;
+  }
+  .tab.active:hover {
+    @apply bg-primary text-white;
+  }
+
+  /* ======================================== */
+
+  /* ========================================
+     INPUT STYLES - Global input styling
+     ======================================== */
+
+  input,
+  select,
+  textarea {
+    @apply bg-white border border-gray rounded-md text-black placeholder-gray px-4 py-3 focus:outline-none transition-shadow font-medium;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    @apply border-primary;
+    box-shadow: 0 0 0 2px rgba(100, 148, 170, 0.3);
+  }
+
+  .input-sm {
+    @apply px-4 py-2 rounded-sm;
+    /* font-size: 14px; */
+    line-height: 21px;
+  }
+
+  /* ======================================== */
+
+  /* ========================================
+     CARD STYLES
+     ======================================== */
+
   .card {
-    @apply bg-dark-card border-2 border-dark-border shadow-gym p-[1.125rem];
+    @apply bg-white border border-gray rounded-lg py-8 px-8;
+    box-shadow: 0 1px 20px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   }
-  .input {
-    @apply bg-dark-lighter border-2 text-text-primary placeholder-text-dim px-4 py-3 focus:outline-none transition-shadow font-medium;
-    border-color: #4a4a4a;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+
+  .card.card-sm {
+    @apply py-2 px-2 rounded-md;
+    box-shadow: none;
   }
-  .input:focus {
-    border-color: #6a6a6a;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(59, 130, 246, 0.3);
-  }
+
+  /* ======================================== */
 }
 
-/* Make number input arrows visible in dark mode */
+/* Make number input arrows visible */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   opacity: 1;
-  filter: invert(1);
 }
 
 ::-webkit-scrollbar {
   width: 12px;
-  background: #0d0d0d;
+  @apply bg-white;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2a2a2a;
-  border: 2px solid #0d0d0d;
+  @apply bg-gray-light border-2 border-white;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3b82f6;
+  @apply bg-primary;
 }

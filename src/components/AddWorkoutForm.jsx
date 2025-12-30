@@ -34,13 +34,13 @@ const AddWorkoutForm = ({ onClose }) => {
           placeholder="Workout Name (e.g., Bench Press)"
           value={newWorkout.name}
           onChange={(e) => setNewWorkout({ ...newWorkout, name: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 border border-gray-light focus:outline-none focus:ring-2 focus:ring-primary"
         />
         
         <select
           value={newWorkout.type}
           onChange={(e) => setNewWorkout({ ...newWorkout, type: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 border border-gray-light focus:outline-none focus:ring-2 focus:ring-primary"
         >
           <option value="reverse">Reverse Pyramid (6 sets)</option>
           <option value="tensets">UFpwrLifter Program Plan</option>
@@ -53,7 +53,7 @@ const AddWorkoutForm = ({ onClose }) => {
             placeholder="6 Rep Max (lbs)"
             value={newWorkout.sixRM}
             onChange={(e) => setNewWorkout({ ...newWorkout, sixRM: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 border border-gray-light focus:outline-none focus:ring-2 focus:ring-primary"
           />
         ) : (
           <input
@@ -61,14 +61,14 @@ const AddWorkoutForm = ({ onClose }) => {
             placeholder="1 Rep Max (lbs)"
             value={newWorkout.oneRM}
             onChange={(e) => setNewWorkout({ ...newWorkout, oneRM: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 border border-gray-light focus:outline-none focus:ring-2 focus:ring-primary"
           />
         )}
         
         <div className="flex gap-2">
           <button
             onClick={handleSubmit}
-            className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+            className="flex-1 bg-primary text-white py-2 rounded-lg hover:bg-primary-dim transition"
           >
             Add Exercise
           </button>

@@ -9,12 +9,12 @@
 }
 
 .loading-spinner {
-  border: 8px solid #252525;
-  border-top: 8px solid #3b82f6;
+  border: 8px solid rgba(255, 255, 255, 0.2);
+  border-top: 8px solid #E9F1F7;
   border-radius: 50% !important;
   width: 60px;
   height: 60px;
-  animation: spin 1s linear infinite;
+  animation: spin 1s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
 }
 
 @keyframes spin {

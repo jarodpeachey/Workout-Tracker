@@ -6,7 +6,7 @@ const Header = () => {
   const { currentUser, logout } = useWorkout();
 
   return (
-    <div className="bg-black text-white p-3 border-b-2 border-dark-border">
+    <div className="bg-white text-black p-6 py-3 border-b border-gray">
       <div className="max-w-6xl mx-auto flex justify-between items-center">
         <div className="flex items-center gap-3">
           <Dumbbell className="w-8 h-8" />
@@ -14,12 +14,11 @@ const Header = () => {
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <User className="w-5 h-5" />
             <span>{currentUser}</span>
           </div>
           <button
             onClick={logout}
-            className="flex items-center gap-2 btn-secondary"
+            className="flex items-center gap-2 btn btn-secondary"
           >
             <LogOut className="w-4 h-4" />
             <span className="hidden md:inline">Logout</span>

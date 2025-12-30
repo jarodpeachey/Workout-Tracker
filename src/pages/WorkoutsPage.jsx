@@ -12,13 +12,13 @@ const WorkoutsPage = () => {
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold uppercase tracking-wider">My Workouts</h2>
+        <h2>My Workouts</h2>
         <button
           onClick={() => setShowAdd(true)}
-          className="btn-primary flex items-center gap-2"
+          className="btn btn-primary btn-sm flex items-center gap-2 p-3 md:px-4"
         >
           <Plus className="w-5 h-5" />
-          Create Workout
+          <span className="hidden md:inline">Add Exercise</span>
         </button>
       </div>
 

@@ -20,7 +20,7 @@ const WorkoutCard = ({ workout }) => {
       : calculateTenSets(workout.oneRM);
 
   return (
-    <div className="card">
+    <div className="card py-0">
       <div className="flex justify-between items-center">
         <button
           onClick={() => setIsExpanded(!isExpanded)}
@@ -32,11 +32,11 @@ const WorkoutCard = ({ workout }) => {
             }`}
           />
           <div>
-            <h3 className="text-xl font-bold text-text-primary text-left">
+            <h3 className="font-bold text-black text-left">
               {workout.name}
             </h3>
             <p
-              className="text-sm text-text-secondary width-fit"
+              className="text-md text-gray-dark width-fit"
               style={{ width: "fit-content" }}
             >
               {workout.type === "reverse"
@@ -49,7 +49,7 @@ const WorkoutCard = ({ workout }) => {
         </button>
         <button
           onClick={() => deleteExercise(workout.id)}
-          className="text-red-600 hover:bg-[rgba(0,0,0,0.3)] p-3 ml-2 transition-all duration-150"
+          className="text-danger hover:bg-[rgba(0,0,0,0.3)] p-3 ml-2 transition-all duration-150"
         >
           <Trash2 className="w-5 h-5" />
         </button>
@@ -60,7 +60,7 @@ const WorkoutCard = ({ workout }) => {
           <div className="mb-4 mt-4 flex gap-4">
             {workout.type === "reverse" ? (
               <div className="flex-1">
-                <label className="block text-sm font-medium text-text-primary mb-1">
+                <label className="block mb-1">
                   6 Rep Max (lbs)
                 </label>
                 <input
@@ -74,7 +74,7 @@ const WorkoutCard = ({ workout }) => {
               </div>
             ) : (
               <div className="flex-1">
-                <label className="block text-sm font-medium text-text-primary mb-1">
+                <label className="block mb-1">
                   1 Rep Max (lbs)
                 </label>
                 <input
@@ -89,18 +89,18 @@ const WorkoutCard = ({ workout }) => {
             )}
           </div>
 
-          <div className="bg-dark-lighter p-3 border-2 border-dark-border">
-            <h4 className="font-semibold mb-3 text-text-primary">Workout Plan</h4>
+          <div className="bg-white p-3 border-2 border-gray-light">
+            <h4 className="font-semibold mb-3 text-black">Workout Plan</h4>
             <div className="space-y-2">
               {plan.map((set, idx) => (
                 <div
                   key={idx}
-                  className="flex justify-between items-center py-2 border-b border-dark-border last:border-0"
+                  className="flex justify-between items-center py-2 border-b border-gray-light last:border-0"
                 >
-                  <span className="font-medium text-text-primary">
+                  <span className="font-medium text-black">
                     Set {idx + 1}
                   </span>
-                  <span className="text-text-secondary">
+                  <span className="text-gray">
                     {set.reps} reps @ {set.weight} lbs
                   </span>
                 </div>

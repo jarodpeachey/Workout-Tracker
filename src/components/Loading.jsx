@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './Loading.css';
+import backgroundImage from '../blurry-gradient-haikei.png';
 
 const Loading = ({ timeout = 2000 }) => {
   const [show, setShow] = useState(true);
@@ -9,7 +10,15 @@ const Loading = ({ timeout = 2000 }) => {
   }, [timeout]);
   if (!show) return null;
   return (
-    <div className="loading-spinner-container">
+    <div 
+      className="loading-spinner-container"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
       <div className="loading-spinner"></div>
     </div>
   );
