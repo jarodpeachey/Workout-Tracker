@@ -11,7 +11,7 @@ export const WorkoutProvider = ({ children }) => {
   const [exercisesLoading, setExercisesLoading] = useState(true);
   const [workouts, setWorkouts] = useState([]);
   const [workoutsLoading, setWorkoutsLoading] = useState(true);
-  const [currentTab, setCurrentTab] = useState('workouts');
+  const [currentTab, setCurrentTab] = useState('schedule');
   const [schedule, setSchedule] = useState({});
   const [globalLoading, setGlobalLoading] = useState(false);
   const [globalError, setGlobalError] = useState(false);

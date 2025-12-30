@@ -118,6 +118,10 @@ const SchedulePage = () => {
               calculateReversePyramid={calculateReversePyramid}
               calculateTenSets={calculateTenSets}
               calculateTenSetsLight={calculateTenSetsLight}
+              onStartWorkout={(dayIndex) => {
+                setCurrentDayIndex(dayIndex);
+                setView('daily');
+              }}
             />
           </>
         ) : (

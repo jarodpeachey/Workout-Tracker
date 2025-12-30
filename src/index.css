@@ -44,7 +44,7 @@
     @apply bg-accent-blue text-white hover:bg-accent-blue-dim px-6 py-3 text-sm font-semibold uppercase tracking-wider transition-all duration-150 active:scale-[0.97];
   }
   .card {
-    @apply bg-dark-card border-2 border-dark-border shadow-gym p-6;
+    @apply bg-dark-card border-2 border-dark-border shadow-gym p-[1.125rem];
   }
   .input {
     @apply bg-dark-lighter border-2 text-text-primary placeholder-text-dim px-4 py-3 focus:outline-none transition-shadow font-medium;

@@ -26,7 +26,7 @@ const AddWorkoutForm = ({ onClose }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+    <div className="bg-white rounded-lg shadow-lg p-[1.125rem] mb-6">
       <h3 className="text-xl font-bold mb-4">Add New Exercise</h3>
       <div className="space-y-4">
         <input

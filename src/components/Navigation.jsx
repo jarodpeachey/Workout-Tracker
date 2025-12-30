@@ -9,6 +9,16 @@ const Navigation = () => {
       <div className="max-w-6xl mx-auto px-4 py-3">
         <div className="flex items-center gap-2 w-full justify-center">
           <button
+            onClick={() => setCurrentTab('schedule')}
+            className={`flex-1 px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider transition ${
+              currentTab === 'schedule' 
+                ? 'bg-accent-blue text-white' 
+                : 'bg-dark-lighter text-text-secondary hover:bg-dark-border'
+            }`}
+          >
+            Schedule
+          </button>
+          <button
             onClick={() => setCurrentTab('workouts')}
             className={`flex-1 px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider transition ${
               currentTab === 'workouts' 
@@ -27,16 +37,6 @@ const Navigation = () => {
             }`}
           >
             Exercises
-          </button>
-          <button
-            onClick={() => setCurrentTab('schedule')}
-            className={`flex-1 px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider transition ${
-              currentTab === 'schedule' 
-                ? 'bg-accent-blue text-white' 
-                : 'bg-dark-lighter text-text-secondary hover:bg-dark-border'
-            }`}
-          >
-            Schedule
           </button>
         </div>
       </div>

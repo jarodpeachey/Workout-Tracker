@@ -89,7 +89,7 @@ const WorkoutCard = ({ workout }) => {
             )}
           </div>
 
-          <div className="bg-dark-lighter p-4 border-2 border-dark-border">
+          <div className="bg-dark-lighter p-3 border-2 border-dark-border">
             <h4 className="font-semibold mb-3 text-text-primary">Workout Plan</h4>
             <div className="space-y-2">
               {plan.map((set, idx) => (

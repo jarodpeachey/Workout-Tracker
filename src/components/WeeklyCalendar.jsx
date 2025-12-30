@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const WeeklyCalendar = ({ weekDays, workouts, schedule, onSetWorkout, exercises, calculateReversePyramid, calculateTenSets, calculateTenSetsLight }) => {
+const WeeklyCalendar = ({ weekDays, workouts, schedule, onSetWorkout, exercises, calculateReversePyramid, calculateTenSets, calculateTenSetsLight, onStartWorkout }) => {
   const [selectedDay, setSelectedDay] = useState(null);
 
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -61,8 +61,23 @@ const WeeklyCalendar = ({ weekDays, workouts, schedule, onSetWorkout, exercises,
                   : 'border-dark-border bg-dark-card hover:bg-dark-lighter'
               }`}
             >
-              <div className="text-sm font-semibold text-text-primary">{dayName}</div>
-              <div className="text-lg font-bold text-text-primary">{dayNum}</div>
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="text-sm font-semibold text-text-primary">{dayName}</div>
+                  <div className="text-lg font-bold text-text-primary">{dayNum}</div>
+                </div>
+                {isToday && scheduledWorkout && onStartWorkout && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onStartWorkout(idx);
+                    }}
+                    className="text-xs px-2 py-1 bg-green-600 text-white hover:bg-green-700 transition font-semibold uppercase tracking-wider"
+                  >
+                    Start
+                  </button>
+                )}
+              </div>
               {scheduledWorkout ? (
                 <div className={`mt-2 text-xs font-medium break-words ${isToday ? 'text-green-600' : 'text-text-secondary'}`}>
                   {scheduledWorkout.name}
@@ -73,14 +88,14 @@ const WeeklyCalendar = ({ weekDays, workouts, schedule, onSetWorkout, exercises,
               
               {/* Mobile picker - show inside box */}
               {isSelected && (
-                <div className="md:hidden mt-4 pt-3 border-t border-green-600 space-y-2">
-                  <div className="text-xs font-semibold text-text-primary">Select workout:</div>
+                <div className="md:hidden mt-4 pt-3 border-t-2 border-dark-border space-y-2">
+                  <div className="text-sm font-semibold text-text-primary mb-1">Select a workout:</div>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleSelectWorkout('none');
                     }}
-                    className={`w-full px-2 py-1 text-xs border-2 transition ${scheduledWorkoutId == null ? 'bg-green-600 border-green-600 text-white' : 'bg-dark-lighter border-dark-border text-text-primary hover:bg-dark-border'}`}
+                    className={`w-full px-3 py-2 text-sm border-2 transition text-left ${scheduledWorkoutId == null ? 'bg-green-600 border-green-600 text-white' : 'bg-dark-lighter border-dark-border text-text-primary hover:bg-dark-border'}`}
                   >
                     No workout
                   </button>
@@ -92,13 +107,13 @@ const WeeklyCalendar = ({ weekDays, workouts, schedule, onSetWorkout, exercises,
                           e.stopPropagation();
                           handleSelectWorkout(workout.id);
                         }}
-                        className={`w-full px-2 py-1 text-xs border-2 transition text-left ${workout.id == scheduledWorkoutId ? 'bg-green-600 border-green-600 text-white' : 'bg-dark-lighter border-dark-border text-text-primary hover:bg-dark-border'}`}
+                        className={`w-full px-3 py-2 text-sm border-2 transition text-left ${workout.id == scheduledWorkoutId ? 'bg-green-600 border-green-600 text-white' : 'bg-dark-lighter border-dark-border text-text-primary hover:bg-dark-border'}`}
                       >
                         {workout.name}
                       </button>
                     ))
                   ) : (
-                    <div className="text-xs text-text-dim py-1">No workouts created yet.</div>
+                    <div className="text-sm text-text-dim py-2">No workouts created yet.</div>
                   )}
                 </div>
               )}
@@ -109,7 +124,7 @@ const WeeklyCalendar = ({ weekDays, workouts, schedule, onSetWorkout, exercises,
 
       {/* Desktop picker - show below grid */}
       {selectedDay !== null && (
-        <div className="hidden md:block bg-dark-card p-4 border-2 border-dark-border">
+        <div className="hidden md:block bg-dark-card p-3 border-2 border-dark-border">
           <div className="mb-3 font-semibold text-text-primary">
             Select a workout for {dayNames[weekDays[selectedDay].getDay()]}, {weekDays[selectedDay].toLocaleDateString()}
           </div>
