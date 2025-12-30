@@ -86,7 +86,7 @@ const WeeklyCalendar = ({
               }`}
             >
               <div className="flex justify-between items-start">
-                <div>
+                <div className="flex-1">
                   <div
                     className={`font-semibold ${
                       isToday ? "text-success" : "text-black"
@@ -94,25 +94,36 @@ const WeeklyCalendar = ({
                   >
                     {dayName}, {monthName} {dayNum}
                   </div>
+                  {scheduledWorkout ? (
+                    <div
+                      className={`mt-2 text-sm break-words ${
+                        isToday ? "text-success" : "text-gray-dark"
+                      }`}
+                    >
+                      {scheduledWorkout.name}
+                    </div>
+                  ) : (
+                    <div
+                      className={`mt-2 text-sm break-words ${
+                        isToday ? "text-success" : "text-gray-dark"
+                      }`}
+                    >
+                      No workout selected
+                    </div>
+                  )}
                 </div>
+                {isToday && scheduledWorkout && onStartWorkout && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onStartWorkout(idx);
+                    }}
+                    className="md:hidden ml-3 btn btn-sm bg-success shadow-none border-success text-white hover:bg-success-dim hover:border-success-dim transition font-semibold uppercase tracking-wider whitespace-nowrap self-start"
+                  >
+                    Start
+                  </button>
+                )}
               </div>
-              {scheduledWorkout ? (
-                <div
-                  className={`mt-2 text-sm text-gray-dark break-words ${
-                    isToday ? "text-success" : "text-gray"
-                  }`}
-                >
-                  {scheduledWorkout.name}
-                </div>
-              ) : (
-                <div
-                  className={`mt-2 text-sm text-gray-dark break-words ${
-                    isToday ? "text-success" : "text-gray"
-                  }`}
-                >
-                  No workout selected
-                </div>
-              )}
 
               {isToday && scheduledWorkout && onStartWorkout && (
                 <button
@@ -137,7 +148,7 @@ const WeeklyCalendar = ({
                       e.stopPropagation();
                       handleSelectWorkout("none");
                     }}
-                    className={`w-full px-3 py-2 text-sm border shadow-none normal-case transition text-left ${
+                    className={`w-full px-3 py-2 text-sm border rounded-sm shadow-none normal-case transition text-left ${
                       scheduledWorkoutId == null
                         ? "bg-primary border-primary text-white hover:bg-primary hover:border-primary"
                         : "bg-white border-gray text-black hover:bg-white"
@@ -153,7 +164,7 @@ const WeeklyCalendar = ({
                           e.stopPropagation();
                           handleSelectWorkout(workout.id);
                         }}
-                        className={`w-full px-3 py-2 text-sm border shadow-none normal-case transition text-left ${
+                        className={`w-full px-3 py-2 text-sm border shadow-none rounded-sm normal-case transition text-left ${
                           workout.id == scheduledWorkoutId
                             ? "bg-primary border-primary text-white hover:bg-primary hover:border-primary"
                             : "bg-white border-gray text-black hover:bg-white"
@@ -184,7 +195,7 @@ const WeeklyCalendar = ({
           <div className="space-y-2">
             <button
               onClick={() => handleSelectWorkout("none")}
-              className={`w-full px-3 py-2 text-left text-sm border shadow-none normal-case transition ${
+              className={`w-full px-3 py-2 text-left text-sm border rounded-sm shadow-none normal-case transition ${
                 selectedScheduledWorkoutId == null
                   ? "bg-primary border-primary text-white hover:bg-primary hover:border-primary"
                   : "bg-white border-gray text-black hover:bg-white"
@@ -197,7 +208,7 @@ const WeeklyCalendar = ({
                 <button
                   key={workout.id}
                   onClick={() => handleSelectWorkout(workout.id)}
-                  className={`w-full px-3 py-2 text-left text-sm border shadow-none normal-case transition ${
+                  className={`w-full px-3 py-2 text-left rounded-sm text-sm border shadow-none normal-case transition ${
                     workout.id == selectedScheduledWorkoutId
                       ? "bg-primary border-primary text-white hover:bg-primary hover:border-primary"
                       : "bg-white border-gray text-black hover:bg-white"

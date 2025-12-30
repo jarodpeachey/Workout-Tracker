@@ -87,7 +87,7 @@
      ======================================== */
 
   .btn, .btn.btn-primary {
-    @apply bg-primary text-white border-2 rounded-md border-primary px-8 py-3 text-[14px] font-semibold uppercase tracking-wider transition-all duration-150 active:scale-[0.97];
+    @apply bg-primary text-white border-2 rounded-md border-primary px-8 py-3 text-[14px] font-medium uppercase tracking-wider transition-all duration-150 active:scale-[0.97];
     box-shadow: 4px 4px 20px -10px rgb(110, 110, 110);
   }
   .btn.btn-primary:hover {
@@ -95,7 +95,7 @@
   }
 
   .btn.btn-secondary {
-    @apply bg-transparent text-black border-2 border-gray rounded-md px-8 py-3 text-[14px] font-semibold uppercase tracking-wider transition-all duration-150 active:scale-[0.97];
+    @apply bg-transparent text-black border-2 border-gray rounded-md px-8 py-3 text-[14px] font-medium uppercase tracking-wider transition-all duration-150 active:scale-[0.97];
     box-shadow: none;
   }
   .btn.btn-secondary:hover {

@@ -3,10 +3,10 @@ import { Trash2, Edit2 } from 'lucide-react';
 import { useWorkout } from '../context/WorkoutContext';
 
 const CustomWorkoutCard = ({ workout }) => {
-  const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(workout.name);
   const [editExercises, setEditExercises] = useState(workout.exerciseIds || []);
-  const { exercises, deleteWorkout, updateWorkout } = useWorkout();
+  const { exercises, deleteWorkout, updateWorkout, editingWorkoutId, setEditingWorkoutId } = useWorkout();
+  const isEditing = editingWorkoutId === workout.id;
 
   const items = workout.exerciseIds?.map(id => exercises.find(e => e.id === id)).filter(Boolean);
 
@@ -17,7 +17,7 @@ const CustomWorkoutCard = ({ workout }) => {
   const handleSave = () => {
     if (editName && editExercises.length > 0) {
       updateWorkout(workout.id, { name: editName, exerciseIds: editExercises });
-      setIsEditing(false);
+      setEditingWorkoutId(null);
     }
   };
 
@@ -47,7 +47,7 @@ const CustomWorkoutCard = ({ workout }) => {
           ) : (
             <>
               <button
-                onClick={() => setIsEditing(true)}
+                onClick={() => setEditingWorkoutId(workout.id)}
                 className="text-secondary hover:bg-gray-light p-3 transition-all duration-150 rounded-sm"
                 title="Edit workout"
               >

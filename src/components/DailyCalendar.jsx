@@ -102,7 +102,7 @@ const DailyCalendar = ({
               <div className="font-semibold text-black">Select a workout</div>
               <button
                 onClick={() => setShowWorkoutPicker(false)}
-                className="text-gray hover:bg-[rgba(0,0,0,0.3)] p-2 transition-all duration-150 text-lg"
+                className="text-gray-dark rounded-sm hover:text-danger p-3 h-auto w-auto transition-all duration-150 text-lg"
               >
                 ✕
               </button>
@@ -110,10 +110,10 @@ const DailyCalendar = ({
             <div className="space-y-2">
               <button
                 onClick={() => handleSelectWorkout("none")}
-                className={`w-full px-3 py-2 text-left text-sm border-2 transition ${
+                className={`w-full px-3 py-2 text-left text-sm border rounded-sm transition ${
                   scheduledWorkoutId == null
                     ? "bg-success border-success text-white"
-                    : "bg-white border-gray-light text-black hover:bg-white"
+                    : "bg-white border-gray text-black hover:bg-gray-light"
                 }`}
               >
                 No workout
@@ -123,10 +123,10 @@ const DailyCalendar = ({
                   <button
                     key={workout.id}
                     onClick={() => handleSelectWorkout(workout.id)}
-                    className={`w-full px-3 py-2 text-left text-sm border-2 transition ${
+                    className={`w-full px-3 py-2 text-left text-sm border rounded-sm transition ${
                       workout.id === scheduledWorkoutId
                         ? "bg-success border-success text-white"
-                        : "bg-white border-gray-light text-black hover:bg-white"
+                        : "bg-white border-gray text-black hover:bg-gray-light"
                     }`}
                   >
                     {workout.name}
@@ -147,7 +147,7 @@ const DailyCalendar = ({
               </h4>
               <button
                 onClick={() => setShowWorkoutPicker(true)}
-                className="text-sm text-gray hover:text-black transition"
+                className="text-sm text-gray-dark hover:text-primary transition relative pt-1"
               >
                 Change
               </button>

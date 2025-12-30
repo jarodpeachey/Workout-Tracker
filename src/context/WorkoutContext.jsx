@@ -15,6 +15,7 @@ export const WorkoutProvider = ({ children }) => {
   const [schedule, setSchedule] = useState({});
   const [globalLoading, setGlobalLoading] = useState(false);
   const [globalError, setGlobalError] = useState(false);
+  const [editingWorkoutId, setEditingWorkoutId] = useState(null);
 
   // Auth state
   useEffect(() => {
@@ -355,7 +356,9 @@ export const WorkoutProvider = ({ children }) => {
       globalLoading,
       globalError,
       setGlobalLoading,
-      setGlobalError
+      setGlobalError,
+      editingWorkoutId,
+      setEditingWorkoutId
     }}>
       {children}
     </WorkoutContext.Provider>
