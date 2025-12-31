@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useWorkout } from "../context/WorkoutContext";
 import Modal from "./Modal";
+import { getDateKey } from "../utils/timezoneUtils";
+import toast from "react-hot-toast";
 
 const DailyCalendar = ({
   weekDays,
@@ -26,14 +28,15 @@ const DailyCalendar = ({
     "Saturday",
   ];
   const navigate = useNavigate();
-  const { saveSchedule, setShouldOpenAddWorkout } = useWorkout();
+  const { saveSchedule, setShouldOpenAddWorkout, profileData } = useWorkout();
   const [showWorkoutPicker, setShowWorkoutPicker] = useState(false);
   const [showNoWorkoutsModal, setShowNoWorkoutsModal] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [completedSets, setCompletedSets] = useState({});
+  const [lastToggledSet, setLastToggledSet] = useState(null);
 
   const getScheduleKey = (date) => {
-    return date.toISOString().split("T")[0]; // YYYY-MM-DD
+    return getDateKey(date, profileData?.timezone);
   };
 
   const getExerciseDetails = (exerciseId) => {
@@ -151,6 +154,7 @@ const DailyCalendar = ({
 
       // If all sets are completed, ask user to confirm
       if (completedCount === totalSets && totalSets > 0) {
+        setLastToggledSet(setKey);
         setShowCompleteModal(true);
       }
     }
@@ -175,10 +179,34 @@ const DailyCalendar = ({
   };
 
   const handleConfirmComplete = async () => {
-    await saveSchedule(key, scheduledWorkoutId, {
+    const result = await saveSchedule(key, scheduledWorkoutId, {
       completed: true,
       completedAt: new Date().toISOString(),
     });
+    
+    if (result) {
+      toast.success("Workout completed!");
+      setLastToggledSet(null);
+    } else {
+      toast.error("There was an error completing your workout");
+    }
+  };
+
+  const handleCancelComplete = () => {
+    if (lastToggledSet) {
+      const newCompletedSets = {
+        ...completedSets,
+        [lastToggledSet]: false,
+      };
+      setCompletedSets(newCompletedSets);
+      
+      // Update localStorage
+      const storageKey = `workout-${key}-${scheduledWorkoutId}`;
+      localStorage.setItem(storageKey, JSON.stringify(newCompletedSets));
+      
+      setLastToggledSet(null);
+    }
+    setShowCompleteModal(false);
   };
 
   const handleConfirmNavigate = () => {
@@ -205,10 +233,12 @@ const DailyCalendar = ({
       />
       <Modal
         isOpen={showCompleteModal}
-        onClose={() => setShowCompleteModal(false)}
+        onClose={handleCancelComplete}
         onConfirm={handleConfirmComplete}
-        message="All sets completed! Mark this workout as done?"
-        confirmText="Mark Complete"
+        title="Done with your workout?"
+        message="Great job! If you're done with your workout, we'll mark it as complete and update your progress."
+        confirmText="Finish Workout"
+        cancelText="Return to Workout"
       />
     <div className="space-y-4">
       <div className="flex justify-between items-center">

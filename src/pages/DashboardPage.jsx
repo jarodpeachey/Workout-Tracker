@@ -2,23 +2,22 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Calendar, Dumbbell, ListChecks, TrendingUp, Play, ArrowRight, Check } from "lucide-react";
 import { useWorkout } from "../context/WorkoutContext";
+import { getTodayLocalDate } from "../utils/timezoneUtils";
 
 const DashboardPage = () => {
   const navigate = useNavigate();
-  const { schedule, exercises, workouts, setShouldOpenAddExercise, setShouldOpenAddWorkout } = useWorkout();
+  const { schedule, exercises, workouts, profileData, setShouldOpenAddExercise, setShouldOpenAddWorkout } = useWorkout();
 
   // Check if there's a workout scheduled for today that's not completed
-  const today = new Date();
-  const todayKey = `${today.getFullYear()}-${String(
-    today.getMonth() + 1
-  ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  const todayKey = getTodayLocalDate(profileData?.timezone);
   const todaySchedule = schedule[todayKey];
+  
   const hasTodayWorkout =
-    todaySchedule && todaySchedule.workoutId && !todaySchedule.completed;
+    todaySchedule && (todaySchedule.workout_id || todaySchedule.workoutId) && !todaySchedule.completed;
 
   // Check if there are any scheduled workouts in the schedule
   const hasScheduledWorkouts = Object.values(schedule).some(
-    (entry) => entry && (entry.workoutId || entry.workout_id)
+    (entry) => entry && (entry.workout_id || entry.workoutId)
   );
 
   // Determine onboarding step
@@ -144,10 +143,10 @@ const DashboardPage = () => {
   return (
     <div className="p-4 pt-8 max-w-6xl mx-auto">
       <h1 className="text-3xl font-bold text-center mb-2 text-text">
-        {onboardingStep ? "Welcome!" : "Menu"}
+        {onboardingStep ? "Welcome!" : "Welcome back!"}
       </h1>
       <p className="text-center text-text-secondary mb-8">
-        {onboardingStep ? "Let's finish setting up your fitness program." : "What would you like to do today?"}
+        {onboardingStep ? "Let's finish setting up your fitness program." : "Let's get to work."}
       </p>
 
       {onboardingStep ? (
@@ -210,7 +209,7 @@ const DashboardPage = () => {
                 <button
                   key={option.route}
                   onClick={() => navigate(option.route)}
-                  className="card p-6 flex flex-col items-start gap-3 hover:border-primary transition-colors text-left"
+                  className="card p-6 flex flex-col items-start gap-3 hover:border-gray-dark transition-colors text-left"
                 >
                   <div
                     className={`p-3 rounded-lg bg-gradient-to-br ${option.color}`}

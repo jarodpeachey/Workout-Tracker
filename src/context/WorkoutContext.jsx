@@ -2,11 +2,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { supabase } from '../utils/supabaseClient';
+import { getUserTimezone } from '../utils/timezoneUtils';
 
 const WorkoutContext = createContext();
 
 export const WorkoutProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [profileData, setProfileData] = useState(null);
   const [exercises, setExercises] = useState([]);
   const [exercisesLoading, setExercisesLoading] = useState(true);
   const [workouts, setWorkouts] = useState([]);
@@ -58,10 +60,43 @@ export const WorkoutProvider = ({ children }) => {
           setWorkouts([]);
           setWorkoutsLoading(false);
           setSchedule({});
+          setProfileData(null);
           setGlobalLoading(false);
           return;
         }
         const user_id = user.id;
+        // Profile - ensure it exists with timezone
+        let { data: profile, error: profileError } = await supabase.from('profiles').select('*').eq('id', user_id).single();
+        
+        if (profileError && profileError.code === 'PGRST116') {
+          // Profile doesn't exist, create it
+          const userTimezone = getUserTimezone();
+          const { data: newProfile, error: insertError } = await supabase
+            .from('profiles')
+            .insert([{ 
+              id: user_id, 
+              timezone: userTimezone,
+              workouts_created: 0, 
+              workouts_completed: 0, 
+              workouts_assigned: 0 
+            }])
+            .select()
+            .single();
+          
+          if (!insertError) {
+            profile = newProfile;
+          }
+        } else if (profile && !profile.timezone) {
+          // Profile exists but no timezone, update it
+          const userTimezone = getUserTimezone();
+          await supabase
+            .from('profiles')
+            .update({ timezone: userTimezone })
+            .eq('id', user_id);
+          profile.timezone = userTimezone;
+        }
+        
+        setProfileData(profile || { workouts_created: 0, workouts_completed: 0, workouts_assigned: 0, timezone: getUserTimezone() });
         // Exercises
         await loadExercises(user_id);
         // Workouts
@@ -152,6 +187,7 @@ export const WorkoutProvider = ({ children }) => {
       console.error('Error signing out', e);
     }
     setCurrentUser(null);
+    setProfileData(null);
     setExercises([]);
     setWorkouts([]);
     setSchedule({});
@@ -396,6 +432,7 @@ export const WorkoutProvider = ({ children }) => {
   return (
     <WorkoutContext.Provider value={{
       currentUser,
+      profileData,
       exercises,
       exercisesLoading,
       workouts,

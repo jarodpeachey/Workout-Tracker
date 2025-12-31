@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useWorkout } from "../context/WorkoutContext";
 import Modal from "./Modal";
+import { getDateKey } from "../utils/timezoneUtils";
 
 const WeeklyCalendar = ({
   weekDays,
@@ -17,7 +18,7 @@ const WeeklyCalendar = ({
   const [selectedDay, setSelectedDay] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
-  const { setShouldOpenAddWorkout } = useWorkout();
+  const { setShouldOpenAddWorkout, profileData } = useWorkout();
 
   const dayNames = [
     "Sunday",
@@ -29,8 +30,18 @@ const WeeklyCalendar = ({
     "Saturday",
   ];
 
+  const dayNamesAbbr = [
+    "Sun.",
+    "Mon.",
+    "Tues.",
+    "Wed.",
+    "Thu.",
+    "Fri.",
+    "Sat.",
+  ];
+
   const getScheduleKey = (date) => {
-    return date.toISOString().split("T")[0]; // YYYY-MM-DD
+    return getDateKey(date, profileData?.timezone);
   };
 
   const getExerciseDetails = (exerciseId) => {
@@ -64,8 +75,14 @@ const WeeklyCalendar = ({
     }
   };
 
-  const handleDayClick = (isPastDate, idx) => {
+  const handleDayClick = (isPastDate, idx, isCompleted, isToday) => {
     if (isPastDate) return;
+    
+    // If completed and today's workout, navigate to daily view
+    if (isCompleted && isToday && onStartWorkout) {
+      onStartWorkout(idx);
+      return;
+    }
     
     if (workouts.length === 0) {
       setShowModal(true);
@@ -107,6 +124,7 @@ const WeeklyCalendar = ({
           const isCompleted = scheduleEntry?.completed || false;
           const isSelected = selectedDay === idx;
           const dayName = dayNames[date.getDay()];
+          const dayNameAbbr = dayNamesAbbr[date.getDay()];
           const dayNum = date.getDate();
           const monthName = date.toLocaleString('default', { month: 'short' });
 
@@ -138,10 +156,12 @@ const WeeklyCalendar = ({
           return (
             <div
               key={idx}
-              onClick={() => handleDayClick(isPastDate, idx)}
+              onClick={() => handleDayClick(isPastDate, idx, isCompleted, isToday)}
               className={`card card-sm transition ${
                 isPastDate
                   ? "bg-gray-light cursor-not-allowed"
+                  : isCompleted
+                  ? "bg-success border-success cursor-pointer"
                   : isToday
                   ? "border-success shadow-[0_4px_12px_rgba(0,0,0,0.5)] cursor-pointer"
                   : isSelected
@@ -151,16 +171,21 @@ const WeeklyCalendar = ({
             >
               <div className="flex justify-between items-start">
                 <div className="flex-1">
+                  <p className={`m-0 text-xs font-xs ${isCompleted ? "text-white" : "text-gray-dark"}`}>{dayName}</p>
                   <div
                     className={`font-semibold ${
-                      isPastDate ? "text-gray-dark" : isToday ? "text-success" : "text-black"
+                      isPastDate ? "text-gray-dark" : isCompleted ? "text-white" : isToday ? "text-success" : "text-black"
                     }`}
                   >
-                    {dayName}, {monthName} {dayNum}
+                    {monthName} {dayNum}
                   </div>
                   {isPastDate ? (
                     <div className={`mt-2 text-sm break-words ${statusColor}`}>
                       {statusText}
+                    </div>
+                  ) : isCompleted && scheduledWorkout ? (
+                    <div className="mt-2 text-sm break-words text-white font-semibold">
+                      Completed
                     </div>
                   ) : scheduledWorkout ? (
                     <div
@@ -180,7 +205,7 @@ const WeeklyCalendar = ({
                     </div>
                   )}
                 </div>
-                {isToday && scheduledWorkout && onStartWorkout && (
+                {isToday && scheduledWorkout && !isCompleted && onStartWorkout && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -200,7 +225,7 @@ const WeeklyCalendar = ({
                 )}
               </div>
 
-              {isToday && scheduledWorkout && onStartWorkout && (
+              {isToday && scheduledWorkout && !isCompleted && onStartWorkout && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -275,8 +300,7 @@ const WeeklyCalendar = ({
       {selectedDay !== null && workouts.length > 0 && (
         <div className="hidden md:block bg-white p-3 border-2 border-gray-light">
           <div className="mb-3 font-semibold text-black">
-            Select a workout for {dayNames[weekDays[selectedDay].getDay()]},{" "}
-            {weekDays[selectedDay].toLocaleDateString()}
+            Select a workout for {String(weekDays[selectedDay].getMonth() + 1).padStart(2, '0')}/{String(weekDays[selectedDay].getDate()).padStart(2, '0')}/{weekDays[selectedDay].getFullYear()}
           </div>
           <div className="space-y-2">
             <button

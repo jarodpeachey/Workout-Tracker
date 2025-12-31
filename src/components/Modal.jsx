@@ -25,7 +25,7 @@ const Modal = ({
       >
         {title && <h3 className="text-xl font-bold text-text mb-4">{title}</h3>}
         <p className="text-gray-dark mb-6">{message}</p>
-        <div className="flex gap-3 justify-center">
+        <div className="flex flex-col gap-3 w-full">
           <button
             onClick={() => {
               onConfirm();
