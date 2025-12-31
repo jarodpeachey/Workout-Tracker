@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useWorkout } from "../context/WorkoutContext";
+import Modal from "./Modal";
 
 const WeeklyCalendar = ({
   weekDays,
@@ -13,7 +15,9 @@ const WeeklyCalendar = ({
   onStartWorkout,
 }) => {
   const [selectedDay, setSelectedDay] = useState(null);
-  const { setCurrentTab, setShouldOpenAddWorkout } = useWorkout();
+  const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
+  const { setShouldOpenAddWorkout } = useWorkout();
 
   const dayNames = [
     "Sunday",
@@ -64,15 +68,16 @@ const WeeklyCalendar = ({
     if (isPastDate) return;
     
     if (workouts.length === 0) {
-      const confirmed = window.confirm("There are no workouts created. Please create a workout first.");
-      if (confirmed) {
-        setCurrentTab('workouts');
-        setShouldOpenAddWorkout(true);
-      }
+      setShowModal(true);
       return;
     }
     
     setSelectedDay(selectedDay === idx ? null : idx);
+  };
+
+  const handleConfirmNavigate = () => {
+    navigate('/workouts');
+    setShouldOpenAddWorkout(true);
   };
 
   // compute scheduled workout id for the selected day (used by desktop picker)
@@ -82,6 +87,14 @@ const WeeklyCalendar = ({
       : null;
 
   return (
+    <>
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onConfirm={handleConfirmNavigate}
+        message="There are no workouts created. Please create a workout first."
+        confirmText="Create Workout"
+      />
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-7 gap-2">
         {weekDays.map((date, idx) => {
@@ -303,6 +316,7 @@ const WeeklyCalendar = ({
         </div>
       )}
     </div>
+    </>
   );
 };
 

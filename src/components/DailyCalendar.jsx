@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useWorkout } from "../context/WorkoutContext";
+import Modal from "./Modal";
 
 const DailyCalendar = ({
   weekDays,
@@ -23,8 +25,11 @@ const DailyCalendar = ({
     "Friday",
     "Saturday",
   ];
-  const { saveSchedule, setCurrentTab, setShouldOpenAddWorkout } = useWorkout();
+  const navigate = useNavigate();
+  const { saveSchedule, setShouldOpenAddWorkout } = useWorkout();
   const [showWorkoutPicker, setShowWorkoutPicker] = useState(false);
+  const [showNoWorkoutsModal, setShowNoWorkoutsModal] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [completedSets, setCompletedSets] = useState({});
 
   const getScheduleKey = (date) => {
@@ -146,16 +151,7 @@ const DailyCalendar = ({
 
       // If all sets are completed, ask user to confirm
       if (completedCount === totalSets && totalSets > 0) {
-        const confirmed = window.confirm(
-          "All sets completed! Mark this workout as done?"
-        );
-        if (confirmed) {
-          // Update Supabase with completion status
-          await saveSchedule(key, scheduledWorkoutId, {
-            completed: true,
-            completedAt: new Date().toISOString(),
-          });
-        }
+        setShowCompleteModal(true);
       }
     }
   };
@@ -172,14 +168,22 @@ const DailyCalendar = ({
 
   const handleOpenWorkoutPicker = () => {
     if (workouts.length === 0) {
-      const confirmed = window.confirm("There are no workouts created. Please create a workout first.");
-      if (confirmed) {
-        setCurrentTab('workouts');
-        setShouldOpenAddWorkout(true);
-      }
+      setShowNoWorkoutsModal(true);
       return;
     }
     setShowWorkoutPicker(true);
+  };
+
+  const handleConfirmComplete = async () => {
+    await saveSchedule(key, scheduledWorkoutId, {
+      completed: true,
+      completedAt: new Date().toISOString(),
+    });
+  };
+
+  const handleConfirmNavigate = () => {
+    navigate('/workouts');
+    setShouldOpenAddWorkout(true);
   };
 
   const handlePrevDay = () => {
@@ -191,6 +195,21 @@ const DailyCalendar = ({
   };
 
   return (
+    <>
+      <Modal
+        isOpen={showNoWorkoutsModal}
+        onClose={() => setShowNoWorkoutsModal(false)}
+        onConfirm={handleConfirmNavigate}
+        message="There are no workouts created. Please create a workout first."
+        confirmText="Create Workout"
+      />
+      <Modal
+        isOpen={showCompleteModal}
+        onClose={() => setShowCompleteModal(false)}
+        onConfirm={handleConfirmComplete}
+        message="All sets completed! Mark this workout as done?"
+        confirmText="Mark Complete"
+      />
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <button
@@ -440,6 +459,7 @@ const DailyCalendar = ({
         )}
       </div>
     </div>
+    </>
   );
 };
 

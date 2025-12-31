@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 import { useWorkout } from "../context/WorkoutContext";
 
 const AddCustomWorkoutForm = ({ onClose }) => {
@@ -13,7 +14,14 @@ const AddCustomWorkoutForm = ({ onClose }) => {
   };
 
   const handleSubmit = () => {
-    if (!name || selected.length === 0) return;
+    if (!name.trim()) {
+      toast.error("Please enter a workout name");
+      return;
+    }
+    if (selected.length === 0) {
+      toast.error("Please select at least one exercise");
+      return;
+    }
 
     addWorkout({ name, exerciseIds: selected });
     setName("");
@@ -43,9 +51,14 @@ const AddCustomWorkoutForm = ({ onClose }) => {
             key={ex.id}
             className={`card card-sm flex items-center gap-2 cursor-pointer transition-colors ${
               selected.includes(ex.id)
-                ? "bg-success text-white border-success"
+                ? "text-white border-success"
                 : "bg-white text-black hover:bg-gray-light"
             }`}
+            style={
+              selected.includes(ex.id)
+                ? { background: "linear-gradient(135deg, #619624 0%, #86bd48 100%)" }
+                : {}
+            }
           >
             <input
               type="checkbox"

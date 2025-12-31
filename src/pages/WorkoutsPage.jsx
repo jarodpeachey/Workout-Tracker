@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { useWorkout } from "../context/WorkoutContext";
 import AddCustomWorkoutForm from "../components/AddCustomWorkoutForm";
 import CustomWorkoutCard from "../components/CustomWorkoutCard";
+import Modal from "../components/Modal";
 
 const WorkoutsPage = () => {
   const [showAdd, setShowAdd] = useState(false);
-  const { workouts, exercises, editingWorkoutId, shouldOpenAddWorkout, setShouldOpenAddWorkout, setCurrentTab, setShouldOpenAddExercise } = useWorkout();
+  const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
+  const { workouts, exercises, editingWorkoutId, shouldOpenAddWorkout, setShouldOpenAddWorkout, setShouldOpenAddExercise } = useWorkout();
 
   // Open add workout form if triggered from elsewhere
   useEffect(() => {
@@ -18,18 +22,26 @@ const WorkoutsPage = () => {
 
   const handleAddWorkout = () => {
     if (exercises.length === 0) {
-      const confirmed = window.confirm("There are no exercises created. Please create at least one exercise before building your first workout template.");
-      if (confirmed) {
-        setCurrentTab('exercises');
-        setShouldOpenAddExercise(true);
-      }
+      setShowModal(true);
       return;
     }
     setShowAdd(true);
   };
 
+  const handleConfirmNavigate = () => {
+    navigate('/exercises');
+    setShouldOpenAddExercise(true);
+  };
+
   return (
     <div className="max-w-6xl mx-auto p-6">
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onConfirm={handleConfirmNavigate}
+        message="There are no exercises created. Please create at least one exercise before building your first workout template."
+        confirmText="Create Exercise"
+      />
       <div className="flex justify-between items-center mb-2">
         <h2 className="mb-3">My Workouts</h2>
         <button

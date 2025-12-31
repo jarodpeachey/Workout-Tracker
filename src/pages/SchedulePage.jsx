@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useWorkout } from "../context/WorkoutContext";
 import WeeklyCalendar from "../components/WeeklyCalendar";
@@ -14,9 +15,20 @@ const SchedulePage = () => {
     calculateTenSets,
     calculateTenSetsLight,
   } = useWorkout();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [weekOffset, setWeekOffset] = useState(0);
-  const [view, setView] = useState("weekly"); // 'weekly' or 'daily'
-  const [currentDayIndex, setCurrentDayIndex] = useState(new Date().getDay()); // 0-6 for current week
+  // Convert JavaScript day (0=Sun, 6=Sat) to weekDays array index (0=Mon, 6=Sun)
+  const jsDay = new Date().getDay();
+  const todayArrayIndex = jsDay === 0 ? 6 : jsDay - 1;
+  const [currentDayIndex, setCurrentDayIndex] = useState(todayArrayIndex);
+  
+  // Get view from URL or default to weekly
+  const view = searchParams.get('view') || 'weekly';
+
+  // Update URL when view changes
+  const setView = (newView) => {
+    setSearchParams({ view: newView });
+  };
 
   // Get Monday of the current week
   const getMonday = (offset) => {
@@ -88,7 +100,10 @@ const SchedulePage = () => {
             onClick={() => {
               setView("daily");
               setWeekOffset(0);
-              setCurrentDayIndex(new Date().getDay());
+              // Convert JavaScript day (0=Sun, 6=Sat) to weekDays array index (0=Mon, 6=Sun)
+              const jsDay = new Date().getDay();
+              const arrayIndex = jsDay === 0 ? 6 : jsDay - 1;
+              setCurrentDayIndex(arrayIndex);
             }}
             className={`px-6 py-2 text-[14px] font-medium rounded-sm normal-case transition-all duration-150 ${
               view === "daily"

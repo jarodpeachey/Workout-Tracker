@@ -1,37 +1,43 @@
 import React from 'react';
-import { useWorkout } from '../context/WorkoutContext';
+import { Link, useLocation } from 'react-router-dom';
 
 const Navigation = () => {
-  const { currentTab, setCurrentTab } = useWorkout();
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  // Hide navigation on dashboard
+  if (currentPath === '/') {
+    return null;
+  }
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray" style={{ boxShadow: '0 -4px 12px 0 rgba(0, 0, 0, 0.08)' }}>
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center w-full">
-          <button
-            onClick={() => setCurrentTab('schedule')}
-            className={`tab ${currentTab === 'schedule' ? 'active' : ''}`}
+          <Link
+            to="/schedule"
+            className={`tab ${currentPath === '/schedule' ? 'active' : ''}`}
           >
             Schedule
-          </button>
-          <button
-            onClick={() => setCurrentTab('workouts')}
-            className={`tab ${currentTab === 'workouts' ? 'active' : ''}`}
+          </Link>
+          <Link
+            to="/workouts"
+            className={`tab ${currentPath === '/workouts' ? 'active' : ''}`}
           >
             Workouts
-          </button>
-          <button
-            onClick={() => setCurrentTab('exercises')}
-            className={`tab ${currentTab === 'exercises' ? 'active' : ''}`}
+          </Link>
+          <Link
+            to="/exercises"
+            className={`tab ${currentPath === '/exercises' ? 'active' : ''}`}
           >
             Exercises
-          </button>
-          <button
-            onClick={() => setCurrentTab('profile')}
-            className={`tab ${currentTab === 'profile' ? 'active' : ''}`}
+          </Link>
+          <Link
+            to="/stats"
+            className={`tab ${currentPath === '/stats' ? 'active' : ''}`}
           >
             Stats
-          </button>
+          </Link>
         </div>
       </div>
     </div>

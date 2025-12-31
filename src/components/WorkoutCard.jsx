@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Trash2, ChevronDown } from "lucide-react";
 import { useWorkout } from "../context/WorkoutContext";
+import Modal from "./Modal";
 
 const WorkoutCard = ({ workout }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [localSixRM, setLocalSixRM] = useState(workout.sixRM);
+  const [localOneRM, setLocalOneRM] = useState(workout.oneRM);
   const {
     updateExercise,
     deleteExercise,
@@ -11,6 +15,39 @@ const WorkoutCard = ({ workout }) => {
     calculateTenSets,
     calculateTenSetsLight,
   } = useWorkout();
+
+  const handleDelete = () => {
+    deleteExercise(workout.id);
+  };
+
+  // Sync local state when workout prop changes (after Supabase update)
+  useEffect(() => {
+    setLocalSixRM(workout.sixRM);
+  }, [workout.sixRM]);
+
+  useEffect(() => {
+    setLocalOneRM(workout.oneRM);
+  }, [workout.oneRM]);
+
+  // Debounce 6RM updates
+  useEffect(() => {
+    if (localSixRM !== workout.sixRM && localSixRM !== "") {
+      const timer = setTimeout(() => {
+        updateExercise(workout.id, "sixRM", localSixRM);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [localSixRM]);
+
+  // Debounce 1RM updates
+  useEffect(() => {
+    if (localOneRM !== workout.oneRM && localOneRM !== "") {
+      const timer = setTimeout(() => {
+        updateExercise(workout.id, "oneRM", localOneRM);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [localOneRM]);
 
   const plan =
     workout.type === "reverse"
@@ -20,6 +57,17 @@ const WorkoutCard = ({ workout }) => {
       : calculateTenSets(workout.oneRM);
 
   return (
+    <>
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        title="Woah! That's dangerous!"
+        message="Are you sure you want to delete this exercise? All your progress will be lost."
+        confirmText="Yes, delete"
+        cancelText="No, keep it"
+        danger
+      />
     <div className="card py-0">
       <div className="flex justify-between items-center">
         <button
@@ -48,8 +96,8 @@ const WorkoutCard = ({ workout }) => {
           </div>
         </button>
         <button
-          onClick={() => deleteExercise(workout.id)}
-          className="text-danger hover:bg-[rgba(0,0,0,0.3)] p-3 ml-2 transition-all duration-150"
+          onClick={() => setShowDeleteModal(true)}
+          className="text-danger rounded-sm hover:bg-[rgba(0,0,0,0.07)] p-3 ml-2 transition-all duration-150"
         >
           <Trash2 className="w-5 h-5" />
         </button>
@@ -57,7 +105,7 @@ const WorkoutCard = ({ workout }) => {
 
       {isExpanded && (
         <>
-          <div className="mb-4 mt-4 flex gap-4">
+          <div className="mb-4 mt-4">
             {workout.type === "reverse" ? (
               <div className="flex-1">
                 <label className="block mb-1">
@@ -65,10 +113,8 @@ const WorkoutCard = ({ workout }) => {
                 </label>
                 <input
                   type="number"
-                  value={workout.sixRM}
-                  onChange={(e) =>
-                    updateExercise(workout.id, "sixRM", e.target.value)
-                  }
+                  value={localSixRM}
+                  onChange={(e) => setLocalSixRM(e.target.value)}
                   className="input w-full"
                 />
               </div>
@@ -79,10 +125,8 @@ const WorkoutCard = ({ workout }) => {
                 </label>
                 <input
                   type="number"
-                  value={workout.oneRM}
-                  onChange={(e) =>
-                    updateExercise(workout.id, "oneRM", e.target.value)
-                  }
+                  value={localOneRM}
+                  onChange={(e) => setLocalOneRM(e.target.value)}
                   className="input w-full"
                 />
               </div>
@@ -110,6 +154,7 @@ const WorkoutCard = ({ workout }) => {
         </>
       )}
     </div>
+    </>
   );
 };
 

@@ -19,12 +19,12 @@ export default {
           dim: "#c58816",
         },
         success: {
-          DEFAULT: "#567335",
-          dim: "#7a8f4a",
+          DEFAULT: "#619624",
+          dim: "#86bd48",
         },
         danger: {
           DEFAULT: "#a63d40",
-          dim: "#8b3335",
+          dim: "#c17779",
         },
         // Text colors
         text: {
