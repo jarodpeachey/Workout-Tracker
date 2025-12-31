@@ -3,6 +3,7 @@ import { Dumbbell } from 'lucide-react';
 import { supabase } from '../utils/supabaseClient';
 import { useWorkout } from '../context/WorkoutContext';
 import backgroundImage from '../blurry-gradient-haikei.png';
+import logo from '../logo-2.png';
 import Loading from './Loading';
 
 const AuthForm = () => {
@@ -64,7 +65,7 @@ const AuthForm = () => {
 
   return (
     <div 
-      className="min-h-screen flex items-center justify-center p-4"
+      className="h-screen w-screen flex items-center justify-center p-4"
       style={{
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
@@ -74,7 +75,7 @@ const AuthForm = () => {
     >
       <div className="card w-full max-w-md">
         <div className="flex items-center justify-center mb-6">
-          <Dumbbell className="w-12 h-12 mt-4 mb-4 text-primary" />
+          <img src={logo} alt="Project 1,000" className="h-16 mt-4 mb-4" />
         </div>
         
         <div className="space-y-4">

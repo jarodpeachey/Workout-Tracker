@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useWorkout } from './context/WorkoutContext';
 import AuthForm from './components/AuthForm';
@@ -17,7 +17,6 @@ import Loading from './components/Loading';
 const App = () => {
   const { currentUser } = useWorkout();
   const [initialLoading, setInitialLoading] = useState(true);
-  const [showAuthForm, setShowAuthForm] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setInitialLoading(false), 2000);
@@ -31,10 +30,16 @@ const App = () => {
   }
 
   if (!currentUser) {
-    if (showAuthForm) {
-      return <AuthForm />;
-    }
-    return <LandingPage onGetStarted={() => setShowAuthForm(true)} />;
+    return (
+      <BrowserRouter>
+        <ScrollToTop />
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<AuthForm />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    );
   }
 
   return (
@@ -63,6 +68,7 @@ const App = () => {
           <Route path="/workouts" element={<WorkoutsPage />} />
           <Route path="/exercises" element={<ExercisesPage />} />
           <Route path="/stats" element={<ProfilePage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <Navigation />
       </div>

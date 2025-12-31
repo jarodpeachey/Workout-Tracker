@@ -47,7 +47,10 @@ export default {
         DEFAULT: "0",
       },
       fontFamily: {
-        gym: ["Inter", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+        display: ["Bebas Neue", "sans-serif"], // For PROJECT 1,000 and main titles
+        heading: ["Poppins", "sans-serif"], // For headings
+        body: ["Inter", "sans-serif"], // For body text
+        gym: ["Inter", "-apple-system", "BlinkMacSystemFont", "sans-serif"], // Legacy
       },
       fontSize: {
         base: "16px",
