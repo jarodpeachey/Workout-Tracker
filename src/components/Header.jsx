@@ -19,7 +19,7 @@ const Header = () => {
         </button>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <span>{currentUser}</span>
+            <span className="hidden md:inline">{currentUser}</span>
           </div>
           <button
             onClick={logout}

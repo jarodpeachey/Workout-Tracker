@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trash2, Edit2 } from 'lucide-react';
+import { Trash2, Edit2, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useWorkout } from '../context/WorkoutContext';
 
@@ -46,9 +46,10 @@ const CustomWorkoutCard = ({ workout }) => {
             <>
               <button
                 onClick={handleSave}
-                className="btn btn-primary"
+                className="btn btn-primary flex items-center justify-center"
               >
-                Save
+                <span className="inline md:hidden"><Check className="w-5 h-5" /></span>
+                <span className="hidden md:inline">Save</span>
               </button>
             </>
           ) : (
