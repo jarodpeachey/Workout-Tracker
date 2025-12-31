@@ -26,6 +26,12 @@ const Navigation = () => {
           >
             Exercises
           </button>
+          <button
+            onClick={() => setCurrentTab('profile')}
+            className={`tab ${currentTab === 'profile' ? 'active' : ''}`}
+          >
+            Stats
+          </button>
         </div>
       </div>
     </div>

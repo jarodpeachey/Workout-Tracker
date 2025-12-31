@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useWorkout } from "../context/WorkoutContext";
 
 const WeeklyCalendar = ({
   weekDays,
@@ -12,6 +13,7 @@ const WeeklyCalendar = ({
   onStartWorkout,
 }) => {
   const [selectedDay, setSelectedDay] = useState(null);
+  const { setCurrentTab, setShouldOpenAddWorkout } = useWorkout();
 
   const dayNames = [
     "Sunday",
@@ -46,9 +48,31 @@ const WeeklyCalendar = ({
   const handleSelectWorkout = (workoutId) => {
     if (selectedDay !== null) {
       const key = getScheduleKey(weekDays[selectedDay]);
-      onSetWorkout(key, workoutId === "none" ? null : workoutId);
+      const scheduleEntry = schedule[key];
+      const currentWorkoutId = scheduleEntry?.workout_id || scheduleEntry;
+      const newWorkoutId = workoutId === "none" ? null : workoutId;
+      
+      // Only call onSetWorkout if there's an actual change
+      if (currentWorkoutId !== newWorkoutId) {
+        onSetWorkout(key, newWorkoutId);
+      }
       setSelectedDay(null);
     }
+  };
+
+  const handleDayClick = (isPastDate, idx) => {
+    if (isPastDate) return;
+    
+    if (workouts.length === 0) {
+      const confirmed = window.confirm("There are no workouts created. Please create a workout first.");
+      if (confirmed) {
+        setCurrentTab('workouts');
+        setShouldOpenAddWorkout(true);
+      }
+      return;
+    }
+    
+    setSelectedDay(selectedDay === idx ? null : idx);
   };
 
   // compute scheduled workout id for the selected day (used by desktop picker)
@@ -62,10 +86,12 @@ const WeeklyCalendar = ({
       <div className="grid grid-cols-1 md:grid-cols-7 gap-2">
         {weekDays.map((date, idx) => {
           const key = getScheduleKey(date);
-          const scheduledWorkoutId = schedule[key];
+          const scheduleEntry = schedule[key];
+          const scheduledWorkoutId = scheduleEntry?.workout_id || scheduleEntry;
           const scheduledWorkout = workouts.find(
             (w) => w.id === scheduledWorkoutId
           );
+          const isCompleted = scheduleEntry?.completed || false;
           const isSelected = selectedDay === idx;
           const dayName = dayNames[date.getDay()];
           const dayNum = date.getDate();
@@ -80,10 +106,26 @@ const WeeklyCalendar = ({
           dateOnly.setHours(0, 0, 0, 0);
           const isPastDate = dateOnly < today;
 
+          // Determine status for past dates
+          let statusText = "";
+          let statusColor = "";
+          if (isPastDate) {
+            if (!scheduledWorkout) {
+              statusText = "No workout";
+              statusColor = "text-gray-dark";
+            } else if (isCompleted) {
+              statusText = "Workout Complete";
+              statusColor = "text-gray-dark";
+            } else {
+              statusText = "Workout Incomplete";
+              statusColor = "text-gray-dark";
+            }
+          }
+
           return (
             <div
               key={idx}
-              onClick={() => !isPastDate && setSelectedDay(isSelected ? null : idx)}
+              onClick={() => handleDayClick(isPastDate, idx)}
               className={`card card-sm transition ${
                 isPastDate
                   ? "bg-gray-light cursor-not-allowed"
@@ -103,7 +145,11 @@ const WeeklyCalendar = ({
                   >
                     {dayName}, {monthName} {dayNum}
                   </div>
-                  {scheduledWorkout ? (
+                  {isPastDate ? (
+                    <div className={`mt-2 text-sm break-words ${statusColor}`}>
+                      {statusText}
+                    </div>
+                  ) : scheduledWorkout ? (
                     <div
                       className={`mt-2 text-sm break-words ${
                         isPastDate ? "text-gray-dark" : isToday ? "text-success" : "text-gray-dark"
@@ -117,7 +163,7 @@ const WeeklyCalendar = ({
                         isPastDate ? "text-gray-dark" : isToday ? "text-success" : "text-gray-dark"
                       }`}
                     >
-                      No workout selected
+                      Select a workout
                     </div>
                   )}
                 </div>
@@ -161,7 +207,7 @@ const WeeklyCalendar = ({
               )}
 
               {/* Mobile picker - show inside box */}
-              {isSelected && (
+              {isSelected && workouts.length > 0 && (
                 <div className="md:hidden mt-4 pt-3 border-t border-gray space-y-2">
                   <div className="text-sm font-semibold text-black mb-1">
                     Select a workout:
@@ -184,8 +230,7 @@ const WeeklyCalendar = ({
                   >
                     No workout
                   </button>
-                  {workouts.length > 0 ? (
-                    workouts.map((workout) => (
+                  {workouts.map((workout) => (
                       <button
                         key={workout.id}
                         onClick={(e) => {
@@ -205,12 +250,7 @@ const WeeklyCalendar = ({
                       >
                         {workout.name}
                       </button>
-                    ))
-                  ) : (
-                    <div className="text-sm text-gray-dark py-2">
-                      No workouts created yet.
-                    </div>
-                  )}
+                    ))}
                 </div>
               )}
             </div>
@@ -219,7 +259,7 @@ const WeeklyCalendar = ({
       </div>
 
       {/* Desktop picker - show below grid */}
-      {selectedDay !== null && (
+      {selectedDay !== null && workouts.length > 0 && (
         <div className="hidden md:block bg-white p-3 border-2 border-gray-light">
           <div className="mb-3 font-semibold text-black">
             Select a workout for {dayNames[weekDays[selectedDay].getDay()]},{" "}
@@ -241,8 +281,7 @@ const WeeklyCalendar = ({
             >
               No workout
             </button>
-            {workouts.length > 0 ? (
-              workouts.map((workout) => (
+            {workouts.map((workout) => (
                 <button
                   key={workout.id}
                   onClick={() => handleSelectWorkout(workout.id)}
@@ -259,12 +298,7 @@ const WeeklyCalendar = ({
                 >
                   {workout.name}
                 </button>
-              ))
-            ) : (
-              <div className="text-sm text-gray-dark py-2">
-                No workouts created yet.
-              </div>
-            )}
+              ))}
           </div>
         </div>
       )}

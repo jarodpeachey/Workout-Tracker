@@ -16,8 +16,10 @@ const AddWorkoutForm = ({ onClose }) => {
     const exercise = {
       name: newWorkout.name,
       type: newWorkout.type,
-      oneRM: (newWorkout.type === 'tensets' || newWorkout.type === 'tensetslight') ? parseFloat(newWorkout.oneRM) : null,
-      sixRM: newWorkout.type === 'reverse' ? parseFloat(newWorkout.sixRM) : null
+      oneRM: parseFloat(newWorkout.oneRM) || null,
+      starting_onerm: parseFloat(newWorkout.oneRM) || null,
+      sixRM: newWorkout.type === 'reverse' ? parseFloat(newWorkout.sixRM) : null,
+      starting_sixrm: newWorkout.type === 'reverse' ? parseFloat(newWorkout.sixRM) : null
     };
 
     addExercise(exercise);
@@ -34,47 +36,54 @@ const AddWorkoutForm = ({ onClose }) => {
           placeholder="Workout Name (e.g., Bench Press)"
           value={newWorkout.name}
           onChange={(e) => setNewWorkout({ ...newWorkout, name: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-light focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full px-4 py-2 border border-gray-light focus:outline-none focus:border-primary"
         />
         
         <select
           value={newWorkout.type}
           onChange={(e) => setNewWorkout({ ...newWorkout, type: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-light focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full px-4 py-2 border border-gray-light focus:outline-none focus:border-primary"
         >
           <option value="reverse">Reverse Pyramid (6 sets)</option>
           <option value="tensets">UFpwrLifter Program Plan</option>
           <option value="tensetslight">UFpwrLifter Program Plan (Light)</option>
         </select>
         
-        {newWorkout.type === 'reverse' ? (
+        <input
+          type="number"
+          placeholder="1 Rep Max (lbs)"
+          value={newWorkout.oneRM}
+          onChange={(e) => setNewWorkout({ ...newWorkout, oneRM: e.target.value })}
+          className="w-full px-4 py-2 border border-gray-light focus:outline-none focus:border-primary"
+        />
+        
+        {newWorkout.type === 'reverse' && (
           <input
             type="number"
             placeholder="6 Rep Max (lbs)"
             value={newWorkout.sixRM}
             onChange={(e) => setNewWorkout({ ...newWorkout, sixRM: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-light focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-        ) : (
-          <input
-            type="number"
-            placeholder="1 Rep Max (lbs)"
-            value={newWorkout.oneRM}
-            onChange={(e) => setNewWorkout({ ...newWorkout, oneRM: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-light focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full px-4 py-2 border border-gray-light focus:outline-none focus:border-primary"
           />
         )}
         
         <div className="flex gap-2">
           <button
             onClick={handleSubmit}
-            className="flex-1 bg-primary text-white py-2 rounded-lg hover:bg-primary-dim transition"
+            className="flex-1 text-white py-2 rounded-lg transition"
+            style={{ background: "linear-gradient(135deg, #BC3908 0%, #F6AA1C 100%)" }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.filter = "brightness(0.9)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.filter = "";
+            }}
           >
             Add Exercise
           </button>
           <button
             onClick={onClose}
-            className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400 transition"
+            className="flex-1 btn btn-secondary"
           >
             Cancel
           </button>

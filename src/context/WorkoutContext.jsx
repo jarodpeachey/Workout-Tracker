@@ -16,6 +16,8 @@ export const WorkoutProvider = ({ children }) => {
   const [globalLoading, setGlobalLoading] = useState(false);
   const [globalError, setGlobalError] = useState(false);
   const [editingWorkoutId, setEditingWorkoutId] = useState(null);
+  const [shouldOpenAddWorkout, setShouldOpenAddWorkout] = useState(false);
+  const [shouldOpenAddExercise, setShouldOpenAddExercise] = useState(false);
 
   // Auth state
   useEffect(() => {
@@ -107,9 +109,8 @@ export const WorkoutProvider = ({ children }) => {
         id: dateId, 
         user_id, 
         workout_id: workoutId, 
-        data,
         completed: data.completed || false,
-        completed_at: data.completed ? new Date().toISOString() : null
+        completed_at: data.completedAt || (data.completed ? new Date().toISOString() : null)
       };
       const { data: upserted, error } = await supabase.from('schedules').upsert([payload], { onConflict: 'id' }).select().single();
       if (error) throw error;
@@ -268,6 +269,12 @@ export const WorkoutProvider = ({ children }) => {
       const wasAssigned = prev[dateKey] !== undefined;
       
       if (workoutId === null) {
+        // Only delete if there was something to delete
+        if (!wasAssigned) {
+          // Nothing to delete, return unchanged
+          return prev;
+        }
+        
         const updated = { ...prev };
         delete updated[dateKey];
         (async () => {
@@ -278,10 +285,8 @@ export const WorkoutProvider = ({ children }) => {
           } else {
             const date = new Date(dateKey).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             toast.success(`Workout removed from ${date}`);
-            // Decrement workoutsAssigned if there was a workout assigned
-            if (wasAssigned) {
-              await updateProfileCounters('workouts_assigned', -1);
-            }
+            // Decrement workoutsAssigned
+            await updateProfileCounters('workouts_assigned', -1);
           }
         })();
         return updated;
@@ -416,7 +421,11 @@ export const WorkoutProvider = ({ children }) => {
       setGlobalLoading,
       setGlobalError,
       editingWorkoutId,
-      setEditingWorkoutId
+      setEditingWorkoutId,
+      shouldOpenAddWorkout,
+      setShouldOpenAddWorkout,
+      shouldOpenAddExercise,
+      setShouldOpenAddExercise
     }}>
       {children}
     </WorkoutContext.Provider>

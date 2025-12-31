@@ -107,9 +107,8 @@
     background: #00000022;
   }
   .btn.btn-secondary:hover {
-    @apply text-white border-primary;
-    background: linear-gradient(135deg, #bc3908 0%, #f6aa1c 100%);
-    box-shadow: 4px 4px 20px -10px rgb(110, 110, 110);
+    background: #00000036;
+    box-shadow: 4px 4px 20px -16px rgb(58, 58, 58);
   }
 
   .btn.btn-sm {
@@ -157,14 +156,13 @@
   input,
   select,
   textarea {
-    @apply bg-white border border-gray rounded-md text-black placeholder-gray px-4 py-3 focus:outline-none transition-shadow font-medium;
+    @apply bg-white border border-gray rounded-md text-black placeholder-gray px-4 py-3 focus:outline-none font-medium;
   }
 
   input:focus,
   select:focus,
   textarea:focus {
     @apply border-primary;
-    box-shadow: 0 0 0 2px rgba(100, 148, 170, 0.3);
   }
 
   .input-sm {
@@ -180,7 +178,7 @@
      ======================================== */
 
   .card {
-    @apply bg-white border border-gray rounded-lg py-8 px-8;
+    @apply bg-white rounded-lg shadow-sm border border-gray p-6;
     box-shadow: 0 1px 20px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   }
 

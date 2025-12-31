@@ -60,15 +60,15 @@ const SchedulePage = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2>My Schedule</h2>
-        <div className="flex gap-1 bg-gray-light p-1 rounded-sm">
+      <div className="flex justify-between items-center mb-2">
+        <h2 className="mb-3">My Schedule</h2>
+        <div className="card card-sm flex gap-1 bg-white p-1 pt-1 pl-1 pr-1 pb-1 rounded-sm">
           <button
             onClick={() => setView("weekly")}
             className={`px-6 py-2 text-[14px] font-medium rounded-sm normal-case transition-all duration-150 ${
               view === "weekly"
                 ? "text-white shadow border-primary hover:border-primary"
-                : "bg-transparent text-black hover:bg-gray hover:border-transparent shadow-none border-transparent"
+                : "bg-transparent text-black hover:bg-gray-light hover:border-transparent shadow-none border-transparent"
             }`}
             style={
               view === "weekly"
@@ -85,11 +85,15 @@ const SchedulePage = () => {
             Weekly
           </button>
           <button
-            onClick={() => setView("daily")}
+            onClick={() => {
+              setView("daily");
+              setWeekOffset(0);
+              setCurrentDayIndex(new Date().getDay());
+            }}
             className={`px-6 py-2 text-[14px] font-medium rounded-sm normal-case transition-all duration-150 ${
               view === "daily"
                 ? "text-white shadow border-primary hover:border-primary"
-                : "bg-transparent text-black hover:bg-gray hover:border-transparent shadow-none border-transparent"
+                : "bg-transparent text-black hover:bg-gray-light hover:border-transparent shadow-none border-transparent"
             }`}
             style={
               view === "daily"
@@ -107,6 +111,7 @@ const SchedulePage = () => {
           </button>
         </div>
       </div>
+      {/* <p className="text-gray-dark mb-6">Plan your training week by assigning workouts to specific days. View your schedule in weekly or daily format to stay organized.</p> */}
 
       <div className="card">
         {view === "weekly" ? (

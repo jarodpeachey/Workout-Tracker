@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Dumbbell, LogOut } from 'lucide-react';
+import { Dumbbell, LogOut } from 'lucide-react';
 import { useWorkout } from '../context/WorkoutContext';
 
 const Header = () => {

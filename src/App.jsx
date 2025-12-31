@@ -8,6 +8,7 @@ import Navigation from './components/Navigation';
 import WorkoutsPage from './pages/WorkoutsPage';
 import ExercisesPage from './pages/ExercisesPage';
 import SchedulePage from './pages/SchedulePage';
+import ProfilePage from './pages/ProfilePage';
 import Loading from './components/Loading';
 
 const App = () => {
@@ -51,7 +52,10 @@ const App = () => {
         },
       }} />
       <Header />
-      {currentTab === 'exercises' ? <ExercisesPage /> : currentTab === 'schedule' ? <SchedulePage /> : <WorkoutsPage />}
+      {currentTab === 'exercises' ? <ExercisesPage /> : 
+       currentTab === 'schedule' ? <SchedulePage /> : 
+       currentTab === 'profile' ? <ProfilePage /> : 
+       <WorkoutsPage />}
       <Navigation />
     </div>
   );

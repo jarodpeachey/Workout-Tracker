@@ -8,7 +8,7 @@ export default {
         black: "#151515",
         gray: "#c6c6c6",
         "gray-dark": "#888888",
-        "gray-light": "#dedede",
+        "gray-light": "#ececec",
         // Brand colors
         primary: {
           DEFAULT: "#BC3908",
