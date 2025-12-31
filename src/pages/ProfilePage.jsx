@@ -127,19 +127,19 @@ const ProfilePage = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
           <div className="bg-white border border-gray shadow-sm p-4 rounded-lg">
             <p className="text-black">Workouts Assigned</p>
-            <p className="text-4xl mt-2 font-bold text-black">
+            <p className="text-2xl md:text-4xl mt-2 font-bold text-black">
               {profileData?.workouts_assigned || 0}
             </p>
           </div>
           <div className="bg-white border border-gray shadow-sm p-4 rounded-lg">
             <p className="text-black">Workouts Completed</p>
-            <p className="text-4xl mt-2 font-bold text-black">
+            <p className="text-2xl md:text-4xl mt-2 font-bold text-black">
               {profileData?.workouts_completed || 0}
             </p>
           </div>
           <div className="bg-white border border-gray shadow-sm p-4 rounded-lg">
             <p className="text-black">Completion Rate</p>
-            <p className="text-4xl mt-2 font-bold text-black">
+            <p className="text-2xl md:text-4xl mt-2 font-bold text-black">
               {profileData?.workouts_assigned > 0
                 ? (
                     (profileData.workouts_completed /
@@ -152,7 +152,7 @@ const ProfilePage = () => {
           </div>
           <div className="bg-white border border-gray shadow-sm p-4 rounded-lg">
             <p className="text-black">3-Lift Total</p>
-            <p className="text-4xl mt-2 font-bold text-black">
+            <p className="text-2xl md:text-4xl mt-2 font-bold text-black">
               {liftTotal.total > 0 ? `${liftTotal.total} lbs` : "-"}
             </p>
             {!liftTotal.hasAll && (

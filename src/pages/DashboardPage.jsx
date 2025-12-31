@@ -1,12 +1,28 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Calendar, Dumbbell, ListChecks, TrendingUp, Play, ArrowRight, Check } from "lucide-react";
 import { useWorkout } from "../context/WorkoutContext";
 import { getTodayLocalDate } from "../utils/timezoneUtils";
+import Loading from "../components/Loading";
 
 const DashboardPage = () => {
   const navigate = useNavigate();
-  const { schedule, exercises, workouts, profileData, setShouldOpenAddExercise, setShouldOpenAddWorkout } = useWorkout();
+  const { schedule, exercises, workouts, profileData, setShouldOpenAddExercise, setShouldOpenAddWorkout, exercisesLoading, workoutsLoading } = useWorkout();
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+  useEffect(() => {
+    // Wait for data to load from Supabase, then wait 500ms more
+    if (!exercisesLoading && !workoutsLoading && profileData !== null) {
+      const timer = setTimeout(() => {
+        setIsInitialLoading(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [exercisesLoading, workoutsLoading, profileData]);
+
+  if (isInitialLoading) {
+    return <Loading />;
+  }
 
   // Check if there's a workout scheduled for today that's not completed
   const todayKey = getTodayLocalDate(profileData?.timezone);

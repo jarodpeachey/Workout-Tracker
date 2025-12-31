@@ -19,7 +19,7 @@ const ExercisesPage = () => {
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="flex justify-between items-center mb-2">
-        <h2 className="mb-3">My Exercises</h2>
+        <h2 className="mb-3">Exercises</h2>
         <button
           onClick={() => setShowAddExercise(true)}
           className="btn btn-primary btn-sm flex items-center gap-2 p-3 md:px-4"

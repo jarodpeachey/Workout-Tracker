@@ -19,8 +19,14 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Custom Header with frosted effect */}
-      <div className="h-20 backdrop-blur-md bg-white/30 border-b-2 border-white flex items-center justify-center">
+      <div className="h-20 backdrop-blur-md bg-white/30 border-b-2 border-white flex items-center justify-between px-6">
         <img src={logo} alt="Project 1,000" className="h-12" />
+        <button
+          onClick={() => navigate('/login')}
+          className="btn btn-sm btn-primary"
+        >
+          Log In
+        </button>
       </div>
 
       {/* Hero Section */}

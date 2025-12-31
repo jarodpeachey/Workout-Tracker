@@ -43,7 +43,7 @@ const WorkoutsPage = () => {
         confirmText="Create Exercise"
       />
       <div className="flex justify-between items-center mb-2">
-        <h2 className="mb-3">My Workouts</h2>
+        <h2 className="mb-3">Workouts</h2>
         <button
           onClick={handleAddWorkout}
           disabled={editingWorkoutId !== null}

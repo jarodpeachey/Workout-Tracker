@@ -1,11 +1,15 @@
 .loading-spinner-container {
+  position: fixed;
+  top: 0;
+  left: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  width: 100vw;
   height: 100vh;
-  min-height: 100vh;
+  overflow: hidden;
   background: #0d0d0d;
+  z-index: 9999;
 }
 
 .loading-spinner {
