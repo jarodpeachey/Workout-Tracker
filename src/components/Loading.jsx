@@ -22,12 +22,13 @@ const Loading = ({ timeout = 2000 }) => {
   
   return (
     <div 
-      className="loading-spinner-container"
+      className="loading-spinner-container min-h-screen"
       style={{
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundRepeat: 'no-repeat',
+        minHeight: '100vh'
       }}
     >
       <div className="loading-spinner"></div>
