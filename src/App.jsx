@@ -23,21 +23,28 @@ import DashboardPage from './pages/DashboardPage';
 import Loading from './components/Loading';
 
 const App = () => {
-  const { currentUser } = useWorkout();
-  const [initialLoading, setInitialLoading] = useState(true);
+  const { currentUser, globalLoading } = useWorkout();
+  const [checkingUser, setCheckingUser] = useState(true);
+  const [userExists, setUserExists] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setInitialLoading(false), 2000);
-    return () => clearTimeout(timer);
+    // Check for user in background, but don't show loader on landing page
+    async function checkUser() {
+      // Try to get user from supabase
+      const { data } = await import('./utils/supabaseClient').then(m => m.supabase.auth.getUser());
+      if (data?.user) {
+        setUserExists(true);
+      }
+      setCheckingUser(false);
+    }
+    checkUser();
   }, []);
 
-  if (initialLoading) {
-    return (
-      <Loading timeout={2000} />
-    );
-  }
+  // If checking for user, just render nothing (or a splash if desired)
+  if (checkingUser) return null;
 
-  if (!currentUser) {
+  // If on landing page, never show loader
+  if (!userExists || !currentUser) {
     return (
       <BrowserRouter>
         <ScrollToTop />
@@ -48,6 +55,11 @@ const App = () => {
         </Routes>
       </BrowserRouter>
     );
+  }
+
+  // If user exists and we're loading data, show loader
+  if (globalLoading) {
+    return <Loading timeout={2000} />;
   }
 
   return (
