@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+// PrivateRoute component to protect routes
+const PrivateRoute = ({ children }) => {
+  const { currentUser } = useWorkout();
+  if (!currentUser) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
 import { Toaster } from 'react-hot-toast';
 import { useWorkout } from './context/WorkoutContext';
 import AuthForm from './components/AuthForm';
@@ -63,11 +71,31 @@ const App = () => {
         }} />
         <Header />
         <Routes>
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="/schedule" element={<SchedulePage />} />
-          <Route path="/workouts" element={<WorkoutsPage />} />
-          <Route path="/exercises" element={<ExercisesPage />} />
-          <Route path="/stats" element={<ProfilePage />} />
+          <Route path="/" element={
+            <PrivateRoute>
+              <DashboardPage />
+            </PrivateRoute>
+          } />
+          <Route path="/schedule" element={
+            <PrivateRoute>
+              <SchedulePage />
+            </PrivateRoute>
+          } />
+          <Route path="/workouts" element={
+            <PrivateRoute>
+              <WorkoutsPage />
+            </PrivateRoute>
+          } />
+          <Route path="/exercises" element={
+            <PrivateRoute>
+              <ExercisesPage />
+            </PrivateRoute>
+          } />
+          <Route path="/stats" element={
+            <PrivateRoute>
+              <ProfilePage />
+            </PrivateRoute>
+          } />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <Navigation />
