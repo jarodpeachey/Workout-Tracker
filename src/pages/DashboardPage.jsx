@@ -62,7 +62,8 @@ const DashboardPage = () => {
         },
       };
     }
-    if (!hasScheduledWorkouts) {
+    // Only show step 3 if there are workouts but truly no scheduled workouts
+    if (workouts.length > 0 && !hasScheduledWorkouts) {
       return {
         step: 3,
         title: "Schedule Your Week",
