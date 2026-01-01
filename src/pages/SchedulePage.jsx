@@ -14,6 +14,7 @@ const SchedulePage = () => {
     calculateReversePyramid,
     calculateTenSets,
     calculateTenSetsLight,
+    calculate1RMProgression,
   } = useWorkout();
   const [searchParams, setSearchParams] = useSearchParams();
   const [weekOffset, setWeekOffset] = useState(0);
@@ -192,6 +193,7 @@ const SchedulePage = () => {
               calculateReversePyramid={calculateReversePyramid}
               calculateTenSets={calculateTenSets}
               calculateTenSetsLight={calculateTenSetsLight}
+              calculate1RMProgression={calculate1RMProgression}
               onStartWorkout={(dayIndex) => {
                 setCurrentDayIndex(dayIndex);
                 setView("daily");
@@ -208,6 +210,7 @@ const SchedulePage = () => {
             calculateReversePyramid={calculateReversePyramid}
             calculateTenSets={calculateTenSets}
             calculateTenSetsLight={calculateTenSetsLight}
+            calculate1RMProgression={calculate1RMProgression}
             currentDayIndex={currentDayIndex}
             onDayChange={setCurrentDayIndex}
           />

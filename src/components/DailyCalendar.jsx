@@ -15,6 +15,7 @@ const DailyCalendar = ({
   calculateReversePyramid,
   calculateTenSets,
   calculateTenSetsLight,
+  calculate1RMProgression,
   currentDayIndex,
   onDayChange,
 }) => {
@@ -28,12 +29,18 @@ const DailyCalendar = ({
     "Saturday",
   ];
   const navigate = useNavigate();
-  const { saveSchedule, setShouldOpenAddWorkout, profileData } = useWorkout();
+  const { saveSchedule, setShouldOpenAddWorkout, profileData, updateExercise } =
+    useWorkout();
   const [showWorkoutPicker, setShowWorkoutPicker] = useState(false);
   const [showNoWorkoutsModal, setShowNoWorkoutsModal] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [completedSets, setCompletedSets] = useState({});
   const [lastToggledSet, setLastToggledSet] = useState(null);
+  const [show1RMUpdateModal, setShow1RMUpdateModal] = useState(false);
+  const [selected1RMExercise, setSelected1RMExercise] = useState(null);
+  const [new1RMValue, setNew1RMValue] = useState("");
+  const [isUpdating1RM, setIsUpdating1RM] = useState(false);
+  const [updated1RMValues, setUpdated1RMValues] = useState({});
 
   const getScheduleKey = (date) => {
     return getDateKey(date, profileData?.timezone);
@@ -44,7 +51,10 @@ const DailyCalendar = ({
     if (!exercise) return null;
 
     let plan;
-    if (exercise.type === "reverse") {
+    // Check if the scheduled workout has 1RM mode enabled
+    if (scheduledWorkout?.is_1rm) {
+      plan = calculate1RMProgression(exercise.oneRM);
+    } else if (exercise.type === "reverse") {
       plan = calculateReversePyramid(exercise.sixRM);
     } else if (exercise.type === "tensetslight") {
       plan = calculateTenSetsLight(exercise.oneRM);
@@ -162,7 +172,7 @@ const DailyCalendar = ({
 
   const handleSelectWorkout = (workoutId) => {
     const newWorkoutId = workoutId === "none" ? null : workoutId;
-    
+
     // Only call onSetWorkout if there's an actual change
     if (scheduledWorkoutId !== newWorkoutId) {
       onSetWorkout(key, newWorkoutId);
@@ -183,12 +193,14 @@ const DailyCalendar = ({
       completed: true,
       completedAt: new Date().toISOString(),
     });
-    
+
     if (result) {
       toast.success("Workout completed!");
       setLastToggledSet(null);
+      setShowCompleteModal(false);
     } else {
       toast.error("There was an error completing your workout");
+      setShowCompleteModal(false);
     }
   };
 
@@ -199,19 +211,76 @@ const DailyCalendar = ({
         [lastToggledSet]: false,
       };
       setCompletedSets(newCompletedSets);
-      
+
       // Update localStorage
       const storageKey = `workout-${key}-${scheduledWorkoutId}`;
       localStorage.setItem(storageKey, JSON.stringify(newCompletedSets));
-      
+
       setLastToggledSet(null);
     }
     setShowCompleteModal(false);
   };
 
   const handleConfirmNavigate = () => {
-    navigate('/workouts');
+    setShowNoWorkoutsModal(false);
+    navigate("/workouts");
     setShouldOpenAddWorkout(true);
+  };
+
+  const handleOpen1RMUpdate = (exerciseId) => {
+    const exercise = exercises.find((e) => e.id === exerciseId);
+    if (exercise) {
+      setSelected1RMExercise(exercise);
+      setNew1RMValue(exercise.oneRM || "");
+      setShow1RMUpdateModal(true);
+    }
+  };
+
+  const handleUpdate1RM = async () => {
+    if (!selected1RMExercise || !new1RMValue) {
+      toast.error("Please enter a valid 1RM value");
+      return;
+    }
+    setIsUpdating1RM(true);
+
+    updateExercise(selected1RMExercise.id, "oneRM", new1RMValue);
+
+    // Wait for the update to complete (updateExercise is async internally)
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Track the updated 1RM value for this exercise
+    const updatedValues = {
+      ...updated1RMValues,
+      [selected1RMExercise.id]: new1RMValue
+    };
+    setUpdated1RMValues(updatedValues);
+
+    // Reset state and close modal after update completes
+    setIsUpdating1RM(false);
+    setSelected1RMExercise(null);
+    setNew1RMValue("");
+    setShow1RMUpdateModal(false);
+
+    // Check if all exercises have been updated
+    if (scheduledWorkout?.is_1rm) {
+      const allExercisesUpdated = scheduledWorkout.exerciseIds.every(
+        (exId) => updatedValues[exId] !== undefined
+      );
+
+      if (allExercisesUpdated) {
+        // All exercises have been updated, auto-complete the workout
+        const result = await saveSchedule(key, scheduledWorkoutId, {
+          completed: true,
+          completedAt: new Date().toISOString(),
+        });
+
+        if (result) {
+          toast.success("All 1RM values updated! Workout completed!");
+          // Reset updated values
+          setUpdated1RMValues({});
+        }
+      }
+    }
   };
 
   const handlePrevDay = () => {
@@ -240,107 +309,159 @@ const DailyCalendar = ({
         confirmText="Finish Workout"
         cancelText="Return to Workout"
       />
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <button
-          onClick={handlePrevDay}
-          disabled={currentDayIndex === 0}
-          className={`sm p-3 rounded-sm transition-all duration-150 shadow-none ${
-            currentDayIndex === 0
-              ? "bg-gray-light text-gray border-gray-light cursor-not-allowed hover:bg-gray-light hover:text-gray hover:border-gray-light"
-              : "text-white"
-          }`}
-          style={
-            currentDayIndex !== 0
-              ? {
-                  background:
-                    "linear-gradient(135deg, #BC3908 0%, #F6AA1C 100%)",
-                }
-              : {}
-          }
-          onMouseEnter={(e) => {
-            if (currentDayIndex !== 0)
-              e.currentTarget.style.filter = "brightness(0.9)";
-          }}
-          onMouseLeave={(e) => {
-            if (currentDayIndex !== 0) e.currentTarget.style.filter = "";
-          }}
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-
-        <h3
-          className={`text-lg font-semibold tracking-wider ${
-            isPastDate && !isCompleted && scheduledWorkout
-              ? "text-gray"
-              : isCompleted
-              ? "text-success"
-              : ""
-          }`}
-        >
-          {dayName}, {month} {dayNum}
-        </h3>
-
-        <button
-          onClick={handleNextDay}
-          disabled={currentDayIndex === 6}
-          className={`sm p-3 rounded-sm transition-all duration-150 shadow-none ${
-            currentDayIndex === 6
-              ? "bg-gray-light text-gray border-gray-light cursor-not-allowed hover:bg-gray-light hover:text-gray hover:border-gray-light"
-              : "text-white"
-          }`}
-          style={
-            currentDayIndex !== 6
-              ? {
-                  background:
-                    "linear-gradient(135deg, #BC3908 0%, #F6AA1C 100%)",
-                }
-              : {}
-          }
-          onMouseEnter={(e) => {
-            if (currentDayIndex !== 6)
-              e.currentTarget.style.filter = "brightness(0.9)";
-          }}
-          onMouseLeave={(e) => {
-            if (currentDayIndex !== 6) e.currentTarget.style.filter = "";
-          }}
-        >
-          <ChevronRight className="w-5 h-5" />
-        </button>
-      </div>
-
-      <div className="relative">
-        {showWorkoutPicker && workouts.length > 0 ? (
-          <div className="">
-            <div className="flex justify-between items-center mb-3">
-              <div className="font-semibold text-black">Select a workout</div>
-              <button
-                onClick={() => setShowWorkoutPicker(false)}
-                className="text-gray-dark rounded-sm hover:text-danger p-3 h-auto w-auto transition-all duration-150 text-lg"
+      <Modal
+        isOpen={show1RMUpdateModal}
+        onClose={() => setShow1RMUpdateModal(false)}
+        onConfirm={handleUpdate1RM}
+        title="Update 1RM Value"
+        confirmText={
+          isUpdating1RM ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg
+                className="animate-spin h-4 w-4"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
               >
-                ✕
-              </button>
-            </div>
-            <div className="space-y-2">
-              <button
-                onClick={() => handleSelectWorkout("none")}
-                className={`w-full px-3 py-2 text-left text-sm border rounded-sm transition ${
-                  scheduledWorkoutId == null
-                    ? "border-primary text-white"
-                    : "bg-white border-gray text-black hover:bg-gray-light"
-                }`}
-                style={
-                  scheduledWorkoutId == null
-                    ? {
-                        background:
-                          "linear-gradient(135deg, #BC3908 0%, #F6AA1C 100%)",
-                      }
-                    : {}
-                }
-              >
-                No workout
-              </button>
-              {workouts.map((workout) => (
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            </span>
+          ) : (
+            "Update 1RM"
+          )
+        }
+        cancelText="Cancel"
+        confirmDisabled={isUpdating1RM}
+        variant="primary"
+      >
+        <p className="text-gray-dark mb-4">
+          Enter your new 1RM for{" "}
+          <span className="text-black font-bold">
+            {selected1RMExercise?.name}
+          </span>
+        </p>
+        <input
+          type="number"
+          value={new1RMValue}
+          onChange={(e) => setNew1RMValue(e.target.value)}
+          placeholder="Enter 1RM (lbs)"
+          className="input w-full mb-6"
+          autoFocus
+        />
+      </Modal>
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <button
+            onClick={handlePrevDay}
+            disabled={currentDayIndex === 0}
+            className={`sm p-3 rounded-sm transition-all duration-150 shadow-none ${
+              currentDayIndex === 0
+                ? "bg-gray-light text-gray border-gray-light cursor-not-allowed hover:bg-gray-light hover:text-gray hover:border-gray-light"
+                : "text-white"
+            }`}
+            style={
+              currentDayIndex !== 0
+                ? {
+                    background:
+                      "linear-gradient(135deg, #BC3908 0%, #F6AA1C 100%)",
+                  }
+                : {}
+            }
+            onMouseEnter={(e) => {
+              if (currentDayIndex !== 0)
+                e.currentTarget.style.filter = "brightness(0.9)";
+            }}
+            onMouseLeave={(e) => {
+              if (currentDayIndex !== 0) e.currentTarget.style.filter = "";
+            }}
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+
+          <h3
+            className={`text-lg font-semibold tracking-wider ${
+              isPastDate && !isCompleted && scheduledWorkout
+                ? "text-gray"
+                : isCompleted
+                ? "text-success"
+                : ""
+            }`}
+          >
+            {dayName}, {month} {dayNum}
+          </h3>
+
+          <button
+            onClick={handleNextDay}
+            disabled={currentDayIndex === 6}
+            className={`sm p-3 rounded-sm transition-all duration-150 shadow-none ${
+              currentDayIndex === 6
+                ? "bg-gray-light text-gray border-gray-light cursor-not-allowed hover:bg-gray-light hover:text-gray hover:border-gray-light"
+                : "text-white"
+            }`}
+            style={
+              currentDayIndex !== 6
+                ? {
+                    background:
+                      "linear-gradient(135deg, #BC3908 0%, #F6AA1C 100%)",
+                  }
+                : {}
+            }
+            onMouseEnter={(e) => {
+              if (currentDayIndex !== 6)
+                e.currentTarget.style.filter = "brightness(0.9)";
+            }}
+            onMouseLeave={(e) => {
+              if (currentDayIndex !== 6) e.currentTarget.style.filter = "";
+            }}
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="relative">
+          {showWorkoutPicker && workouts.length > 0 ? (
+            <div className="">
+              <div className="flex justify-between items-center mb-3">
+                <div className="font-semibold text-black">Select a workout</div>
+                <button
+                  onClick={() => setShowWorkoutPicker(false)}
+                  className="text-gray-dark rounded-sm hover:text-danger p-3 h-auto w-auto transition-all duration-150 text-lg"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="space-y-2">
+                <button
+                  onClick={() => handleSelectWorkout("none")}
+                  className={`w-full px-3 py-2 text-left text-sm border rounded-sm transition ${
+                    scheduledWorkoutId == null
+                      ? "border-primary text-white"
+                      : "bg-white border-gray text-black hover:bg-gray-light"
+                  }`}
+                  style={
+                    scheduledWorkoutId == null
+                      ? {
+                          background:
+                            "linear-gradient(135deg, #BC3908 0%, #F6AA1C 100%)",
+                        }
+                      : {}
+                  }
+                >
+                  No workout
+                </button>
+                {workouts.map((workout) => (
                   <button
                     key={workout.id}
                     onClick={() => handleSelectWorkout(workout.id)}
@@ -361,134 +482,183 @@ const DailyCalendar = ({
                     {workout.name}
                   </button>
                 ))}
+              </div>
             </div>
-          </div>
-        ) : scheduledWorkout ? (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <h4
-                className={`text-xl font-bold ${
-                  isPastDate && !isCompleted
-                    ? "text-gray"
-                    : isCompleted
-                    ? "text-success"
-                    : "text-black"
-                }`}
-              >
-                {scheduledWorkout.name}
-              </h4>
-              {!isPastDate && !isCompleted && (
-                <button
-                  onClick={() => setShowWorkoutPicker(true)}
-                  className="text-sm text-gray-dark hover:text-primary transition relative pt-1"
+          ) : scheduledWorkout ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <h4
+                  className={`text-xl font-bold ${
+                    isPastDate && !isCompleted
+                      ? "text-gray"
+                      : isCompleted
+                      ? "text-success"
+                      : "text-black"
+                  }`}
                 >
-                  Change
-                </button>
-              )}
-              {isPastDate && !isCompleted && (
-                <p className="text-danger">Workout Incomplete</p>
-              )}
-              {isCompleted && (
-                <p className="text-success">Workout Complete!</p>
-              )}
-            </div>
-
-            <div className="space-y-6">
-              {scheduledWorkout.exerciseIds?.map((exerciseId) => {
-                const details = getExerciseDetails(exerciseId);
-                if (!details) return null;
-                const { exercise, plan } = details;
-
-                return (
-                  <div
-                    key={exerciseId}
-                    className={`border-l-4 pl-4 ${
-                      isPastDate && !isCompleted
-                        ? "border-danger"
-                        : isCompleted
-                        ? "border-success"
-                        : "border-primary"
-                    }`}
+                  {scheduledWorkout.name}
+                </h4>
+                {!isPastDate && !isCompleted && (
+                  <button
+                    onClick={() => setShowWorkoutPicker(true)}
+                    className="text-sm text-gray-dark hover:text-primary transition relative pt-1"
                   >
-                    <h5
-                      className={`text-lg font-bold mb-2 ${
+                    Change
+                  </button>
+                )}
+                {isPastDate && !isCompleted && (
+                  <p className="text-danger">Workout Incomplete</p>
+                )}
+                {isCompleted && (
+                  <p className="text-success">Workout Complete!</p>
+                )}
+              </div>
+
+              <div className="space-y-6">
+                {scheduledWorkout.exerciseIds?.map((exerciseId) => {
+                  const details = getExerciseDetails(exerciseId);
+                  if (!details) return null;
+                  const { exercise, plan } = details;
+
+                  // Check if all pre-test sets are completed (sets 0-6 for 1RM mode)
+                  const preTestSetsCompleted =
+                    scheduledWorkout?.is_1rm &&
+                    plan
+                      .slice(0, 7)
+                      .every((_, i) => completedSets[`${exerciseId}-${i}`]);
+
+                  // Check if this exercise has had its 1RM updated
+                  const has1RMUpdated = updated1RMValues[exerciseId] !== undefined;
+
+                  return (
+                    <div
+                      key={exerciseId}
+                      className={`border-l-4 pl-4 ${
                         isPastDate && !isCompleted
-                          ? "text-gray"
-                          : isCompleted
-                          ? "text-success"
-                          : "text-black"
+                          ? "border-danger"
+                          : isCompleted || has1RMUpdated
+                          ? "border-success"
+                          : "border-primary"
                       }`}
                     >
-                      {exercise.name}
-                    </h5>
-                    <div className="space-y-1 text-sm text-black">
-                      {plan.map((set, i) => {
-                        const setKey = `${exerciseId}-${i}`;
-                        const isSetCompleted = completedSets[setKey];
-                        const isDisabled = isPastDate || isCompleted;
-                        return (
-                          <div
-                            key={i}
-                            className={`flex items-center gap-2 ${
-                              isDisabled ? "opacity-60" : ""
-                            }`}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={isSetCompleted || false}
-                              onChange={() =>
-                                toggleSetCompletion(exerciseId, i)
-                              }
-                              disabled={isDisabled}
-                              className={`w-4 h-4 ${
-                                isDisabled
-                                  ? "cursor-not-allowed"
-                                  : "cursor-pointer"
-                              }`}
-                              style={
-                                isCompleted ? { accentColor: "#567335" } : {}
-                              }
-                            />
-                            <div
-                              className={`flex justify-between flex-1 ${
-                                isSetCompleted ? "line-through opacity-50" : ""
-                              }`}
-                            >
-                              <span>Set {i + 1}:</span>
-                              <span className="font-medium">
-                                {set.weight} lbs × {set.reps} reps
-                              </span>
-                            </div>
+                      <h5
+                        className={`text-lg font-bold mb-2 ${
+                          isPastDate && !isCompleted
+                            ? "text-gray"
+                            : isCompleted
+                            ? "text-success"
+                            : "text-black"
+                        }`}
+                      >
+                        {exercise.name}
+                      </h5>
+                      <div className="space-y-1 text-sm text-black">
+                        {plan.map((set, i) => {
+                          const setKey = `${exerciseId}-${i}`;
+                          const isSetCompleted = completedSets[setKey];
+                          const isDisabled = isPastDate || isCompleted;
+
+                          // Show 1RM test indicator after the first 100% set (index 6)
+                          const show1RMIndicator =
+                            scheduledWorkout?.is_1rm && i === 7;
+
+                          return (
+                            <React.Fragment key={i}>
+                              {show1RMIndicator && (
+                                <div className="flex items-center gap-2 py-2 my-2">
+                                  <div className={`flex-1 border-t-2 ${has1RMUpdated ? "border-success" : "border-primary"}`}></div>
+                                  <span className={`text-xs font-bold px-2 ${has1RMUpdated ? "text-success" : "text-primary"}`}>
+                                    1RM TEST PROGRESSION
+                                  </span>
+                                  <div className={`flex-1 border-t-2 ${has1RMUpdated ? "border-success" : "border-primary"}`}></div>
+                                </div>
+                              )}
+                              <div
+                                className={`flex items-center gap-2 ${
+                                  isDisabled ? "opacity-60" : has1RMUpdated && !isSetCompleted ? "opacity-40" : ""
+                                }`}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={isSetCompleted || false}
+                                  onChange={() =>
+                                    toggleSetCompletion(exerciseId, i)
+                                  }
+                                  disabled={isDisabled || has1RMUpdated}
+                                  className={`w-4 h-4 ${
+                                    isDisabled || has1RMUpdated
+                                      ? "cursor-not-allowed"
+                                      : "cursor-pointer"
+                                  }`}
+                                  style={
+                                    isCompleted
+                                      ? { accentColor: "#567335" }
+                                      : {}
+                                  }
+                                />
+                                <div
+                                  className={`flex justify-between flex-1 ${
+                                    isSetCompleted
+                                      ? "line-through opacity-50"
+                                      : ""
+                                  }`}
+                                >
+                                  <span>Set {i + 1}:</span>
+                                  <span className="font-medium">
+                                    {set.weight} lbs × {set.reps} reps
+                                  </span>
+                                </div>
+                              </div>
+                            </React.Fragment>
+                          );
+                        })}
+                      </div>
+                      {preTestSetsCompleted && !isCompleted && !isPastDate && (
+                        has1RMUpdated ? (
+                          <div className="mt-3 px-3 py-2 bg-success/10 text-success text-sm rounded-sm border border-success">
+                            New 1RM - {updated1RMValues[exerciseId]} lbs
                           </div>
-                        );
-                      })}
+                        ) : (
+                          <button
+                            onClick={() => handleOpen1RMUpdate(exerciseId)}
+                            className="btn btn-sm text-white mt-3"
+                            style={{
+                              background:
+                                "linear-gradient(135deg, #619624 0%, #86bd48 100%)",
+                            }}
+                          >
+                            Update 1RM Value
+                          </button>
+                        )
+                      )}
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center h-full text-center">
-            {isPastDate ? (
-              <div className="text-gray-dark">
-                This day is in the past - you can't schedule a workout here
+                  );
+                })}
               </div>
-            ) : (
-              <>
-                <div className="text-gray-dark mb-4">No workout scheduled</div>
-                <button
-                  onClick={handleOpenWorkoutPicker}
-                  className="btn btn-primary px-4 py-2"
-                >
-                  Add Workout
-                </button>
-              </>
-            )}
-          </div>
-        )}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              {isPastDate ? (
+                <div className="text-gray-dark">
+                  This day is in the past - you can't schedule a workout here
+                </div>
+              ) : (
+                <>
+                  <div className="text-gray-dark mb-4">
+                    No workout scheduled
+                  </div>
+                  <button
+                    onClick={handleOpenWorkoutPicker}
+                    className="btn btn-primary px-4 py-2"
+                  >
+                    Add Workout
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
     </>
   );
 };

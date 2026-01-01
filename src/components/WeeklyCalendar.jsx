@@ -13,6 +13,7 @@ const WeeklyCalendar = ({
   calculateReversePyramid,
   calculateTenSets,
   calculateTenSetsLight,
+  calculate1RMProgression,
   onStartWorkout,
 }) => {
   const [selectedDay, setSelectedDay] = useState(null);
@@ -44,12 +45,16 @@ const WeeklyCalendar = ({
     return getDateKey(date, profileData?.timezone);
   };
 
-  const getExerciseDetails = (exerciseId) => {
+  const getExerciseDetails = (exerciseId, workoutId) => {
     const exercise = exercises.find((e) => e.id === exerciseId);
     if (!exercise) return null;
 
+    const workout = workouts.find(w => w.id === workoutId);
     let plan;
-    if (exercise.type === "reverse") {
+    // Check if workout has 1RM mode enabled
+    if (workout?.is_1rm) {
+      plan = calculate1RMProgression(exercise.oneRM);
+    } else if (exercise.type === "reverse") {
       plan = calculateReversePyramid(exercise.sixRM);
     } else if (exercise.type === "tensetslight") {
       plan = calculateTenSetsLight(exercise.oneRM);
@@ -145,10 +150,10 @@ const WeeklyCalendar = ({
               statusText = "No workout";
               statusColor = "text-gray-dark";
             } else if (isCompleted) {
-              statusText = "Workout Complete";
+              statusText = "Workout complete";
               statusColor = "text-gray-dark";
             } else {
-              statusText = "Workout Incomplete";
+              statusText = "Workout incomplete";
               statusColor = "text-gray-dark";
             }
           }
@@ -171,7 +176,7 @@ const WeeklyCalendar = ({
             >
               <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  <p className={`m-0 text-xs font-xs ${isCompleted ? "text-white" : "text-gray-dark"}`}>{dayName}</p>
+                  <p className={`m-0 text-xs font-xs ${isPastDate ? "text-gray-dark" : isCompleted ? "text-white" : "text-gray-dark"}`}>{dayName}</p>
                   <div
                     className={`font-semibold ${
                       isPastDate ? "text-gray-dark" : isCompleted ? "text-white" : isToday ? "text-success" : "text-black"

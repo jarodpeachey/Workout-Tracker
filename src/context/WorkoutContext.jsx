@@ -47,6 +47,35 @@ export const WorkoutProvider = ({ children }) => {
     setWorkoutsLoading(false);
   };
 
+  // Helper to reload profile data
+  const reloadProfileData = async () => {
+    try {
+      const user_id = await getCurrentUserId();
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user_id)
+        .single();
+      
+      if (!error && profile) {
+        // Query counts from schedules table
+        const { data: schedules, error: schedError } = await supabase
+          .from('schedules')
+          .select('*')
+          .eq('user_id', user_id);
+        
+        if (!schedError && schedules) {
+          profile.workouts_assigned = schedules.length;
+          profile.workouts_completed = schedules.filter(s => s.completed).length;
+        }
+        
+        setProfileData(profile);
+      }
+    } catch (err) {
+      console.error('Error reloading profile data:', err);
+    }
+  };
+
   useEffect(() => {
     async function loadAll() {
       setGlobalLoading(true);
@@ -106,6 +135,19 @@ export const WorkoutProvider = ({ children }) => {
         const schedObj = {};
         (schedRows || []).forEach(r => { schedObj[r.id] = r; });
         setSchedule(schedObj);
+        
+        // Update profile with actual counts from schedules
+        if (profile && schedRows) {
+          profile.workouts_assigned = schedRows.length;
+          profile.workouts_completed = schedRows.filter(s => s.completed).length;
+          setProfileData(profile);
+        }
+        
+        // Calculate lift_total after exercises are loaded
+        setTimeout(() => {
+          updateLiftTotal();
+        }, 500);
+        
         setGlobalLoading(false);
       } catch (err) {
         setGlobalError(true);
@@ -151,9 +193,9 @@ export const WorkoutProvider = ({ children }) => {
       if (error) throw error;
       setSchedule(prev => ({ ...prev, [dateId]: upserted }));
       
-      // If workout is being marked as completed, increment workoutsCompleted
+      // If workout is being marked as completed, reload profile to update counts
       if (data.completed) {
-        await updateProfileCounters('workouts_completed', 1);
+        await reloadProfileData();
       }
       
       return upserted;
@@ -227,6 +269,18 @@ export const WorkoutProvider = ({ children }) => {
         console.error('Failed to update exercise:', { error, status, updatedData, payload: updatePayload });
       } else {
         toast.success('Exercise updated');
+        
+        // If updating oneRM for bench/squat/deadlift, recalculate lift_total
+        if (field === 'oneRM') {
+          const exercise = exercises.find(ex => ex.id === id);
+          const exerciseName = exercise?.name?.toLowerCase() || '';
+          if (exerciseName.includes('bench') || exerciseName.includes('squat') || exerciseName.includes('deadlift')) {
+            // Wait a bit for state to update, then recalculate
+            setTimeout(() => {
+              updateLiftTotal();
+            }, 500);
+          }
+        }
       }
     })();
   };
@@ -274,11 +328,11 @@ export const WorkoutProvider = ({ children }) => {
     setWorkouts(prev => prev.map(w => w.id === id ? { ...w, ...updates } : w));
     (async () => {
       const user_id = await getCurrentUserId();
-      const updatePayload = { ...updates, user_id };
+      const updatePayload = { ...updates };
       const { data: updatedData, error, status } = await supabase
         .from('workouts')
         .update(updatePayload)
-        .match({ id });
+        .match({ id, user_id });
       if (error) {
         console.error('Failed to update workout:', { error, status, updatedData, payload: updatePayload });
       } else {
@@ -302,17 +356,22 @@ export const WorkoutProvider = ({ children }) => {
 
   const setScheduleWorkout = (dateKey, workoutId) => {
     setSchedule(prev => {
-      const wasAssigned = prev[dateKey] !== undefined;
+      const scheduleEntry = prev[dateKey];
+      const existingWorkoutId = scheduleEntry?.workout_id || scheduleEntry;
+      const wasAssigned = existingWorkoutId !== undefined && existingWorkoutId !== null;
       
       if (workoutId === null) {
-        // Only delete if there was something to delete
-        if (!wasAssigned) {
-          // Nothing to delete, return unchanged
-          return prev;
-        }
-        
+        // Always try to delete from Supabase when explicitly setting to null
         const updated = { ...prev };
         delete updated[dateKey];
+        
+        // Clear localStorage for the removed workout
+        if (existingWorkoutId) {
+          const storageKey = `workout-${dateKey}-${existingWorkoutId}`;
+          localStorage.removeItem(storageKey);
+          localStorage.removeItem(`${storageKey}-1rm`);
+        }
+        
         (async () => {
           const user_id = await getCurrentUserId();
           const { error } = await supabase.from('schedules').delete().match({ id: dateKey, user_id });
@@ -321,8 +380,8 @@ export const WorkoutProvider = ({ children }) => {
           } else {
             const date = new Date(dateKey).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             toast.success(`Workout removed from ${date}`);
-            // Decrement workoutsAssigned
-            await updateProfileCounters('workouts_assigned', -1);
+            // Reload profile to update counts
+            await reloadProfileData();
           }
         })();
         return updated;
@@ -338,10 +397,8 @@ export const WorkoutProvider = ({ children }) => {
         } else {
           const date = new Date(dateKey).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
           toast.success(`Workout ${isUpdating ? 'updated' : 'added'} to ${date}`);
-          // Increment workoutsAssigned only if this is a new assignment (not an update)
-          if (!isUpdating) {
-            await updateProfileCounters('workouts_assigned', 1);
-          }
+          // Reload profile to update counts
+          await reloadProfileData();
         }
       })();
       return updated;
@@ -380,8 +437,53 @@ export const WorkoutProvider = ({ children }) => {
           .eq('id', user_id);
         if (updateError) console.error('Error updating profile:', updateError);
       }
+      
+      // Reload profile data to update UI
+      await reloadProfileData();
     } catch (err) {
       console.error('Error in updateProfileCounters:', err);
+    }
+  };
+
+  // Helper function to update lift_total in profile
+  const updateLiftTotal = async () => {
+    try {
+      const user_id = await getCurrentUserId();
+      
+      // Query exercises directly from Supabase to get the latest data
+      const { data: exercisesList, error: exError } = await supabase
+        .from('exercises')
+        .select('*')
+        .eq('user_id', user_id);
+      
+      if (exError) {
+        console.error('Error fetching exercises for lift_total:', exError);
+        return;
+      }
+      
+      // Find the big 3 lifts
+      const bench = exercisesList?.find((ex) => ex.name.toLowerCase().includes('bench'));
+      const squat = exercisesList?.find((ex) => ex.name.toLowerCase().includes('squat'));
+      const deadlift = exercisesList?.find((ex) => ex.name.toLowerCase().includes('deadlift'));
+
+      const benchWeight = bench?.oneRM || 0;
+      const squatWeight = squat?.oneRM || 0;
+      const deadliftWeight = deadlift?.oneRM || 0;
+      const total = benchWeight + squatWeight + deadliftWeight;
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ lift_total: total })
+        .eq('id', user_id);
+
+      if (error) {
+        console.error('Error updating lift_total:', error);
+      } else {
+        // Reload profile data to update UI
+        await reloadProfileData();
+      }
+    } catch (err) {
+      console.error('Error in updateLiftTotal:', err);
     }
   };
 
@@ -429,6 +531,23 @@ export const WorkoutProvider = ({ children }) => {
     ];
   };
 
+  const calculate1RMProgression = (oneRM) => {
+    const rm = parseFloat(oneRM);
+    return [
+      { sets: 1, reps: 10, weight: roundToNearestFive(rm * 0.33) },
+      { sets: 1, reps: 10, weight: roundToNearestFive(rm * 0.56) },
+      { sets: 1, reps: 5, weight: roundToNearestFive(rm * 0.79) },
+      { sets: 1, reps: 3, weight: roundToNearestFive(rm * 0.86) },
+      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 0.91) },
+      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 0.96) },
+      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 1.00) },
+      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 1.00) + 5 },
+      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 1.00) + 10 },
+      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 1.00) + 15 },
+      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 1.00) + 20 }
+    ];
+  };
+
   return (
     <WorkoutContext.Provider value={{
       currentUser,
@@ -453,6 +572,7 @@ export const WorkoutProvider = ({ children }) => {
       calculateTenSets,
       calculateReversePyramid,
       calculateTenSetsLight,
+      calculate1RMProgression,
       globalLoading,
       globalError,
       setGlobalLoading,

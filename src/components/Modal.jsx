@@ -10,6 +10,8 @@ const Modal = ({
   cancelText = "Cancel",
   variant = "primary", // "primary" or "danger"
   danger = false,
+  children, // Allow custom content
+  confirmDisabled = false, // Allow disabling confirm button
 }) => {
   if (!isOpen) return null;
 
@@ -24,13 +26,11 @@ const Modal = ({
         onClick={(e) => e.stopPropagation()}
       >
         {title && <h3 className="text-xl font-bold text-text mb-4">{title}</h3>}
-        <p className="text-gray-dark mb-6">{message}</p>
+        {children ? children : <p className="text-gray-dark mb-6">{message}</p>}
         <div className="flex flex-col gap-3 w-full">
           <button
-            onClick={() => {
-              onConfirm();
-              onClose();
-            }}
+            onClick={onConfirm}
+            disabled={confirmDisabled}
             className={`btn ${danger || variant === "danger" ? "text-white border-danger" : ""}`}
             style={
               danger || variant === "danger"

@@ -6,6 +6,7 @@ const AddCustomWorkoutForm = ({ onClose }) => {
   const { exercises, addWorkout } = useWorkout();
   const [name, setName] = useState("");
   const [selected, setSelected] = useState([]);
+  const [is_1rm, setIs1RM] = useState(false);
 
   const toggleSelect = (id) => {
     setSelected((prev) =>
@@ -23,9 +24,10 @@ const AddCustomWorkoutForm = ({ onClose }) => {
       return;
     }
 
-    addWorkout({ name, exerciseIds: selected });
+    addWorkout({ name, exerciseIds: selected, is_1rm });
     setName("");
     setSelected([]);
+    setIs1RM(false);
     onClose();
   };
 
@@ -42,6 +44,25 @@ const AddCustomWorkoutForm = ({ onClose }) => {
         className="input w-full mb-4"
       />
 
+      <div className="mb-4">
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={is_1rm}
+            onChange={(e) => setIs1RM(e.target.checked)}
+            className="w-5 h-5 cursor-pointer"
+          />
+          <div>
+            <span className="text-md font-semibold text-black">
+              1RM Progression Mode
+            </span>
+            <p className="font-normal text-gray-dark text-sm">
+              Converts exercises to 1RM format with progression sets
+            </p>
+          </div>
+        </label>
+      </div>
+
       <div className="text-sm font-medium text-gray-dark mb-3">
         Select exercises:
       </div>
@@ -56,7 +77,10 @@ const AddCustomWorkoutForm = ({ onClose }) => {
             }`}
             style={
               selected.includes(ex.id)
-                ? { background: "linear-gradient(135deg, #619624 0%, #86bd48 100%)" }
+                ? {
+                    background:
+                      "linear-gradient(135deg, #619624 0%, #86bd48 100%)",
+                  }
                 : {}
             }
           >

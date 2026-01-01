@@ -101,7 +101,7 @@ const ProfilePage = () => {
     const deadliftWeight = deadlift?.oneRM || 0;
 
     return {
-      total: benchWeight + squatWeight + deadliftWeight,
+      total: profileData?.lift_total || 0,
       hasAll:
         bench &&
         squat &&
