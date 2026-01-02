@@ -27,6 +27,7 @@ const App = () => {
   const [checkingUser, setCheckingUser] = useState(true);
   const [userExists, setUserExists] = useState(false);
 
+  
   useEffect(() => {
     // Check for user in background, but don't show loader on landing page
     async function checkUser() {
