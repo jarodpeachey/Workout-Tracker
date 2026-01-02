@@ -1,15 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-// PrivateRoute component to protect routes
-const PrivateRoute = ({ children }) => {
-  const { currentUser } = useWorkout();
-  if (!currentUser) {
-    return <Navigate to="/login" replace />;
-  }
-  return children;
-};
 import { Toaster } from 'react-hot-toast';
 import { useWorkout } from './context/WorkoutContext';
+import { supabase } from './utils/supabaseClient';
 import AuthForm from './components/AuthForm';
 import LandingPage from './pages/LandingPage';
 import Header from './components/Header';
@@ -22,19 +15,32 @@ import ProfilePage from './pages/ProfilePage';
 import DashboardPage from './pages/DashboardPage';
 import Loading from './components/Loading';
 
+// PrivateRoute component to protect routes
+const PrivateRoute = ({ children }) => {
+  const { currentUser } = useWorkout();
+  if (!currentUser) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
+
 const App = () => {
   const { currentUser, globalLoading } = useWorkout();
   const [checkingUser, setCheckingUser] = useState(true);
   const [userExists, setUserExists] = useState(false);
 
-  
+
   useEffect(() => {
     // Check for user in background, but don't show loader on landing page
     async function checkUser() {
-      // Try to get user from supabase
-      const { data } = await import('./utils/supabaseClient').then(m => m.supabase.auth.getUser());
-      if (data?.user) {
-        setUserExists(true);
+      try {
+        // Try to get user from supabase
+        const { data } = await supabase.auth.getUser();
+        if (data?.user) {
+          setUserExists(true);
+        }
+      } catch (error) {
+        console.error('Error checking user:', error);
       }
       setCheckingUser(false);
     }
