@@ -1,9 +1,9 @@
 import React from 'react';
 import { Dumbbell } from 'lucide-react';
 import { useWorkout } from '../context/WorkoutContext';
-import WorkoutCard from './WorkoutCard';
+import ExerciseCard from './ExerciseCard';
 
-const WorkoutList = () => {
+const ExerciseList = () => {
   const { exercises, setShouldOpenAddExercise, setPrefilledExerciseName } = useWorkout();
 
   // Check which big three lifts are missing
@@ -37,11 +37,11 @@ const WorkoutList = () => {
         </button>
       ))}
       
-      {exercises.map((workout) => (
-        <WorkoutCard key={workout.id} workout={workout} />
+      {exercises.map((exercise) => (
+        <ExerciseCard key={exercise.id} exercise={exercise} />
       ))}
     </div>
   );
 };
 
-export default WorkoutList;
+export default ExerciseList;

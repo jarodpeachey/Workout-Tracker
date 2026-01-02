@@ -3,11 +3,11 @@ import { Trash2, ChevronDown } from "lucide-react";
 import { useWorkout } from "../context/WorkoutContext";
 import Modal from "./Modal";
 
-const WorkoutCard = ({ workout }) => {
+const ExerciseCard = ({ exercise }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [localSixRM, setLocalSixRM] = useState(workout.sixRM);
-  const [localOneRM, setLocalOneRM] = useState(workout.oneRM);
+  const [localSixRM, setLocalSixRM] = useState(exercise.sixRM);
+  const [localOneRM, setLocalOneRM] = useState(exercise.oneRM);
   const {
     updateExercise,
     deleteExercise,
@@ -17,23 +17,23 @@ const WorkoutCard = ({ workout }) => {
   } = useWorkout();
 
   const handleDelete = () => {
-    deleteExercise(workout.id);
+    deleteExercise(exercise.id);
   };
 
-  // Sync local state when workout prop changes (after Supabase update)
+  // Sync local state when exercise prop changes (after Supabase update)
   useEffect(() => {
-    setLocalSixRM(workout.sixRM);
-  }, [workout.sixRM]);
+    setLocalSixRM(exercise.sixRM);
+  }, [exercise.sixRM]);
 
   useEffect(() => {
-    setLocalOneRM(workout.oneRM);
-  }, [workout.oneRM]);
+    setLocalOneRM(exercise.oneRM);
+  }, [exercise.oneRM]);
 
   // Debounce 6RM updates
   useEffect(() => {
-    if (localSixRM !== workout.sixRM && localSixRM !== "") {
+    if (localSixRM !== exercise.sixRM && localSixRM !== "") {
       const timer = setTimeout(() => {
-        updateExercise(workout.id, "sixRM", localSixRM);
+        updateExercise(exercise.id, "sixRM", localSixRM);
       }, 2000);
       return () => clearTimeout(timer);
     }
@@ -41,20 +41,20 @@ const WorkoutCard = ({ workout }) => {
 
   // Debounce 1RM updates
   useEffect(() => {
-    if (localOneRM !== workout.oneRM && localOneRM !== "") {
+    if (localOneRM !== exercise.oneRM && localOneRM !== "") {
       const timer = setTimeout(() => {
-        updateExercise(workout.id, "oneRM", localOneRM);
+        updateExercise(exercise.id, "oneRM", localOneRM);
       }, 2000);
       return () => clearTimeout(timer);
     }
   }, [localOneRM]);
 
   const plan =
-    workout.type === "reverse"
-      ? calculateReversePyramid(workout.sixRM)
-      : workout.type === "tensetslight"
-      ? calculateTenSetsLight(workout.oneRM)
-      : calculateTenSets(workout.oneRM);
+    exercise.type === "reverse"
+      ? calculateReversePyramid(exercise.sixRM)
+      : exercise.type === "tensetslight"
+      ? calculateTenSetsLight(exercise.oneRM)
+      : calculateTenSets(exercise.oneRM);
 
   return (
     <>
@@ -81,23 +81,25 @@ const WorkoutCard = ({ workout }) => {
           />
           <div>
             <h3 className="font-bold text-black text-left">
-              {workout.name}
+              {exercise.name}
             </h3>
             <p
               className="text-md text-gray-dark width-fit"
               style={{ width: "fit-content" }}
             >
-              {workout.type === "reverse"
+              {exercise.type === "reverse"
                 ? "Reverse Pyramid (6 sets)"
-                : workout.type === "tensetslight"
+                : exercise.type === "tensetslight"
                 ? "UFpwrLifter Program (Light)"
                 : "UFpwrLifter Program"}
             </p>
           </div>
         </button>
-        <p className="text-sm text-gray-dark font-mono mr-2">
-          {workout.oneRM || 0} lbs
-        </p>
+        {exercise.oneRM > 0 && (
+          <p className="text-sm text-gray-dark font-mono mr-2">
+            {exercise.oneRM} lbs
+          </p>
+        )}
         <button
           onClick={() => setShowDeleteModal(true)}
           className="text-danger rounded-sm hover:bg-[rgba(0,0,0,0.07)] p-3 ml-2 transition-all duration-150"
@@ -109,7 +111,7 @@ const WorkoutCard = ({ workout }) => {
       {isExpanded && (
         <>
           <div className="mb-4 mt-4">
-            {workout.type === "reverse" ? (
+            {exercise.type === "reverse" ? (
               <div className="flex-1">
                 <label className="block mb-1">
                   6 Rep Max (lbs)
@@ -161,4 +163,4 @@ const WorkoutCard = ({ workout }) => {
   );
 };
 
-export default WorkoutCard;
+export default ExerciseCard;

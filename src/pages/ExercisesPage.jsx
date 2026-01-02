@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import AddWorkoutForm from "../components/AddWorkoutForm";
-import WorkoutList from "../components/WorkoutList";
+import ExerciseList from "../components/ExerciseList";
 import { useWorkout } from "../context/WorkoutContext";
 
 const ExercisesPage = () => {
@@ -45,7 +45,7 @@ const ExercisesPage = () => {
         />
       )}
 
-      <WorkoutList />
+      <ExerciseList />
     </div>
   );
 };
