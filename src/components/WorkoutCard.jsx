@@ -95,6 +95,9 @@ const WorkoutCard = ({ workout }) => {
             </p>
           </div>
         </button>
+        <p className="text-sm text-gray-dark font-mono mr-2">
+          {workout.oneRM || 0} lbs
+        </p>
         <button
           onClick={() => setShowDeleteModal(true)}
           className="text-danger rounded-sm hover:bg-[rgba(0,0,0,0.07)] p-3 ml-2 transition-all duration-150"

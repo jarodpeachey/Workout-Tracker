@@ -11,6 +11,11 @@ import {
   Armchair,
 } from "lucide-react";
 import logo from "../logo-2.png";
+import stats1 from "../stats.png";
+import stats2 from "../stats-2.png";
+import step1 from "../step-1.png";
+import step2 from "../step-2.png";
+import step3 from "../step-3.png";
 import Header from "../components/Header";
 
 const LandingPage = () => {
@@ -48,7 +53,7 @@ const LandingPage = () => {
         </div>
         
         {/* What is 1,000 Pound Club - Floating Card */}
-        <div className="absolute bottom-0 left-0 right-0 transform translate-y-1/2 px-6">
+        <div className="absolute bottom-0 left-0 right-0 transform translate-y-[calc(50%+120px)] md:translate-y-1/2 px-6">
           <div className="max-w-4xl mx-auto">
             <div className="bg-gradient-to-br from-black to-gray-900 border border-primary/20 rounded-lg p-8 text-center" style={{ boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)' }}>
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-lg bg-primary/20 mb-4 shadow-[0_0_20px_rgba(188,57,8,0.3)] border border-primary/40">
@@ -66,9 +71,9 @@ const LandingPage = () => {
       </div>
 
       {/* How It Works */}
-      <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 py-20 my-10 md:py-32 border-b border-primary/20 pt-40 md:pt-48">
+      <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 py-20 my-10 md:py-32 pt-[calc(256px+120px)] md:pt-48">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-12">
+          <div className="text-center mb-16">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-lg bg-primary/20 mb-4 shadow-[0_0_20px_rgba(188,57,8,0.3)] border border-primary/40">
               <TrendingUp className="w-8 h-8 text-primary" />
             </div>
@@ -76,39 +81,75 @@ const LandingPage = () => {
             <p className="text-[19px] text-white/70 leading-loose">Get started in three simple steps</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-gradient-to-br from-black to-gray-900 border border-primary/20 rounded-lg p-8">
+          {/* Step 1 - Text Left, Image Right */}
+          <div className="grid md:grid-cols-2 gap-8 md:gap-0 items-center mb-12 md:mb-16">
+            <div className="md:pr-24 md:-mr-24">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-lg bg-gradient-to-br from-primary to-secondary text-white text-2xl font-bold mb-4 shadow-[0_0_20px_rgba(188,57,8,0.4)]">
                 1
               </div>
-              <h3 className="text-white mb-3 font-bold text-xl">
-                Create an Exercise
+              <h3 className="text-white mb-4 font-bold text-2xl">
+                Create Your Exercises
               </h3>
               <p className="text-[17px] text-white/70 leading-loose">
-                Create your exercises and input your current one-rep max. Project 1,000 automatically calculates your perfect working weights for every set, building your personalized training plan.
+                Add exercises, input your one-rep max, and choose your program style. Project 1,000 automatically calculates your working weights for every set.
               </p>
             </div>
+            <div>
+              <div className="bg-black rounded-3xl p-3 border-[1px] border-gray-dark w-full max-w-xs mx-auto" style={{ boxShadow: '0 10px 40px rgba(188, 57, 8, 0.2), 0 0 20px rgba(255, 255, 255, 0.05)' }}>
+                <img 
+                  src={step1} 
+                  alt="Create Exercise" 
+                  className="w-full rounded-2xl" 
+                />
+              </div>
+            </div>
+          </div>
 
-            <div className="bg-gradient-to-br from-black to-gray-900 border border-primary/20 rounded-lg p-8">
+          {/* Step 2 - Image Left, Text Right */}
+          <div className="grid md:grid-cols-2 gap-8 md:gap-0 items-center mb-12 md:mb-16 md:-mt-8">
+            <div className="order-2 md:order-1">
+              <div className="bg-black rounded-3xl p-3 border-[1px] border-gray-dark w-full max-w-xs mx-auto" style={{ boxShadow: '0 10px 40px rgba(188, 57, 8, 0.2), 0 0 20px rgba(255, 255, 255, 0.05)' }}>
+                <img 
+                  src={step2} 
+                  alt="Create Workout" 
+                  className="w-full rounded-2xl" 
+                />
+              </div>
+            </div>
+            <div className="order-1 md:order-2 md:pl-24 md:-ml-24">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-lg bg-gradient-to-br from-primary to-secondary text-white text-2xl font-bold mb-4 shadow-[0_0_20px_rgba(188,57,8,0.4)]">
                 2
               </div>
-              <h3 className="text-white mb-3 font-bold text-xl">Select Your Program</h3>
+              <h3 className="text-white mb-4 font-bold text-2xl">
+                Build Workout Templates
+              </h3>
               <p className="text-[17px] text-white/70 leading-loose">
-                Choose your progressive overload style. Reverse Pyramid Training for high-intensity with descending weight, or the UFpwrLifter 10-set program for maximum strength gains.
+                Combine exercises into custom workout templates. Design different routines for different training days and save them to reuse week after week.
               </p>
             </div>
+          </div>
 
-            <div className="bg-gradient-to-br from-black to-gray-900 border border-primary/20 rounded-lg p-8">
+          {/* Step 3 - Text Left, Image Right */}
+          <div className="grid md:grid-cols-2 gap-8 md:gap-0 items-center md:-mt-8">
+            <div className="md:pr-24 md:-mr-24">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-lg bg-gradient-to-br from-primary to-secondary text-white text-2xl font-bold mb-4 shadow-[0_0_20px_rgba(188,57,8,0.4)]">
                 3
               </div>
-              <h3 className="text-white mb-3 font-bold text-xl">
-                Create & Schedule Workouts
+              <h3 className="text-white mb-4 font-bold text-2xl">
+                Schedule & Complete Workouts
               </h3>
               <p className="text-[17px] text-white/70 leading-loose">
-                Build custom workout templates by combining exercises. Schedule them across your training week—plan days, weeks, or months in advance.
+                Schedule templates across your training week. When it's time to train, complete each set and track every rep. Watch your progress compound over time.
               </p>
+            </div>
+            <div>
+              <div className="bg-black rounded-3xl p-3 border-[1px] border-gray-dark w-full max-w-xs mx-auto" style={{ boxShadow: '0 10px 40px rgba(188, 57, 8, 0.2), 0 0 20px rgba(255, 255, 255, 0.05)' }}>
+                <img 
+                  src={step3} 
+                  alt="Daily Workout" 
+                  className="w-full rounded-2xl" 
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -128,11 +169,19 @@ const LandingPage = () => {
               Monitor your 3-lift total in real-time as you approach the 1,000 Pound Club. Track starting vs. current maxes and workout completion rates to stay accountable and motivated.
             </p>
           </div>
-          <div>
-            {/* Placeholder for app screenshot */}
-            <div className="bg-gray-800 rounded-lg aspect-[9/16] md:aspect-[3/4] w-full flex items-center justify-center border border-primary/20" style={{ boxShadow: '0 10px 40px rgba(188, 57, 8, 0.2), 0 0 20px rgba(255, 255, 255, 0.05)' }}>
-              <p className="text-gray-500 text-center px-8">Stats Dashboard Screenshot</p>
-            </div>
+          <div className="space-y-6">
+            <img 
+              src={stats1} 
+              alt="Stats Dashboard" 
+              className="w-full rounded-lg border border-primary/20" 
+              style={{ boxShadow: '0 10px 40px rgba(188, 57, 8, 0.2), 0 0 20px rgba(255, 255, 255, 0.05)' }}
+            />
+            <img 
+              src={stats2} 
+              alt="Exercise Progress" 
+              className="w-full rounded-lg border border-primary/20" 
+              style={{ boxShadow: '0 10px 40px rgba(188, 57, 8, 0.2), 0 0 20px rgba(255, 255, 255, 0.05)' }}
+            />
           </div>
         </div>
       </div>

@@ -343,14 +343,36 @@ export const WorkoutProvider = ({ children }) => {
   };
 
   const deleteWorkout = (id) => {
-    setWorkouts(prev => prev.filter(w => w.id !== id));
     (async () => {
-      const user_id = await getCurrentUserId();
-      const { data: deleted, error, status } = await supabase.from('workouts').delete().match({ id: String(id), user_id });
-      if (error) {
-        console.error('Failed to delete workout:', { error, status, deleted, id, user_id });
-      } else {
-        toast.success('Workout deleted');
+      try {
+        const user_id = await getCurrentUserId();
+        
+        // First, delete all schedule entries that reference this workout
+        const { error: schedError } = await supabase
+          .from('schedules')
+          .delete()
+          .match({ workout_id: String(id), user_id });
+        
+        if (schedError) {
+          console.error('Failed to delete schedules:', schedError);
+          return;
+        }
+        
+        // Then delete the workout itself
+        const { error } = await supabase
+          .from('workouts')
+          .delete()
+          .match({ id: String(id), user_id });
+        
+        if (error) {
+          console.error('Failed to delete workout:', error);
+        } else {
+          // Only update local state after successful deletion
+          setWorkouts(prev => prev.filter(w => w.id !== id));
+          toast.success('Workout deleted');
+        }
+      } catch (err) {
+        console.error('Error deleting workout:', err);
       }
     })();
   };

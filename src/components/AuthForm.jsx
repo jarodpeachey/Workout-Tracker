@@ -33,10 +33,11 @@ const AuthForm = () => {
         password
       });
       
-      // If sign in succeeds, we're done (loading will stay until app changes)
+      // If sign in succeeds, refresh the page to properly load user data
       if (!signInError) {
         setPassword('');
-        navigate('/');
+        // Reload the page to trigger full authentication flow
+        window.location.href = '/';
         return;
       }
       
@@ -69,14 +70,9 @@ const AuthForm = () => {
   return (
     <div 
       className="h-screen w-screen flex items-center justify-center p-4"
-      style={{
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      }}
+      style={{ backgroundColor: '#0a0a0a' }}
     >
-      <div className="card w-full max-w-md">
+      <div className="bg-gradient-to-br from-black to-gray-900 border border-primary/20 rounded-lg p-8 text-center w-full max-w-md">
         <div className="flex items-center justify-center mb-6">
           <img src={logo} alt="Project 1,000" className="h-16 mt-4 mb-4" />
         </div>
@@ -100,7 +96,7 @@ const AuthForm = () => {
             </div>
           )}
           <div>
-            <label className="block mb-1">
+            <label className="block mb-1 text-left text-white/80">
               Email
             </label>
             <input
@@ -108,12 +104,12 @@ const AuthForm = () => {
               placeholder="Enter email"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full"
+              className="w-full bg-black border-gray-dark placeholder-white/30 text-white/80"
             />
           </div>
           
           <div>
-            <label className="block mb-1">
+            <label className="block mb-1 text-left text-white/80">
               Password
             </label>
             <input
@@ -122,7 +118,7 @@ const AuthForm = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleAuth()}
-              className="w-full"
+              className="w-full bg-black border-gray-dark placeholder-white/30 text-white/80"
             />
           </div>
           
