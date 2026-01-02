@@ -75,7 +75,7 @@ const SchedulePage = () => {
     <div className="max-w-6xl mx-auto p-6 mt-8">
       <div className="flex justify-between items-center mb-2">
         <h2 className="mb-3">Schedule</h2>
-        <div className="card card-sm flex gap-1 bg-white p-1 pt-1 pl-1 pr-1 pb-1 rounded-sm">
+        <div className="card flex gap-1 bg-white p-2 pt-2 pl-2 pr-2 pb-2">
           <button
             onClick={() => setView("weekly")}
             className={`px-6 py-2 text-[14px] font-medium rounded-sm normal-case transition-all duration-150 ${

@@ -98,6 +98,11 @@
   button {
     /* border-radius: 0 !important; */
   }
+
+  /* Reduce checkbox checkmark size globally by 10% */
+  input[type="checkbox"] {
+    transform: scale(0.9);
+  }
   input,
   select,
   textarea {
