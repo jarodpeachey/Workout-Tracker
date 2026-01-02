@@ -133,28 +133,22 @@ const CustomWorkoutCard = ({ workout }) => {
               {exercises.map((ex) => (
                 <label
                   key={ex.id}
-                  className={`card card-sm flex items-center gap-2 cursor-pointer transition-colors ${
+                  className={`card card-sm flex items-center gap-3 cursor-pointer transition-colors ${
                     editExercises.includes(ex.id)
-                      ? "text-white border-success"
+                      ? "border border-primary bg-white"
                       : "bg-white text-black hover:bg-gray-light"
                   }`}
-                  style={
-                    editExercises.includes(ex.id)
-                      ? {
-                          background:
-                            "linear-gradient(135deg, #619624 0%, #86bd48 100%)",
-                        }
-                      : {}
-                  }
                 >
                   <input
                     type="checkbox"
                     checked={editExercises.includes(ex.id)}
                     onChange={() => toggleExercise(ex.id)}
-                    className="invisible w-0 h-0"
+                    className="w-5 h-5 accent-primary cursor-pointer"
                   />
                   <div>
-                    <p className="font-normal text-inherit">{ex.name}</p>
+                    <p className={`font-normal ${
+                      editExercises.includes(ex.id) ? "text-primary" : "text-black"
+                    }`}>{ex.name}</p>
                   </div>
                 </label>
               ))}
