@@ -4,7 +4,6 @@ import { Toaster } from 'react-hot-toast';
 import { useWorkout } from './context/WorkoutContext';
 import { supabase } from './utils/supabaseClient';
 import AuthForm from './components/AuthForm';
-import LandingPage from './pages/LandingPage';
 import Header from './components/Header';
 import Navigation from './components/Navigation';
 import ScrollToTop from './components/ScrollToTop';
@@ -50,13 +49,13 @@ const App = () => {
   // If checking for user, just render nothing (or a splash if desired)
   if (checkingUser) return null;
 
-  // If on landing page, never show loader
+  // If no user, show auth form
   if (!userExists || !currentUser) {
     return (
       <BrowserRouter>
         <ScrollToTop />
         <Routes>
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={<AuthForm />} />
           <Route path="/login" element={<AuthForm />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

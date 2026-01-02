@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './Loading.css';
 import backgroundImage from '../blurry-gradient-haikei.png';
+import logo from '../logo-2.png';
 
 const Loading = ({ timeout = 2000 }) => {
   const [show, setShow] = useState(true);
@@ -31,7 +32,11 @@ const Loading = ({ timeout = 2000 }) => {
         minHeight: '100vh'
       }}
     >
-      <div className="loading-spinner"></div>
+      <img 
+        src={logo} 
+        alt="Project 1,000" 
+        className="pulsating-logo"
+      />
     </div>
   );
 };

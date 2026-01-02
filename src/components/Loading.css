@@ -12,16 +12,17 @@
   z-index: 9999;
 }
 
-.loading-spinner {
-  border: 8px solid rgba(255, 255, 255, 0.2);
-  border-top: 8px solid #E9F1F7;
-  border-radius: 50% !important;
-  width: 60px;
-  height: 60px;
-  animation: spin 1s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+.pulsating-logo {
+  height: 65px;
+  filter: brightness(0) invert(1);
+  animation: opacityPulse 1.5s ease-in-out infinite;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+@keyframes opacityPulse {
+  0%, 100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
 }
