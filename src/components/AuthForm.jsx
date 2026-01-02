@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Dumbbell } from 'lucide-react';
 import { supabase } from '../utils/supabaseClient';
 import { useWorkout } from '../context/WorkoutContext';
+import { useNavigate } from 'react-router-dom';
 import backgroundImage from '../blurry-gradient-haikei.png';
 import logo from '../logo-2.png';
 import Loading from './Loading';
 
 const AuthForm = () => {
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -34,6 +36,7 @@ const AuthForm = () => {
       // If sign in succeeds, we're done (loading will stay until app changes)
       if (!signInError) {
         setPassword('');
+        navigate('/');
         return;
       }
       
