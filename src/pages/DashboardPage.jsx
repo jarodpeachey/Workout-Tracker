@@ -174,7 +174,7 @@ const DashboardPage = () => {
                 <div className="w-8 h-8 rounded-lg text-white flex items-center justify-center">
                   <Check className="w-5 h-5" />
                 </div>
-                <h3 className="text-lg font-semibold text-white">{completedStep.title}</h3>
+                <h3 className="text-white">{completedStep.title}</h3>
               </div>
             </div>
           ))}
@@ -202,7 +202,7 @@ const DashboardPage = () => {
                 <div className="w-8 h-8 rounded-lg bg-gray text-white flex items-center justify-center font-bold">
                   {uncompletedStep.step}
                 </div>
-                <h3 className="text-lg font-semibold text-gray-dark">{uncompletedStep.title}</h3>
+                <h3 className="text-gray-dark">{uncompletedStep.title}</h3>
               </div>
             </div>
           ))}

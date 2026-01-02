@@ -126,7 +126,7 @@ const ProfilePage = () => {
         <h3 className="mb-4">Stats</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
           <div className="bg-white border border-gray shadow-sm p-4 rounded-lg">
-            <p className="text-black">Workouts Assigned</p>
+            <p className="text-black">Workouts Scheduled</p>
             <p className="text-2xl md:text-4xl mt-2 font-bold text-black">
               {profileData?.workouts_assigned || 0}
             </p>
@@ -177,7 +177,7 @@ const ProfilePage = () => {
                   }}
                 ></div>
               </div>
-              <p className="text-sm mt-2 text-black font-medium">
+              <p className="text-sm mt-2 text-black ">
                 {liftTotal.total} / 1,000 lbs (
                 {((liftTotal.total / 1000) * 100).toFixed(1)}%)
               </p>
@@ -194,7 +194,7 @@ const ProfilePage = () => {
             <div className="md:hidden space-y-3">
               {exercises.map((exercise) => {
                 const isExpanded = expandedCards[exercise.id];
-                const showOneRM = rmView[exercise.id];
+                const showOneRM = rmView[exercise.id] !== undefined ? rmView[exercise.id] : true;
                 const bothRMs = hasBothRMs(exercise);
                 const improvement = parseFloat(
                   calculateImprovement(exercise, showOneRM)
@@ -223,7 +223,7 @@ const ProfilePage = () => {
                             )}
                             <button
                               onClick={(e) => toggleRMView(exercise.id, e)}
-                              className="btn btn-sm text-xs px-2 py-1 rounded bg-primary text-white font-medium"
+                              className="btn btn-sm text-xs px-2 py-1 rounded bg-primary text-white "
                             >
                               {showOneRM ? "6RM" : "1RM"}
                             </button>
@@ -237,37 +237,37 @@ const ProfilePage = () => {
                     {isExpanded && (
                       <div className="">
                         <div className="flex justify-between px-2 py-2 border-gray border-t">
-                          <span className="text-black font-medium">Format</span>
-                          <span className="font-medium text-black">
+                          <span className="text-black ">Format</span>
+                          <span className=" text-gray-dark">
                             {getWorkoutFormat(exercise.type)}
                           </span>
                         </div>
                         <div className="flex justify-between px-2 py-2 border-gray border-t">
-                          <span className="text-black font-medium">
+                          <span className="text-black ">
                             Started
                           </span>
-                          <span className="font-medium text-black">
+                          <span className=" text-gray-dark">
                             {formatDate(exercise.created_at)}
                           </span>
                         </div>
                         <div className="flex justify-between px-2 py-2 border-gray border-t">
-                          <span className="text-black font-medium">
+                          <span className="text-black ">
                             Starting Weight
                           </span>
-                          <span className="font-medium text-black">
+                          <span className=" text-gray-dark">
                             {getStartingWeight(exercise, showOneRM)} lbs
                           </span>
                         </div>
                         <div className="flex justify-between px-2 py-2 border-gray border-t">
-                          <span className="text-black font-medium">
+                          <span className="text-black ">
                             Current Weight
                           </span>
-                          <span className="font-medium text-black">
+                          <span className=" text-gray-dark">
                             {getCurrentWeight(exercise, showOneRM)} lbs
                           </span>
                         </div>
                         <div className="flex justify-between px-2 py-2 border-gray border-t">
-                          <span className="text-black font-medium">
+                          <span className="text-black ">
                             Progress
                           </span>
                           <span
@@ -295,31 +295,31 @@ const ProfilePage = () => {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray">
-                    <th className="text-left py-3 px-4 font-semibold text-black">
+                    <th className="text-left py-3 px-4 font-bold text-black">
                       Exercise
                     </th>
-                    <th className="text-left py-3 px-4 font-semibold text-black">
+                    <th className="text-left py-3 px-4 font-bold text-black">
                       Date Started
                     </th>
-                    <th className="text-left py-3 px-4 font-semibold text-black">
+                    <th className="text-left py-3 px-4 font-bold text-black">
                       Format
                     </th>
-                    <th className="text-right py-3 px-4 font-semibold text-black">
+                    <th className="text-right py-3 px-4 font-bold text-black">
                       1RM Start
                     </th>
-                    <th className="text-right py-3 px-4 font-semibold text-black">
+                    <th className="text-right py-3 px-4 font-bold text-black">
                       1RM Current
                     </th>
-                    <th className="text-right py-3 px-4 font-semibold text-black">
+                    <th className="text-right py-3 px-4 font-bold text-black">
                       1RM Progress
                     </th>
-                    <th className="text-right py-3 px-4 font-semibold text-black">
+                    <th className="text-right py-3 px-4 font-bold text-black">
                       6RM Start
                     </th>
-                    <th className="text-right py-3 px-4 font-semibold text-black">
+                    <th className="text-right py-3 px-4 font-bold text-black">
                       6RM Current
                     </th>
-                    <th className="text-right py-3 px-4 font-semibold text-black">
+                    <th className="text-right py-3 px-4 font-bold text-black">
                       6RM Progress
                     </th>
                   </tr>
@@ -340,21 +340,21 @@ const ProfilePage = () => {
                         key={exercise.id}
                         className="border-b border-gray-light"
                       >
-                        <td className="py-3 px-4 font-medium text-black">
+                        <td className="py-3 px-4  text-black">
                           {exercise.name}
                         </td>
-                        <td className="py-3 px-4 text-black">
+                        <td className="py-3 px-4 text-gray-dark">
                           {formatDate(exercise.created_at)}
                         </td>
-                        <td className="py-3 px-4 text-black">
+                        <td className="py-3 px-4 text-gray-dark">
                           {getWorkoutFormat(exercise.type)}
                         </td>
-                        <td className="py-3 px-4 text-right text-black">
+                        <td className="py-3 px-4 text-right text-gray-dark">
                           {hasOneRM
                             ? `${getStartingWeight(exercise, true)} lbs`
                             : "-"}
                         </td>
-                        <td className="py-3 px-4 text-right font-medium text-black">
+                        <td className="py-3 px-4 text-right  text-gray-dark">
                           {hasOneRM
                             ? `${getCurrentWeight(exercise, true)} lbs`
                             : "-"}
@@ -365,7 +365,7 @@ const ProfilePage = () => {
                               ? "text-success"
                               : hasOneRM && improvement1RM < 0
                               ? "text-danger"
-                              : "text-black"
+                              : "text-gray-dark"
                           }`}
                         >
                           {hasOneRM ? (
@@ -377,12 +377,12 @@ const ProfilePage = () => {
                             "-"
                           )}
                         </td>
-                        <td className="py-3 px-4 text-right text-black">
+                        <td className="py-3 px-4 text-right text-gray-dark">
                           {hasSixRM
                             ? `${getStartingWeight(exercise, false)} lbs`
                             : "-"}
                         </td>
-                        <td className="py-3 px-4 text-right font-medium text-black">
+                        <td className="py-3 px-4 text-right  text-gray-dark">
                           {hasSixRM
                             ? `${getCurrentWeight(exercise, false)} lbs`
                             : "-"}
@@ -393,7 +393,7 @@ const ProfilePage = () => {
                               ? "text-success"
                               : hasSixRM && improvement6RM < 0
                               ? "text-danger"
-                              : "text-black"
+                              : "text-gray-dark"
                           }`}
                         >
                           {hasSixRM ? (

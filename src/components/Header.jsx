@@ -18,13 +18,13 @@ const Header = () => {
           <img src={logo} alt="Project 1,000" className="h-10" />
         </button>
         <div className="flex items-center gap-4">
-          <span className="text-xs text-gray-dark font-mono">
+          <span className="text-xs text-gray-dark font-mono hidden md:inline">
             {currentUser}
           </span>
-<span className="text-xs text-gray-dark font-mono">-</span>
+<span className="text-xs text-gray-dark font-mono hidden md:inline">-</span>
           {profileData && (
             <div className="text-xs text-gray-dark font-mono">
-              Current Total: {profileData.lift_total || 0} lbs
+              <span className="hidden md:inline">Current </span>Total: {profileData.lift_total || 0} lbs
             </div>
           )}
 

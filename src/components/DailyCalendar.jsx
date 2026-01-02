@@ -34,6 +34,7 @@ const DailyCalendar = ({
   const [showWorkoutPicker, setShowWorkoutPicker] = useState(false);
   const [showNoWorkoutsModal, setShowNoWorkoutsModal] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [showRemoveWorkoutModal, setShowRemoveWorkoutModal] = useState(false);
   const [completedSets, setCompletedSets] = useState({});
   const [lastToggledSet, setLastToggledSet] = useState(null);
   const [show1RMUpdateModal, setShow1RMUpdateModal] = useState(false);
@@ -41,6 +42,10 @@ const DailyCalendar = ({
   const [new1RMValue, setNew1RMValue] = useState("");
   const [isUpdating1RM, setIsUpdating1RM] = useState(false);
   const [updated1RMValues, setUpdated1RMValues] = useState({});
+  const [show6RMUpdateModal, setShow6RMUpdateModal] = useState(false);
+  const [selected6RMExercise, setSelected6RMExercise] = useState(null);
+  const [new6RMValue, setNew6RMValue] = useState("");
+  const [isUpdating6RM, setIsUpdating6RM] = useState(false);
 
   const getScheduleKey = (date) => {
     return getDateKey(date, profileData?.timezone);
@@ -92,6 +97,7 @@ const DailyCalendar = ({
   const currentDateOnly = new Date(currentDate);
   currentDateOnly.setHours(0, 0, 0, 0);
   const isPastDate = currentDateOnly < today;
+  const isFutureDate = currentDateOnly > today;
 
   // Load completed sets from localStorage and Supabase on mount or when day changes
   useEffect(() => {
@@ -173,11 +179,30 @@ const DailyCalendar = ({
   const handleSelectWorkout = (workoutId) => {
     const newWorkoutId = workoutId === "none" ? null : workoutId;
 
+    // If removing a workout on today, show confirmation
+    // For future days, allow removal without confirmation
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const currentDateOnly = new Date(currentDate);
+    currentDateOnly.setHours(0, 0, 0, 0);
+    const isToday = currentDateOnly.getTime() === today.getTime();
+
+    if (newWorkoutId === null && scheduledWorkoutId !== null && isToday) {
+      setShowRemoveWorkoutModal(true);
+      return;
+    }
+
     // Only call onSetWorkout if there's an actual change
     if (scheduledWorkoutId !== newWorkoutId) {
       onSetWorkout(key, newWorkoutId);
     }
     setShowWorkoutPicker(false);
+  };
+
+  const handleConfirmRemoveWorkout = () => {
+    onSetWorkout(key, null);
+    setShowWorkoutPicker(false);
+    setShowRemoveWorkoutModal(false);
   };
 
   const handleOpenWorkoutPicker = () => {
@@ -236,6 +261,15 @@ const DailyCalendar = ({
     }
   };
 
+  const handleOpen6RMUpdate = (exerciseId) => {
+    const exercise = exercises.find((e) => e.id === exerciseId);
+    if (exercise) {
+      setSelected6RMExercise(exercise);
+      setNew6RMValue(exercise.sixRM || "");
+      setShow6RMUpdateModal(true);
+    }
+  };
+
   const handleUpdate1RM = async () => {
     if (!selected1RMExercise || !new1RMValue) {
       toast.error("Please enter a valid 1RM value");
@@ -283,6 +317,25 @@ const DailyCalendar = ({
     }
   };
 
+  const handleUpdate6RM = async () => {
+    if (!selected6RMExercise || !new6RMValue) {
+      toast.error("Please enter a valid 6RM value");
+      return;
+    }
+    setIsUpdating6RM(true);
+
+    updateExercise(selected6RMExercise.id, "sixRM", new6RMValue);
+
+    // Wait for the update to complete
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Reset state and close modal
+    setIsUpdating6RM(false);
+    setSelected6RMExercise(null);
+    setNew6RMValue("");
+    setShow6RMUpdateModal(false);
+  };
+
   const handlePrevDay = () => {
     if (currentDayIndex > 0) onDayChange(currentDayIndex - 1);
   };
@@ -308,6 +361,16 @@ const DailyCalendar = ({
         message="Great job! If you're done with your workout, we'll mark it as complete and update your progress."
         confirmText="Finish Workout"
         cancelText="Return to Workout"
+      />
+      <Modal
+        isOpen={showRemoveWorkoutModal}
+        onClose={() => setShowRemoveWorkoutModal(false)}
+        onConfirm={handleConfirmRemoveWorkout}
+        title="Remove Workout?"
+        message="Are you sure you want to remove this workout? Any progress you've made will be lost."
+        confirmText="Remove Workout"
+        cancelText="Cancel"
+        danger={true}
       />
       <Modal
         isOpen={show1RMUpdateModal}
@@ -361,6 +424,58 @@ const DailyCalendar = ({
           autoFocus
         />
       </Modal>
+      <Modal
+        isOpen={show6RMUpdateModal}
+        onClose={() => setShow6RMUpdateModal(false)}
+        onConfirm={handleUpdate6RM}
+        title="Update 6RM Value"
+        confirmText={
+          isUpdating6RM ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg
+                className="animate-spin h-4 w-4"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            </span>
+          ) : (
+            "Update 6RM"
+          )
+        }
+        cancelText="Cancel"
+        confirmDisabled={isUpdating6RM}
+        variant="primary"
+      >
+        <p className="text-gray-dark mb-4">
+          Enter your new 6RM for{" "}
+          <span className="text-black font-bold">
+            {selected6RMExercise?.name}
+          </span>
+        </p>
+        <input
+          type="number"
+          value={new6RMValue}
+          onChange={(e) => setNew6RMValue(e.target.value)}
+          placeholder="Enter 6RM (lbs)"
+          className="input w-full mb-6"
+          autoFocus
+        />
+      </Modal>
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <button
@@ -391,7 +506,7 @@ const DailyCalendar = ({
           </button>
 
           <h3
-            className={`text-lg font-semibold tracking-wider ${
+            className={`${
               isPastDate && !isCompleted && scheduledWorkout
                 ? "text-gray"
                 : isCompleted
@@ -514,7 +629,12 @@ const DailyCalendar = ({
                 )}
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-6 relative">
+                {isFutureDate && (
+                  <div className="absolute inset-0 bg-gray-dark/50 z-10 flex items-center justify-center rounded-lg">
+                    <p className="text-white text-lg font-bold">You can't complete this workout yet</p>
+                  </div>
+                )}
                 {scheduledWorkout.exerciseIds?.map((exerciseId) => {
                   const details = getExerciseDetails(exerciseId);
                   if (!details) return null;
@@ -530,109 +650,129 @@ const DailyCalendar = ({
                   // Check if this exercise has had its 1RM updated
                   const has1RMUpdated = updated1RMValues[exerciseId] !== undefined;
 
-                  return (
+                  // Check if all sets for this exercise are completed
+                  const allSetsCompleted = plan.every((_, i) => completedSets[`${exerciseId}-${i}`]);
+
+                    return (
                     <div
                       key={exerciseId}
                       className={`border-l-4 pl-4 ${
-                        isPastDate && !isCompleted
-                          ? "border-danger"
-                          : isCompleted || has1RMUpdated
-                          ? "border-success"
-                          : "border-primary"
+                      isPastDate && !isCompleted
+                        ? "border-danger"
+                        : isCompleted || has1RMUpdated || allSetsCompleted
+                        ? "border-success"
+                        : "border-primary"
+                      }${
+                      scheduledWorkout && isFutureDate ? " p-4" : ""
                       }`}
                     >
+                      <div className="flex items-center gap-2 mb-2">
                       <h5
-                        className={`text-lg font-bold mb-2 ${
-                          isPastDate && !isCompleted
-                            ? "text-gray"
-                            : isCompleted
-                            ? "text-success"
-                            : "text-black"
+                        className={`text-lg font-bold ${
+                        isPastDate && !isCompleted
+                          ? "text-gray"
+                          : isCompleted
+                          ? "text-success"
+                          : "text-black"
                         }`}
                       >
                         {exercise.name}
                       </h5>
-                      <div className="space-y-1 text-sm text-black">
-                        {plan.map((set, i) => {
-                          const setKey = `${exerciseId}-${i}`;
-                          const isSetCompleted = completedSets[setKey];
-                          const isDisabled = isPastDate || isCompleted;
-
-                          // Show 1RM test indicator after the first 100% set (index 6)
-                          const show1RMIndicator =
-                            scheduledWorkout?.is_1rm && i === 7;
-
-                          return (
-                            <React.Fragment key={i}>
-                              {show1RMIndicator && (
-                                <div className="flex items-center gap-2 py-2 my-2">
-                                  <div className={`flex-1 border-t-2 ${has1RMUpdated ? "border-success" : "border-primary"}`}></div>
-                                  <span className={`text-xs font-bold px-2 ${has1RMUpdated ? "text-success" : "text-primary"}`}>
-                                    1RM TEST PROGRESSION
-                                  </span>
-                                  <div className={`flex-1 border-t-2 ${has1RMUpdated ? "border-success" : "border-primary"}`}></div>
-                                </div>
-                              )}
-                              <div
-                                className={`flex items-center gap-2 ${
-                                  isDisabled ? "opacity-60" : has1RMUpdated && !isSetCompleted ? "opacity-40" : ""
-                                }`}
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={isSetCompleted || false}
-                                  onChange={() =>
-                                    toggleSetCompletion(exerciseId, i)
-                                  }
-                                  disabled={isDisabled || has1RMUpdated}
-                                  className={`w-4 h-4 ${
-                                    isDisabled || has1RMUpdated
-                                      ? "cursor-not-allowed"
-                                      : "cursor-pointer"
-                                  }`}
-                                  style={
-                                    isCompleted
-                                      ? { accentColor: "#567335" }
-                                      : {}
-                                  }
-                                />
-                                <div
-                                  className={`flex justify-between flex-1 ${
-                                    isSetCompleted
-                                      ? "line-through opacity-50"
-                                      : ""
-                                  }`}
-                                >
-                                  <span>Set {i + 1}:</span>
-                                  <span className="font-medium">
-                                    {set.weight} lbs × {set.reps} reps
-                                  </span>
-                                </div>
-                              </div>
-                            </React.Fragment>
-                          );
-                        })}
+                      {exercise.type === 'reverse' && !isPastDate && !isCompleted && (
+                        <button
+                        onClick={() => handleOpen6RMUpdate(exerciseId)}
+                        className="btn btn-sm btn-secondary"
+                        >
+                        Update 6RM
+                        </button>
+                      )}
                       </div>
-                      {preTestSetsCompleted && !isCompleted && !isPastDate && (
-                        has1RMUpdated ? (
-                          <div className="mt-3 px-3 py-2 bg-success/10 text-success text-sm rounded-sm border border-success">
-                            New 1RM - {updated1RMValues[exerciseId]} lbs
+                      {exercise.type === 'reverse' && !isPastDate && !isCompleted && (
+                      <p className="text-xs text-gray-dark mb-3 font-mono italic">
+                        💡 If you reach 8 reps on Set 4, update your 6 rep max by 5 pounds for every extra rep you did.
+                      </p>
+                      )}
+                      <div className="space-y-1 text-sm text-black">
+                      {plan.map((set, i) => {
+                        const setKey = `${exerciseId}-${i}`;
+                        const isSetCompleted = completedSets[setKey];
+                        const isDisabled = isPastDate || isCompleted;
+
+                        // Show 1RM test indicator after the first 100% set (index 6)
+                        const show1RMIndicator =
+                        scheduledWorkout?.is_1rm && i === 7;
+
+                        return (
+                        <React.Fragment key={i}>
+                          {show1RMIndicator && (
+                          <div className="flex items-center gap-2 py-2 my-2">
+                            <div className={`flex-1 border-t-2 ${has1RMUpdated ? "border-success" : "border-primary"}`}></div>
+                            <span className={`text-xs font-bold px-2 ${has1RMUpdated ? "text-success" : "text-primary"}`}>
+                            1RM TEST PROGRESSION
+                            </span>
+                            <div className={`flex-1 border-t-2 ${has1RMUpdated ? "border-success" : "border-primary"}`}></div>
                           </div>
-                        ) : (
-                          <button
-                            onClick={() => handleOpen1RMUpdate(exerciseId)}
-                            className="btn btn-sm text-white mt-3"
-                            style={{
-                              background:
-                                "linear-gradient(135deg, #619624 0%, #86bd48 100%)",
-                            }}
+                          )}
+                          <div
+                          className={`flex items-center gap-2 ${
+                            isDisabled ? "opacity-60" : has1RMUpdated && !isSetCompleted ? "opacity-40" : ""
+                          }`}
                           >
-                            Update 1RM Value
-                          </button>
-                        )
+                          <input
+                            type="checkbox"
+                            checked={isSetCompleted || false}
+                            onChange={() =>
+                            toggleSetCompletion(exerciseId, i)
+                            }
+                            disabled={isDisabled || has1RMUpdated}
+                            className={`w-4 h-4 ${
+                            isDisabled || has1RMUpdated
+                              ? "cursor-not-allowed"
+                              : "cursor-pointer"
+                            }`}
+                            style={
+                            isCompleted || allSetsCompleted
+                              ? { accentColor: "#567335" }
+                              : {}
+                            }
+                          />
+                          <div
+                            className={`flex justify-between flex-1 ${
+                            isSetCompleted
+                              ? "line-through opacity-50"
+                              : ""
+                            }`}
+                          >
+                            <span>Set {i + 1}:</span>
+                            <span className="font-medium">
+                            {set.weight} lbs × {set.reps} reps
+                            </span>
+                          </div>
+                          </div>
+                        </React.Fragment>
+                        );
+                      })}
+                      </div>
+                      {scheduledWorkout?.is_1rm && !isCompleted && !isPastDate && preTestSetsCompleted && (
+                      has1RMUpdated ? (
+                        <div className="mt-3 px-3 py-2 bg-success/10 text-success text-sm rounded-sm border border-success">
+                        New 1RM - {updated1RMValues[exerciseId]} lbs
+                        </div>
+                      ) : (
+                        <button
+                        onClick={() => handleOpen1RMUpdate(exerciseId)}
+                        className="btn btn-sm text-white mt-3"
+                        style={{
+                          background:
+                          "linear-gradient(135deg, #619624 0%, #86bd48 100%)",
+                        }}
+                        >
+                        Update 1RM Value
+                        </button>
+                      )
                       )}
                     </div>
-                  );
+                    );
                 })}
               </div>
             </div>

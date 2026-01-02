@@ -23,8 +23,8 @@ export default {
           dim: "#86bd48",
         },
         danger: {
-          DEFAULT: "#a63d40",
-          dim: "#c17779",
+          DEFAULT: "#d94449",
+          dim: "#e87176",
         },
         // Text colors
         text: {

@@ -33,7 +33,7 @@ const AddCustomWorkoutForm = ({ onClose }) => {
 
   return (
     <div className="card mb-6">
-      <h3 className="text-xl font-bold mb-4 text-black">
+      <h3 className="mb-4 text-black">
         Create Custom Workout
       </h3>
       <input
@@ -54,10 +54,11 @@ const AddCustomWorkoutForm = ({ onClose }) => {
           />
           <div>
             <span className="text-md font-semibold text-black">
-              1RM Progression Mode
+              1RM Testing Mode
             </span>
             <p className="font-normal text-gray-dark text-sm">
-              Converts exercises to 1RM format with progression sets
+              Select this option to test your 1-rep max for the selected
+              exercises
             </p>
           </div>
         </label>

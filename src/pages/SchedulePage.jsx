@@ -156,7 +156,7 @@ const SchedulePage = () => {
                 <ChevronLeft className="w-5 h-5" />
               </button>
 
-              <h3 className="text-lg font-semibold tracking-wider">
+              <h3>
                 {getWeekLabel()}
               </h3>
 

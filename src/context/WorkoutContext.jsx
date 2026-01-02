@@ -20,6 +20,7 @@ export const WorkoutProvider = ({ children }) => {
   const [editingWorkoutId, setEditingWorkoutId] = useState(null);
   const [shouldOpenAddWorkout, setShouldOpenAddWorkout] = useState(false);
   const [shouldOpenAddExercise, setShouldOpenAddExercise] = useState(false);
+  const [prefilledExerciseName, setPrefilledExerciseName] = useState('');
 
   // Auth state
   useEffect(() => {
@@ -582,7 +583,9 @@ export const WorkoutProvider = ({ children }) => {
       shouldOpenAddWorkout,
       setShouldOpenAddWorkout,
       shouldOpenAddExercise,
-      setShouldOpenAddExercise
+      setShouldOpenAddExercise,
+      prefilledExerciseName,
+      setPrefilledExerciseName
     }}>
       {children}
     </WorkoutContext.Provider>

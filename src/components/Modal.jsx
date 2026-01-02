@@ -22,10 +22,10 @@ const Modal = ({
       onClick={onClose}
     >
       <div
-        className="card max-w-md w-full p-6 text-center"
+        className="card max-w-md w-full p-6 text-center max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        {title && <h3 className="text-xl font-bold text-text mb-4">{title}</h3>}
+        {title && <h3 className="mb-4">{title}</h3>}
         {children ? children : <p className="text-gray-dark mb-6">{message}</p>}
         <div className="flex flex-col gap-3 w-full">
           <button
@@ -34,15 +34,17 @@ const Modal = ({
             className={`btn ${danger || variant === "danger" ? "text-white border-danger" : ""}`}
             style={
               danger || variant === "danger"
-                ? { background: "linear-gradient(135deg, #a63d40 0%, #c17779 100%)" }
+                ? { background: "linear-gradient(135deg, #a63d40 0%, #d94449 100%)" }
                 : {}
             }
           >
             {confirmText}
           </button>
-          <button onClick={onClose} className="btn btn-secondary">
-            {cancelText}
-          </button>
+          {cancelText && (
+            <button onClick={onClose} className="btn btn-secondary">
+              {cancelText}
+            </button>
+          )}
         </div>
       </div>
     </div>

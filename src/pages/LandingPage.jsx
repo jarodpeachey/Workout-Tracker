@@ -68,21 +68,21 @@ const LandingPage = () => {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-lg bg-primary/10 mb-4">
               <Armchair className="w-8 h-8 text-primary" />
             </div>
-            <h3 className="text-2xl font-bold text-primary mb-3">Bench Press</h3>
+            <h3 className="text-primary mb-3">Bench Press</h3>
             <p className="text-[17px] text-gray-dark">Upper body pushing strength</p>
           </div>
           <div className="card p-8 text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-lg bg-primary/10 mb-4">
               <Weight className="w-8 h-8 text-primary" />
             </div>
-            <h3 className="text-2xl font-bold text-primary mb-3">Squat</h3>
+            <h3 className="text-primary mb-3">Squat</h3>
             <p className="text-[17px] text-gray-dark">Lower body strength and power</p>
           </div>
           <div className="card p-8 text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-lg bg-primary/10 mb-4">
               <Dumbbell className="w-8 h-8 text-primary" />
             </div>
-            <h3 className="text-2xl font-bold text-primary mb-3">Deadlift</h3>
+            <h3 className="text-primary mb-3">Deadlift</h3>
             <p className="text-[17px] text-gray-dark">Total body strength</p>
           </div>
         </div>
@@ -104,7 +104,7 @@ const LandingPage = () => {
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-lg bg-gradient-to-br from-primary to-secondary text-white text-2xl font-bold mb-4">
                 1
               </div>
-              <h3 className="text-xl font-bold text-black mb-3">
+              <h3 className="text-black mb-3">
                 Add Your Exercises
               </h3>
               <p className="text-[17px] text-gray-dark">
@@ -116,7 +116,7 @@ const LandingPage = () => {
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-lg bg-gradient-to-br from-primary to-secondary text-white text-2xl font-bold mb-4">
                 2
               </div>
-              <h3 className="text-xl font-bold text-black mb-3">Select Your Program</h3>
+              <h3 className="text-black mb-3">Select Your Program</h3>
               <p className="text-[17px] text-gray-dark">
                 Choose from Reverse Pyramid Training or UFpwrLifter Program for structured strength development.
               </p>
@@ -126,7 +126,7 @@ const LandingPage = () => {
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-lg bg-gradient-to-br from-primary to-secondary text-white text-2xl font-bold mb-4">
                 3
               </div>
-              <h3 className="text-xl font-bold text-black mb-3">
+              <h3 className="text-black mb-3">
                 Create & Schedule
               </h3>
               <p className="text-[17px] text-gray-dark">

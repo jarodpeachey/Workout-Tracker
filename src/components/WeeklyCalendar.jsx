@@ -18,6 +18,7 @@ const WeeklyCalendar = ({
 }) => {
   const [selectedDay, setSelectedDay] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showRemoveWorkoutModal, setShowRemoveWorkoutModal] = useState(false);
   const navigate = useNavigate();
   const { setShouldOpenAddWorkout, profileData } = useWorkout();
 
@@ -72,12 +73,27 @@ const WeeklyCalendar = ({
       const currentWorkoutId = scheduleEntry?.workout_id || scheduleEntry;
       const newWorkoutId = workoutId === "none" ? null : workoutId;
       
+      // If removing a workout, show confirmation
+      if (newWorkoutId === null && currentWorkoutId !== null) {
+        setShowRemoveWorkoutModal(true);
+        return;
+      }
+      
       // Only call onSetWorkout if there's an actual change
       if (currentWorkoutId !== newWorkoutId) {
         onSetWorkout(key, newWorkoutId);
       }
       setSelectedDay(null);
     }
+  };
+
+  const handleConfirmRemoveWorkout = () => {
+    if (selectedDay !== null) {
+      const key = getScheduleKey(weekDays[selectedDay]);
+      onSetWorkout(key, null);
+    }
+    setSelectedDay(null);
+    setShowRemoveWorkoutModal(false);
   };
 
   const handleDayClick = (isPastDate, idx, isCompleted, isToday) => {
@@ -116,8 +132,16 @@ const WeeklyCalendar = ({
         onConfirm={handleConfirmNavigate}
         message="There are no workouts created. Please create a workout first."
         confirmText="Create Workout"
-      />
-    <div className="space-y-4">
+      />      <Modal
+        isOpen={showRemoveWorkoutModal}
+        onClose={() => setShowRemoveWorkoutModal(false)}
+        onConfirm={handleConfirmRemoveWorkout}
+        title="Remove Workout?"
+        message="Are you sure you want to remove this workout? Any progress you've made will be lost."
+        confirmText="Remove Workout"
+        cancelText="Cancel"
+        danger={true}
+      />    <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-7 gap-2">
         {weekDays.map((date, idx) => {
           const key = getScheduleKey(date);

@@ -6,15 +6,20 @@ import { useWorkout } from "../context/WorkoutContext";
 
 const ExercisesPage = () => {
   const [showAddExercise, setShowAddExercise] = useState(false);
-  const { shouldOpenAddExercise, setShouldOpenAddExercise } = useWorkout();
+  const [prefilledName, setPrefilledName] = useState("");
+  const { shouldOpenAddExercise, setShouldOpenAddExercise, prefilledExerciseName, setPrefilledExerciseName } = useWorkout();
 
   // Open add exercise form if triggered from elsewhere
   useEffect(() => {
     if (shouldOpenAddExercise) {
       setShowAddExercise(true);
+      if (prefilledExerciseName) {
+        setPrefilledName(prefilledExerciseName);
+        setPrefilledExerciseName("");
+      }
       setShouldOpenAddExercise(false);
     }
-  }, [shouldOpenAddExercise, setShouldOpenAddExercise]);
+  }, [shouldOpenAddExercise, setShouldOpenAddExercise, prefilledExerciseName, setPrefilledExerciseName]);
 
   return (
     <div className="max-w-6xl mx-auto p-6 mt-8">
@@ -31,7 +36,13 @@ const ExercisesPage = () => {
       <p className="text-gray-dark mb-6">Track individual exercises and monitor your progress over time. Select a training type and track your 1RM for each exercise.</p>
 
       {showAddExercise && (
-        <AddWorkoutForm onClose={() => setShowAddExercise(false)} />
+        <AddWorkoutForm 
+          onClose={() => {
+            setShowAddExercise(false);
+            setPrefilledName("");
+          }} 
+          initialName={prefilledName}
+        />
       )}
 
       <WorkoutList />
