@@ -20,12 +20,12 @@ const Navigation = () => {
     {
       path: '/workouts',
       label: 'Workouts',
-      icon: Dumbbell,
+      icon: ListChecks,
     },
     {
       path: '/exercises',
       label: 'Exercises',
-      icon: ListChecks,
+      icon: Dumbbell,
     },
     {
       path: '/stats',

@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { supabase } from '../utils/supabaseClient';
-import { getUserTimezone } from '../utils/timezoneUtils';
+import { getUserTimezone, getTodayLocalDate } from '../utils/timezoneUtils';
 
 const WorkoutContext = createContext();
 
@@ -66,8 +66,15 @@ export const WorkoutProvider = ({ children }) => {
           .eq('user_id', user_id);
         
         if (!schedError && schedules) {
-          profile.workouts_assigned = schedules.length;
-          profile.workouts_completed = schedules.filter(s => s.completed).length;
+          // Only count past workouts (today and before)
+          const today = getTodayLocalDate();
+          console.log('[Stats Debug] Today:', today);
+          console.log('[Stats Debug] All schedules:', schedules);
+          const pastSchedules = schedules.filter(s => s.id <= today);
+          console.log('[Stats Debug] Past schedules:', pastSchedules);
+          profile.workouts_assigned = pastSchedules.length;
+          profile.workouts_completed = pastSchedules.filter(s => s.completed).length;
+          console.log('[Stats Debug] Assigned:', profile.workouts_assigned, 'Completed:', profile.workouts_completed);
         }
         
         setProfileData(profile);
@@ -139,8 +146,15 @@ export const WorkoutProvider = ({ children }) => {
         
         // Update profile with actual counts from schedules
         if (profile && schedRows) {
-          profile.workouts_assigned = schedRows.length;
-          profile.workouts_completed = schedRows.filter(s => s.completed).length;
+          // Only count past workouts (today and before)
+          const today = getTodayLocalDate();
+          console.log('[Stats Debug LoadAll] Today:', today);
+          console.log('[Stats Debug LoadAll] All schedules:', schedRows);
+          const pastSchedules = schedRows.filter(s => s.id <= today);
+          console.log('[Stats Debug LoadAll] Past schedules:', pastSchedules);
+          profile.workouts_assigned = pastSchedules.length;
+          profile.workouts_completed = pastSchedules.filter(s => s.completed).length;
+          console.log('[Stats Debug LoadAll] Assigned:', profile.workouts_assigned, 'Completed:', profile.workouts_completed);
           setProfileData(profile);
         }
         

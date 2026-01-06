@@ -134,14 +134,14 @@ const DashboardPage = () => {
     },
     {
       title: "Workouts",
-      icon: Dumbbell,
+      icon: ListChecks,
       description: "Create and customize workout templates.",
       route: "/workouts",
       color: "from-purple-500 to-purple-600",
     },
     {
       title: "Exercises",
-      icon: ListChecks,
+      icon: Dumbbell,
       description:
         "Manage your exercise library by updating your weight, or adding new exercises to your programs.",
       route: "/exercises",
