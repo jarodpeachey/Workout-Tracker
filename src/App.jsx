@@ -5,6 +5,7 @@ import { useWorkout } from './context/WorkoutContext';
 import { supabase } from './utils/supabaseClient';
 import AuthForm from './components/AuthForm';
 import LandingPage from './pages/LandingPage';
+import DemoPage from './pages/DemoPage';
 import Header from './components/Header';
 import Navigation from './components/Navigation';
 import ScrollToTop from './components/ScrollToTop';
@@ -57,6 +58,7 @@ const App = () => {
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/demo" element={<DemoPage />} />
           <Route path="/login" element={<AuthForm />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
