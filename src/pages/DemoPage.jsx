@@ -8,6 +8,7 @@ const DemoPage = () => {
   const [inputType, setInputType] = useState("1rm"); // "1rm" or "6rm"
   const [weight, setWeight] = useState("");
   const [results, setResults] = useState(null);
+  const [checkedSets, setCheckedSets] = useState({});
 
   // Calculate UFpwrLifter program sets (uses 1RM)
   const calculateUFpwrLifter = (oneRM) => {
@@ -71,6 +72,15 @@ const DemoPage = () => {
   const handleReset = () => {
     setWeight("");
     setResults(null);
+    setCheckedSets({});
+  };
+
+  const toggleCheckbox = (program, setIndex) => {
+    const key = `${program}-${setIndex}`;
+    setCheckedSets(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
   };
 
   return (
@@ -143,7 +153,7 @@ const DemoPage = () => {
                   value={weight}
                   onChange={(e) => setWeight(e.target.value)}
                   placeholder={inputType === "1rm" ? "e.g., 225" : "e.g., 190"}
-                  className="text-black w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                  className="w-full text-black px-4 py-3 bg-gray-800 border border-gray-700 rounded-lgfocus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                   min="1"
                   step="1"
                 />
@@ -173,77 +183,80 @@ const DemoPage = () => {
           {results && (
             <div className="space-y-8">
               {/* UFpwrLifter Program */}
-              <div className="bg-gradient-to-br from-black to-gray-900 border border-primary/20 rounded-lg p-8" style={{ boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)' }}>
-                <h2 className="text-2xl font-bold text-primary mb-2">
+              <div className="bg-white border-l-4 border-primary rounded-lg p-6">
+                <h2 className="text-xl font-bold text-black mb-2">
                   UFpwrLifter Program
                 </h2>
-                <p className="text-white/60 text-sm mb-6">
+                <p className="text-gray-dark text-sm mb-4">
                   {inputType === "1rm" 
                     ? `Based on your 1RM of ${results.inputWeight} lbs`
                     : `Based on estimated 1RM of ${Math.round(results.inputWeight * 1.17)} lbs (from ${results.inputWeight} lbs 6RM)`
                   }
                 </p>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-gray-700">
-                        <th className="text-left text-white/70 py-3 px-4 font-semibold">Set</th>
-                        <th className="text-left text-white/70 py-3 px-4 font-semibold">Reps</th>
-                        <th className="text-left text-white/70 py-3 px-4 font-semibold">Weight</th>
-                        <th className="text-left text-white/70 py-3 px-4 font-semibold">% of 1RM</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {results.ufpwrlifter.map((set) => (
-                        <tr key={set.set} className="border-b border-gray-800 hover:bg-gray-800/30 transition-colors">
-                          <td className="py-3 px-4 text-white font-mono">{set.set}</td>
-                          <td className="py-3 px-4 text-white font-mono">{set.reps}</td>
-                          <td className="py-3 px-4 text-primary font-mono font-bold">{set.weight} lbs</td>
-                          <td className="py-3 px-4 text-white/60 font-mono">{set.percentage}%</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div className="space-y-1 text-sm text-black">
+                  {results.ufpwrlifter.map((set, index) => {
+                    const key = `ufpwrlifter-${index}`;
+                    const isChecked = checkedSets[key] || false;
+                    return (
+                      <div key={set.set} className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          className="w-4 h-4 cursor-pointer"
+                          checked={isChecked}
+                          onChange={() => toggleCheckbox('ufpwrlifter', index)}
+                        />
+                        <div className={`flex justify-between flex-1 ${isChecked ? 'line-through opacity-50' : ''}`}>
+                          <span>Set {set.set}:</span>
+                          <span className="font-medium">
+                            {set.weight} lbs × {set.reps} reps
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Reverse Pyramid Program */}
-              <div className="bg-gradient-to-br from-black to-gray-900 border border-primary/20 rounded-lg p-8" style={{ boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)' }}>
-                <h2 className="text-2xl font-bold text-primary mb-2">
+              <div className="bg-white border-l-4 border-primary rounded-lg p-6">
+                <h2 className="text-xl font-bold text-black mb-2">
                   Reverse Pyramid Program
                 </h2>
-                <p className="text-white/60 text-sm mb-6">
+                <p className="text-gray-dark text-sm mb-4">
                   {inputType === "6rm" 
                     ? `Based on your 6RM of ${results.inputWeight} lbs`
                     : `Based on estimated 6RM of ${Math.round(results.inputWeight * 0.85)} lbs (from ${results.inputWeight} lbs 1RM)`
                   }
                 </p>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-gray-700">
-                        <th className="text-left text-white/70 py-3 px-4 font-semibold">Set</th>
-                        <th className="text-left text-white/70 py-3 px-4 font-semibold">Reps</th>
-                        <th className="text-left text-white/70 py-3 px-4 font-semibold">Weight</th>
-                        <th className="text-left text-white/70 py-3 px-4 font-semibold">% of 6RM</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {results.reversePyramid.map((set) => (
-                        <tr key={set.set} className="border-b border-gray-800 hover:bg-gray-800/30 transition-colors">
-                          <td className="py-3 px-4 text-white font-mono">
-                            {set.set}
+                <p className="text-xs text-gray-dark mb-3 font-mono italic">
+                  💡 If you reach 8 reps on Set 4, update your 6 rep max by 5 pounds for every extra rep you did.
+                </p>
+                <div className="space-y-1 text-sm text-black">
+                  {results.reversePyramid.map((set, index) => {
+                    const key = `reversePyramid-${index}`;
+                    const isChecked = checkedSets[key] || false;
+                    return (
+                      <div key={set.set} className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          className="w-4 h-4 cursor-pointer"
+                          checked={isChecked}
+                          onChange={() => toggleCheckbox('reversePyramid', index)}
+                        />
+                        <div className={`flex justify-between flex-1 ${isChecked ? 'line-through opacity-50' : ''}`}>
+                          <span>
+                            Set {set.set}:
                             {set.warmup && (
-                              <span className="ml-2 text-xs text-white/40 uppercase tracking-wider">warmup</span>
+                              <span className="ml-2 text-xs text-gray-dark uppercase tracking-wider">(warmup)</span>
                             )}
-                          </td>
-                          <td className="py-3 px-4 text-white font-mono">{set.reps}</td>
-                          <td className="py-3 px-4 text-primary font-mono font-bold">{set.weight} lbs</td>
-                          <td className="py-3 px-4 text-white/60 font-mono">{set.percentage}%</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                          </span>
+                          <span className="font-medium">
+                            {set.weight} lbs × {set.reps} reps
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
