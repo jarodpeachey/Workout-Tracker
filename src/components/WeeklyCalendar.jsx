@@ -99,9 +99,12 @@ const WeeklyCalendar = ({
   const handleDayClick = (isPastDate, idx, isCompleted, isToday) => {
     if (isPastDate) return;
     
-    // If completed and today's workout, navigate to daily view
-    if (isCompleted && isToday && onStartWorkout) {
-      onStartWorkout(idx);
+    // If completed, don't allow workout selection
+    if (isCompleted) {
+      // If today's workout and completed, navigate to daily view
+      if (isToday && onStartWorkout) {
+        onStartWorkout(idx);
+      }
       return;
     }
     
@@ -190,7 +193,7 @@ const WeeklyCalendar = ({
                 isPastDate
                   ? "bg-gray-light cursor-not-allowed"
                   : isCompleted
-                  ? "bg-success border-success cursor-pointer"
+                  ? "bg-success border-success" + (isToday && onStartWorkout ? " cursor-pointer" : " cursor-default")
                   : isToday
                   ? "border-success shadow-[0_4px_12px_rgba(0,0,0,0.5)] cursor-pointer"
                   : isSelected
@@ -274,7 +277,7 @@ const WeeklyCalendar = ({
               )}
 
               {/* Mobile picker - show inside box */}
-              {isSelected && workouts.length > 0 && (
+              {isSelected && workouts.length > 0 && !isCompleted && (
                 <div className="md:hidden mt-4 pt-3 border-t border-gray space-y-2">
                   <div className="text-sm font-semibold text-black mb-1">
                     Select a workout:
@@ -326,7 +329,7 @@ const WeeklyCalendar = ({
       </div>
 
       {/* Desktop picker - show below grid */}
-      {selectedDay !== null && workouts.length > 0 && (
+      {selectedDay !== null && workouts.length > 0 && !schedule[getScheduleKey(weekDays[selectedDay])]?.completed && (
         <div className="hidden md:block bg-white p-3 border-2 border-gray-light">
           <div className="mb-3 font-semibold text-black">
             Select a workout for {String(weekDays[selectedDay].getMonth() + 1).padStart(2, '0')}/{String(weekDays[selectedDay].getDate()).padStart(2, '0')}/{weekDays[selectedDay].getFullYear()}

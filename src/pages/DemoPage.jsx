@@ -21,8 +21,8 @@ const DemoPage = () => {
       { set: 6, reps: 1, percentage: 96, weight: Math.round(oneRM * 0.96) },
       { set: 7, reps: 1, percentage: 91, weight: Math.round(oneRM * 0.91) },
       { set: 8, reps: 1, percentage: 91, weight: Math.round(oneRM * 0.91) },
-      { set: 9, reps: 1, percentage: 86, weight: Math.round(oneRM * 0.86) },
-      { set: 10, reps: 1, percentage: 79, weight: Math.round(oneRM * 0.79) },
+      { set: 9, reps: 3, percentage: 86, weight: Math.round(oneRM * 0.86) },
+      { set: 10, reps: 5, percentage: 79, weight: Math.round(oneRM * 0.79) },
     ];
   };
 
