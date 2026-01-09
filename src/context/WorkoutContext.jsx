@@ -557,14 +557,14 @@ export const WorkoutProvider = ({ children }) => {
     return [
       { sets: 1, reps: 10, weight: roundToNearestFive(rm * 0.05) },
       { sets: 1, reps: 10, weight: roundToNearestFive(rm * 0.10) },
-      { sets: 1, reps: 10, weight: roundToNearestFive(rm * 0.33) },
-      { sets: 1, reps: 8, weight: roundToNearestFive(rm * 0.60) },
-      { sets: 1, reps: 6, weight: roundToNearestFive(rm * 0.85) },
-      { sets: 1, reps: 3, weight: roundToNearestFive(rm * 0.96) },
-      { sets: 1, reps: 6, weight: roundToNearestFive(rm * 0.85) },
-      { sets: 1, reps: 6, weight: roundToNearestFive(rm * 0.85) },
-      { sets: 1, reps: 8, weight: roundToNearestFive(rm * 0.60) },
-      { sets: 1, reps: 10, weight: roundToNearestFive(rm * 0.33) }
+      { sets: 1, reps: 5, weight: roundToNearestFive(rm * 0.33) },
+      { sets: 1, reps: 3, weight: roundToNearestFive(rm * 0.60) },
+      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 0.85) },
+      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 0.96) },
+      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 0.85) },
+      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 0.85) },
+      { sets: 1, reps: 3, weight: roundToNearestFive(rm * 0.60) },
+      { sets: 1, reps: 5, weight: roundToNearestFive(rm * 0.33) }
     ];
   };
 
