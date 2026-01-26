@@ -37,9 +37,11 @@ const ExerciseList = () => {
         </button>
       ))}
       
-      {exercises.map((exercise) => (
-        <ExerciseCard key={exercise.id} exercise={exercise} />
-      ))}
+      {[...exercises]
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((exercise) => (
+          <ExerciseCard key={exercise.id} exercise={exercise} />
+        ))}
     </div>
   );
 };

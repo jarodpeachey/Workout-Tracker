@@ -192,13 +192,33 @@ const ProfilePage = () => {
           <>
             {/* Mobile Card View */}
             <div className="md:hidden space-y-3">
-              {exercises.map((exercise) => {
+              {[...exercises]
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((exercise) => {
                 const isExpanded = expandedCards[exercise.id];
                 const showOneRM = rmView[exercise.id] !== undefined ? rmView[exercise.id] : true;
                 const bothRMs = hasBothRMs(exercise);
-                const improvement = parseFloat(
-                  calculateImprovement(exercise, showOneRM)
-                );
+                // Fallback to 6RM if 1RM is not available for mobile view
+                let startingWeight, currentWeight, improvement;
+                if (showOneRM) {
+                  if (exercise.oneRM && exercise.starting_onerm) {
+                    startingWeight = getStartingWeight(exercise, true);
+                    currentWeight = getCurrentWeight(exercise, true);
+                    improvement = parseFloat(calculateImprovement(exercise, true));
+                  } else if (exercise.sixRM && exercise.starting_sixrm) {
+                    startingWeight = getStartingWeight(exercise, false);
+                    currentWeight = getCurrentWeight(exercise, false);
+                    improvement = parseFloat(calculateImprovement(exercise, false));
+                  } else {
+                    startingWeight = 0;
+                    currentWeight = 0;
+                    improvement = 0;
+                  }
+                } else {
+                  startingWeight = getStartingWeight(exercise, false);
+                  currentWeight = getCurrentWeight(exercise, false);
+                  improvement = parseFloat(calculateImprovement(exercise, false));
+                }
 
                 return (
                   <div key={exercise.id} className="card card-sm">
@@ -251,25 +271,19 @@ const ProfilePage = () => {
                           </span>
                         </div>
                         <div className="flex justify-between px-2 py-2 border-gray border-t">
-                          <span className="text-black ">
-                            Starting Weight
-                          </span>
+                          <span className="text-black ">Starting Weight</span>
                           <span className=" text-gray-dark">
-                            {getStartingWeight(exercise, showOneRM)} lbs
+                            {startingWeight} lbs
                           </span>
                         </div>
                         <div className="flex justify-between px-2 py-2 border-gray border-t">
-                          <span className="text-black ">
-                            Current Weight
-                          </span>
+                          <span className="text-black ">Current Weight</span>
                           <span className=" text-gray-dark">
-                            {getCurrentWeight(exercise, showOneRM)} lbs
+                            {currentWeight} lbs
                           </span>
                         </div>
                         <div className="flex justify-between px-2 py-2 border-gray border-t">
-                          <span className="text-black ">
-                            Progress
-                          </span>
+                          <span className="text-black ">Progress</span>
                           <span
                             className={`font-bold ${
                               improvement > 0
@@ -325,7 +339,9 @@ const ProfilePage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {exercises.map((exercise) => {
+                  {[...exercises]
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map((exercise) => {
                     const improvement1RM = parseFloat(
                       calculateImprovement(exercise, true)
                     );

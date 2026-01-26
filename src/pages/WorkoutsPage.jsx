@@ -82,7 +82,9 @@ const WorkoutsPage = () => {
             </p>
           </div>
         ) : (
-          workouts.map((w) => <CustomWorkoutCard key={w.id} workout={w} />)
+          [...workouts]
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((w) => <CustomWorkoutCard key={w.id} workout={w} />)
         )}
       </div>
     </div>
