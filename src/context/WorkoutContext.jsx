@@ -270,7 +270,7 @@ export const WorkoutProvider = ({ children }) => {
     (async () => {
       const user_id = await getCurrentUserId();
       const updatePayload = { [field]: parseFloat(value) };
-      // console.log('[updateExercise] Supabase update payload:', {
+      console.log('[updateExercise] Supabase update payload:', {
         table: 'exercises',
         updatePayload,
         match: { id, user_id }
@@ -279,7 +279,7 @@ export const WorkoutProvider = ({ children }) => {
         .from('exercises')
         .update(updatePayload)
         .match({ id, user_id });
-      // console.log('[updateExercise] Supabase response:', { error, status, updatedData });
+      console.log('[updateExercise] Supabase response:', { error, status, updatedData });
       if (error) {
         console.error('Failed to update exercise:', { error, status, updatedData, payload: updatePayload });
       } else {
