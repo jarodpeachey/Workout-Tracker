@@ -68,13 +68,13 @@ export const WorkoutProvider = ({ children }) => {
         if (!schedError && schedules) {
           // Only count past workouts (today and before)
           const today = getTodayLocalDate();
-          console.log('[Stats Debug] Today:', today);
-          console.log('[Stats Debug] All schedules:', schedules);
+          // console.log('[Stats Debug] Today:', today);
+          // console.log('[Stats Debug] All schedules:', schedules);
           const pastSchedules = schedules.filter(s => s.id <= today);
-          console.log('[Stats Debug] Past schedules:', pastSchedules);
+          // console.log('[Stats Debug] Past schedules:', pastSchedules);
           profile.workouts_assigned = pastSchedules.length;
           profile.workouts_completed = pastSchedules.filter(s => s.completed).length;
-          console.log('[Stats Debug] Assigned:', profile.workouts_assigned, 'Completed:', profile.workouts_completed);
+          // console.log('[Stats Debug] Assigned:', profile.workouts_assigned, 'Completed:', profile.workouts_completed);
         }
         
         setProfileData(profile);
@@ -148,13 +148,13 @@ export const WorkoutProvider = ({ children }) => {
         if (profile && schedRows) {
           // Only count past workouts (today and before)
           const today = getTodayLocalDate();
-          console.log('[Stats Debug LoadAll] Today:', today);
-          console.log('[Stats Debug LoadAll] All schedules:', schedRows);
+          // console.log('[Stats Debug LoadAll] Today:', today);
+          // console.log('[Stats Debug LoadAll] All schedules:', schedRows);
           const pastSchedules = schedRows.filter(s => s.id <= today);
-          console.log('[Stats Debug LoadAll] Past schedules:', pastSchedules);
+          // console.log('[Stats Debug LoadAll] Past schedules:', pastSchedules);
           profile.workouts_assigned = pastSchedules.length;
           profile.workouts_completed = pastSchedules.filter(s => s.completed).length;
-          console.log('[Stats Debug LoadAll] Assigned:', profile.workouts_assigned, 'Completed:', profile.workouts_completed);
+          // console.log('[Stats Debug LoadAll] Assigned:', profile.workouts_assigned, 'Completed:', profile.workouts_completed);
           setProfileData(profile);
         }
         
@@ -270,7 +270,7 @@ export const WorkoutProvider = ({ children }) => {
     (async () => {
       const user_id = await getCurrentUserId();
       const updatePayload = { [field]: parseFloat(value) };
-      console.log('[updateExercise] Supabase update payload:', {
+      // console.log('[updateExercise] Supabase update payload:', {
         table: 'exercises',
         updatePayload,
         match: { id, user_id }
@@ -279,7 +279,7 @@ export const WorkoutProvider = ({ children }) => {
         .from('exercises')
         .update(updatePayload)
         .match({ id, user_id });
-      console.log('[updateExercise] Supabase response:', { error, status, updatedData });
+      // console.log('[updateExercise] Supabase response:', { error, status, updatedData });
       if (error) {
         console.error('Failed to update exercise:', { error, status, updatedData, payload: updatePayload });
       } else {

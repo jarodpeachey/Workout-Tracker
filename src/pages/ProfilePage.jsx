@@ -87,7 +87,7 @@ const ProfilePage = () => {
   // Calculate 3 lift total
   const calculate3LiftTotal = () => {
     const bench = exercises.find((ex) =>
-      ex.name.toLowerCase().includes("bench")
+      ex.name.toLowerCase().includes("bench press")
     );
     const squat = exercises.find((ex) =>
       ex.name.toLowerCase().includes("squat")
@@ -100,8 +100,10 @@ const ProfilePage = () => {
     const squatWeight = squat?.oneRM || 0;
     const deadliftWeight = deadlift?.oneRM || 0;
 
+    console.log("Weights: ", benchWeight, squatWeight, deadliftWeight)
+
     return {
-      total: profileData?.lift_total || 0,
+      total: benchWeight + squatWeight + deadliftWeight || 0,
       hasAll:
         bench &&
         squat &&
@@ -118,6 +120,7 @@ const ProfilePage = () => {
   };
 
   const liftTotal = calculate3LiftTotal();
+  console.log('Lift total: ', calculate3LiftTotal())
 
   return (
     <div className="max-w-6xl mx-auto p-6 mt-8">
