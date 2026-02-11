@@ -289,7 +289,7 @@ export const WorkoutProvider = ({ children }) => {
         if (field === 'oneRM') {
           const exercise = exercises.find(ex => ex.id === id);
           const exerciseName = exercise?.name?.toLowerCase() || '';
-          if (exerciseName.includes('bench') || exerciseName.includes('squat') || exerciseName.includes('deadlift')) {
+          if (exerciseName.includes('bench press') || exerciseName.includes('squat') || exerciseName.includes('deadlift')) {
             // Wait a bit for state to update, then recalculate
             setTimeout(() => {
               updateLiftTotal();
@@ -499,7 +499,7 @@ export const WorkoutProvider = ({ children }) => {
       }
       
       // Find the big 3 lifts
-      const bench = exercisesList?.find((ex) => ex.name.toLowerCase().includes('bench'));
+      const bench = exercisesList?.find((ex) => ex.name.toLowerCase().includes('bench press'));
       const squat = exercisesList?.find((ex) => ex.name.toLowerCase().includes('squat'));
       const deadlift = exercisesList?.find((ex) => ex.name.toLowerCase().includes('deadlift'));
 

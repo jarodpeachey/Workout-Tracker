@@ -7,7 +7,7 @@ const ExerciseList = () => {
   const { exercises, setShouldOpenAddExercise, setPrefilledExerciseName } = useWorkout();
 
   // Check which big three lifts are missing
-  const hasBench = exercises.some(ex => ex.name.toLowerCase().includes('bench'));
+  const hasBench = exercises.some(ex => ex.name.toLowerCase().includes('bench press'));
   const hasSquat = exercises.some(ex => ex.name.toLowerCase().includes('squat'));
   const hasDeadlift = exercises.some(ex => ex.name.toLowerCase().includes('deadlift'));
 
