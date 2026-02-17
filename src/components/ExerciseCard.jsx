@@ -53,8 +53,8 @@ const ExerciseCard = ({ exercise }) => {
     exercise.type === "reverse"
       ? calculateReversePyramid(exercise.sixRM)
       : exercise.type === "tensetslight"
-      ? calculateTenSetsLight(exercise.oneRM)
-      : calculateTenSets(exercise.oneRM);
+        ? calculateTenSetsLight(exercise.oneRM)
+        : calculateTenSets(exercise.oneRM);
 
   return (
     <>
@@ -68,97 +68,104 @@ const ExerciseCard = ({ exercise }) => {
         cancelText="No, keep it"
         danger
       />
-    <div className="card py-0">
-      <div className="flex justify-between items-center">
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-2 p-3 transition-all duration-150 flex-1 text-left"
-        >
-          <ChevronDown
-            className={`w-5 h-5 transition-transform ${
-              isExpanded ? "rotate-180" : ""
-            }`}
-          />
-          <div>
-            <h3 className="font-bold text-black text-left">
-              {exercise.name}
-            </h3>
-            <p
-              className="text-md text-gray-dark width-fit"
-              style={{ width: "fit-content" }}
-            >
-              {exercise.type === "reverse"
-                ? "Reverse Pyramid (6 sets)"
-                : exercise.type === "tensetslight"
-                ? "UFpwrLifter Program (Light)"
-                : "UFpwrLifter Program"}
-            </p>
-          </div>
-        </button>
-        {exercise.oneRM > 0 && (
-          <p className="text-sm text-gray-dark font-mono mr-2">
-            {exercise.oneRM} lbs
-          </p>
-        )}
-        <button
-          onClick={() => setShowDeleteModal(true)}
-          className="text-danger rounded-sm hover:bg-[rgba(0,0,0,0.07)] p-3 ml-2 transition-all duration-150"
-        >
-          <Trash2 className="w-5 h-5" />
-        </button>
-      </div>
-
-      {isExpanded && (
-        <>
-          <div className="mb-4 mt-4">
-            {exercise.type === "reverse" ? (
-              <div className="flex-1">
-                <label className="block mb-1">
-                  6 Rep Max (lbs)
-                </label>
-                <input
-                  type="number"
-                  value={localSixRM}
-                  onChange={(e) => setLocalSixRM(e.target.value)}
-                  className="input w-full"
-                />
-              </div>
-            ) : (
-              <div className="flex-1">
-                <label className="block mb-1">
-                  1 Rep Max (lbs)
-                </label>
-                <input
-                  type="number"
-                  value={localOneRM}
-                  onChange={(e) => setLocalOneRM(e.target.value)}
-                  className="input w-full"
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="">
-            <h4 className="font-semibold mb-3 text-black">Workout Plan</h4>
-            <div className="space-y-2">
-              {plan.map((set, idx) => (
-                <div
-                  key={idx}
-                  className="flex justify-between items-center py-2 border-b border-gray-light last:border-0"
-                >
-                  <span className="font-medium text-black">
-                    Set {idx + 1}
-                  </span>
-                  <span className="text-gray-dark">
-                    {set.reps} reps @ {set.weight} lbs
-                  </span>
-                </div>
-              ))}
+      <div className="card py-0">
+        <div className="flex justify-between items-center">
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex items-center gap-2 p-3 transition-all duration-150 flex-1 text-left"
+          >
+            <ChevronDown
+              className={`w-5 h-5 transition-transform ${
+                isExpanded ? "rotate-180" : ""
+              }`}
+            />
+            <div>
+              <h3 className="font-bold text-black text-left">
+                {exercise.name}
+              </h3>
+              <p
+                className="text-md text-gray-dark width-fit"
+                style={{ width: "fit-content" }}
+              >
+                {exercise.type === "reverse"
+                  ? "Reverse Pyramid (6 sets)"
+                  : exercise.type === "tensetslight"
+                    ? "UFpwrLifter Program (Light)"
+                    : "UFpwrLifter Program"}
+              </p>
             </div>
-          </div>
-        </>
-      )}
-    </div>
+          </button>
+          {exercise.oneRM > 0 && (
+            <p className="text-sm text-gray-dark font-mono mr-2">
+              {exercise.oneRM} lbs
+            </p>
+          )}
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            className="text-danger rounded-sm hover:bg-[rgba(0,0,0,0.07)] p-3 ml-2 transition-all duration-150"
+          >
+            <Trash2 className="w-5 h-5" />
+          </button>
+        </div>
+
+        {isExpanded && (
+          <>
+            <div className="mb-4 mt-4">
+              {exercise.type === "reverse" ? (
+                <div className="flex-1">
+                  <label className="block mb-1">6 Rep Max (lbs)</label>
+                  <input
+                    type="number"
+                    value={localSixRM}
+                    onChange={(e) => setLocalSixRM(e.target.value)}
+                    className="input w-full"
+                  />
+                </div>
+              ) : (
+                <div className="flex-1">
+                  <label className="block mb-1">1 Rep Max (lbs)</label>
+                  <input
+                    type="number"
+                    value={localOneRM}
+                    onChange={(e) => setLocalOneRM(e.target.value)}
+                    className="input w-full"
+                  />
+                </div>
+              )}
+              {localOneRM && (
+                <div className="flex-1">
+                  <label className="block mb-1">1 Rep Max (lbs)</label>
+                  <input
+                    type="number"
+                    value={localOneRM}
+                    onChange={(e) => setLocalOneRM(e.target.value)}
+                    className="input w-full"
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="">
+              <h4 className="font-semibold mb-3 text-black">Workout Plan</h4>
+              <div className="space-y-2">
+                {plan.map((set, idx) => (
+                  <div
+                    key={idx}
+                    className="flex justify-between items-center py-2 border-b border-gray-light last:border-0"
+                  >
+                    <span className="font-medium text-black">
+                      Set {idx + 1}
+                    </span>
+                    <span className="text-gray-dark">
+                      {set.reps} reps @ {set.weight} lbs
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
     </>
   );
 };
