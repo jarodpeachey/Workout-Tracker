@@ -132,8 +132,8 @@ const ExerciseCard = ({ exercise }) => {
                   />
                 </div>
               )}
-              {localOneRM && (
-                <div className="flex-1">
+              {exercise.type === "reverse" && exercise.oneRM > 0 && (
+                <div className="flex-1 mt-3">
                   <label className="block mb-1">1 Rep Max (lbs)</label>
                   <input
                     type="number"
