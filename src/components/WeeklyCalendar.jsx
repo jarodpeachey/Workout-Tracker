@@ -20,7 +20,7 @@ const WeeklyCalendar = ({
   const [showModal, setShowModal] = useState(false);
   const [showRemoveWorkoutModal, setShowRemoveWorkoutModal] = useState(false);
   const navigate = useNavigate();
-  const { setShouldOpenAddWorkout, profileData } = useWorkout();
+  const { setShouldOpenAddWorkout, profileData, setDeload } = useWorkout();
 
   const dayNames = [
     "Sunday",
@@ -235,6 +235,22 @@ const WeeklyCalendar = ({
                     >
                       Select a workout
                     </div>
+                  )}
+                  {scheduledWorkout && !isPastDate && !isCompleted && (
+                    <label
+                      className="mt-2 flex items-center gap-1.5 text-xs cursor-pointer w-fit"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={scheduleEntry?.deload || false}
+                        onChange={(e) => setDeload(key, e.target.checked)}
+                        className="w-3.5 h-3.5 cursor-pointer"
+                      />
+                      <span className={isToday ? "text-success" : "text-gray-dark"}>
+                        Deload
+                      </span>
+                    </label>
                   )}
                 </div>
                 {isToday && scheduledWorkout && !isCompleted && onStartWorkout && (

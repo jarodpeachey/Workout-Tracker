@@ -29,7 +29,7 @@ const DailyCalendar = ({
     "Saturday",
   ];
   const navigate = useNavigate();
-  const { saveSchedule, setShouldOpenAddWorkout, profileData, updateExercise } =
+  const { saveSchedule, setShouldOpenAddWorkout, profileData, updateExercise, setDeload } =
     useWorkout();
   const [showWorkoutPicker, setShowWorkoutPicker] = useState(false);
   const [showNoWorkoutsModal, setShowNoWorkoutsModal] = useState(false);
@@ -52,6 +52,8 @@ const DailyCalendar = ({
     return getDateKey(date, profileData?.timezone);
   };
 
+  const roundToNearestFive = (value) => Math.round(value / 5) * 5;
+
   const getExerciseDetails = (exerciseId) => {
     const exercise = exercises.find((e) => e.id === exerciseId);
     if (!exercise) return null;
@@ -68,6 +70,14 @@ const DailyCalendar = ({
       plan = calculateTenSets(exercise.oneRM);
     }
 
+    // Only the daily view lightens weights, and only when deload is toggled on for this day
+    if (scheduleEntry?.deload) {
+      plan = plan.map((set) => ({
+        ...set,
+        weight: roundToNearestFive(set.weight * 0.75),
+      }));
+    }
+
     return { exercise, plan };
   };
 
@@ -77,6 +87,7 @@ const DailyCalendar = ({
   const scheduledWorkoutId = scheduleEntry?.workout_id || scheduleEntry;
   const scheduledWorkout = workouts.find((w) => w.id === scheduledWorkoutId);
   const isCompleted = scheduleEntry?.completed || false;
+  const isDeload = scheduleEntry?.deload || false;
 
   // Debug logging for Tuesday, December 30
   console.log("=== DailyCalendar Debug ===");
@@ -659,6 +670,25 @@ const DailyCalendar = ({
                   <p className="text-success">Workout Complete!</p>
                 )}
               </div>
+
+              {!isPastDate && !isCompleted && (
+                <label className="flex items-start gap-3 cursor-pointer w-fit">
+                  <input
+                    type="checkbox"
+                    checked={isDeload}
+                    onChange={(e) => setDeload(key, e.target.checked)}
+                    className="w-5 h-5 cursor-pointer"
+                  />
+                  <div>
+                    <span className="text-md font-semibold text-black">
+                      Deload
+                    </span>
+                    <p className="font-normal text-gray-dark text-sm">
+                      Lighten today's weights by 25%
+                    </p>
+                  </div>
+                </label>
+              )}
 
               <div className="space-y-6 relative">
                 {isFutureDate && (

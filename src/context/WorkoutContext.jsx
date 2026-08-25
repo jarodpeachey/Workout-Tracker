@@ -220,6 +220,25 @@ export const WorkoutProvider = ({ children }) => {
     }
   }
 
+  async function setDeload(dateId, deloadValue) {
+    try {
+      const user_id = await getCurrentUserId();
+      const { data: updated, error } = await supabase
+        .from('schedules')
+        .update({ deload: deloadValue })
+        .match({ id: dateId, user_id })
+        .select()
+        .single();
+      if (error) throw error;
+      setSchedule(prev => ({ ...prev, [dateId]: updated }));
+      return updated;
+    } catch (err) {
+      console.error('setDeload error', err);
+      toast.error('Failed to update deload setting');
+      return null;
+    }
+  }
+
   async function clearSchedule(dateId) {
     try {
       const user_id = await getCurrentUserId();
@@ -606,6 +625,7 @@ export const WorkoutProvider = ({ children }) => {
       saveSchedule,
       clearSchedule,
       setScheduleWorkout,
+      setDeload,
       calculateTenSets,
       calculateReversePyramid,
       calculateTenSetsLight,
