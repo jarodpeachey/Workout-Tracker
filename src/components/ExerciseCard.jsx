@@ -20,6 +20,10 @@ const ExerciseCard = ({ exercise }) => {
     deleteExercise(exercise.id);
   };
 
+  const handleTypeChange = (e) => {
+    updateExercise(exercise.id, "type", e.target.value);
+  };
+
   // Sync local state when exercise prop changes (after Supabase update)
   useEffect(() => {
     setLocalSixRM(exercise.sixRM);
@@ -111,6 +115,18 @@ const ExerciseCard = ({ exercise }) => {
         {isExpanded && (
           <>
             <div className="mb-4 mt-4">
+              <div className="flex-1 mb-3">
+                <label className="block mb-1">Program</label>
+                <select
+                  value={exercise.type}
+                  onChange={handleTypeChange}
+                  className="input w-full"
+                >
+                  <option value="reverse">Reverse Pyramid (6 sets)</option>
+                  <option value="tensets">UFpwrLifter Program</option>
+                  <option value="tensetslight">UFpwrLifter Program (Light)</option>
+                </select>
+              </div>
               {exercise.type === "reverse" ? (
                 <div className="flex-1">
                   <label className="block mb-1">6 Rep Max (lbs)</label>

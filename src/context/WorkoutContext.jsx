@@ -285,10 +285,12 @@ export const WorkoutProvider = ({ children }) => {
   };
 
   const updateExercise = (id, field, value) => {
-    setExercises(prev => prev.map(w => w.id === id ? { ...w, [field]: parseFloat(value) } : w));
+    const isNumericField = field === 'oneRM' || field === 'sixRM';
+    const parsedValue = isNumericField ? parseFloat(value) : value;
+    setExercises(prev => prev.map(w => w.id === id ? { ...w, [field]: parsedValue } : w));
     (async () => {
       const user_id = await getCurrentUserId();
-      const updatePayload = { [field]: parseFloat(value) };
+      const updatePayload = { [field]: parsedValue };
       console.log('[updateExercise] Supabase update payload:', {
         table: 'exercises',
         updatePayload,
