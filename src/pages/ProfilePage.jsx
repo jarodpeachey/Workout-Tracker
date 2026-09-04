@@ -7,9 +7,11 @@ const ProfilePage = () => {
   const [expandedCards, setExpandedCards] = useState({});
   const [rmView, setRmView] = useState({}); // Track which RM view for each exercise (true = 1RM, false = 6RM)
 
-  const getWorkoutFormat = (type) => {
-    if (type === "reverse") return "Reverse Pyramid";
-    if (type === "tensetslight") return "UFpwrLifter (Light)";
+  const getWorkoutFormat = (exercise) => {
+    if (exercise.bodyweight) return "Bodyweight";
+    if (exercise.same_weight) return "Same Weight (3 sets)";
+    if (exercise.type === "reverse") return "Reverse Pyramid";
+    if (exercise.type === "tensetslight") return "UFpwrLifter (Light)";
     return "UFpwrLifter";
   };
 
@@ -262,7 +264,7 @@ const ProfilePage = () => {
                         <div className="flex justify-between px-2 py-2 border-gray border-t">
                           <span className="text-black ">Format</span>
                           <span className=" text-gray-dark">
-                            {getWorkoutFormat(exercise.type)}
+                            {getWorkoutFormat(exercise)}
                           </span>
                         </div>
                         <div className="flex justify-between px-2 py-2 border-gray border-t">

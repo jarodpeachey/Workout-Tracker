@@ -60,7 +60,11 @@ const DailyCalendar = ({
 
     let plan;
     // Check if the scheduled workout has 1RM mode enabled
-    if (scheduledWorkout?.is_1rm) {
+    if (exercise.bodyweight) {
+      plan = [0, 1, 2].map(() => ({ weight: null, reps: null }));
+    } else if (exercise.same_weight) {
+      plan = [0, 1, 2].map(() => ({ weight: exercise.same_weight_value, reps: null }));
+    } else if (scheduledWorkout?.is_1rm) {
       plan = calculate1RMProgression(exercise.oneRM);
     } else if (exercise.type === "reverse") {
       plan = calculateReversePyramid(exercise.sixRM);
@@ -71,7 +75,7 @@ const DailyCalendar = ({
     }
 
     // Only the daily view lightens weights, and only when deload is toggled on for this day
-    if (scheduleEntry?.deload) {
+    if (scheduleEntry?.deload && !exercise.bodyweight) {
       plan = plan.map((set) => ({
         ...set,
         weight: roundToNearestFive(set.weight * 0.75),
@@ -739,7 +743,7 @@ const DailyCalendar = ({
                       >
                         {exercise.name}
                       </h5>
-                      {exercise.type === 'reverse' && !isPastDate && !isCompleted && (
+                      {exercise.type === 'reverse' && !exercise.bodyweight && !exercise.same_weight && !isPastDate && !isCompleted && (
                         <button
                         onClick={() => handleOpen6RMUpdate(exerciseId)}
                         className="btn btn-sm btn-secondary"
@@ -748,7 +752,7 @@ const DailyCalendar = ({
                         </button>
                       )}
                       </div>
-                      {exercise.type === 'reverse' && !isPastDate && !isCompleted && (
+                      {exercise.type === 'reverse' && !exercise.bodyweight && !exercise.same_weight && !isPastDate && !isCompleted && (
                       <p className="text-xs text-gray-dark mb-3 font-mono italic">
                         💡 If you reach 8 reps on Set 4, update your 6 rep max by 5 pounds for every extra rep you did.
                       </p>
@@ -806,7 +810,11 @@ const DailyCalendar = ({
                           >
                             <span>Set {i + 1}:</span>
                             <span className="font-medium">
-                            {set.weight} lbs × {set.reps} reps
+                            {exercise.bodyweight
+                              ? `Bodyweight${exercise.set_notes ? ` — ${exercise.set_notes}` : ""}`
+                              : exercise.same_weight
+                              ? `${set.weight} lbs${exercise.set_notes ? ` — ${exercise.set_notes}` : ""}`
+                              : `${set.weight} lbs × ${set.reps} reps`}
                             </span>
                           </div>
                           </div>

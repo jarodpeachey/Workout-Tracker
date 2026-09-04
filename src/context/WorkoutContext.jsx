@@ -285,7 +285,7 @@ export const WorkoutProvider = ({ children }) => {
   };
 
   const updateExercise = (id, field, value) => {
-    const isNumericField = field === 'oneRM' || field === 'sixRM';
+    const isNumericField = field === 'oneRM' || field === 'sixRM' || field === 'same_weight_value';
     const parsedValue = isNumericField ? parseFloat(value) : value;
     setExercises(prev => prev.map(w => w.id === id ? { ...w, [field]: parsedValue } : w));
     (async () => {

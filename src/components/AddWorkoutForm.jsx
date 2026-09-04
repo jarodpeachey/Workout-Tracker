@@ -8,7 +8,11 @@ const AddWorkoutForm = ({ onClose, initialName = '' }) => {
     name: initialName,
     type: 'reverse',
     oneRM: '',
-    sixRM: ''
+    sixRM: '',
+    bodyweight: false,
+    sameWeight: false,
+    sameWeightValue: '',
+    setNotes: ''
   });
   const [showModal, setShowModal] = useState(false);
   const { addExercise } = useWorkout();
@@ -29,11 +33,15 @@ const AddWorkoutForm = ({ onClose, initialName = '' }) => {
       oneRM: parseFloat(newWorkout.oneRM) || null,
       starting_onerm: parseFloat(newWorkout.oneRM) || null,
       sixRM: newWorkout.type === 'reverse' ? parseFloat(newWorkout.sixRM) : null,
-      starting_sixrm: newWorkout.type === 'reverse' ? parseFloat(newWorkout.sixRM) : null
+      starting_sixrm: newWorkout.type === 'reverse' ? parseFloat(newWorkout.sixRM) : null,
+      bodyweight: newWorkout.bodyweight,
+      same_weight: newWorkout.bodyweight ? false : newWorkout.sameWeight,
+      same_weight_value: !newWorkout.bodyweight && newWorkout.sameWeight ? parseFloat(newWorkout.sameWeightValue) || null : null,
+      set_notes: newWorkout.bodyweight || newWorkout.sameWeight ? newWorkout.setNotes : null
     };
 
     addExercise(exercise);
-    setNewWorkout({ name: '', type: 'reverse', oneRM: '', sixRM: '' });
+    setNewWorkout({ name: '', type: 'reverse', oneRM: '', sixRM: '', bodyweight: false, sameWeight: false, sameWeightValue: '', setNotes: '' });
     onClose();
   };
 
@@ -52,11 +60,69 @@ const AddWorkoutForm = ({ onClose, initialName = '' }) => {
           />
         </div>
         
+        <div>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={newWorkout.bodyweight}
+              onChange={(e) => setNewWorkout({
+                ...newWorkout,
+                bodyweight: e.target.checked,
+                sameWeight: e.target.checked ? false : newWorkout.sameWeight
+              })}
+              className="w-4 h-4 cursor-pointer"
+            />
+            <span>Bodyweight</span>
+          </label>
+        </div>
+
+        {!newWorkout.bodyweight && (
+          <div>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={newWorkout.sameWeight}
+                onChange={(e) => setNewWorkout({ ...newWorkout, sameWeight: e.target.checked })}
+                className="w-4 h-4 cursor-pointer"
+              />
+              <span>Keep the same weight for all 3 sets</span>
+            </label>
+          </div>
+        )}
+
+        {newWorkout.sameWeight && !newWorkout.bodyweight && (
+          <div>
+            <label className="block mb-1">Weight (lbs)</label>
+            <input
+              type="number"
+              placeholder="Weight used for all 3 sets"
+              value={newWorkout.sameWeightValue}
+              onChange={(e) => setNewWorkout({ ...newWorkout, sameWeightValue: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-light focus:outline-none focus:border-primary placeholder:font-light placeholder:text-sm"
+            />
+          </div>
+        )}
+
+        {(newWorkout.bodyweight || newWorkout.sameWeight) && (
+          <div>
+            <label className="block mb-1">Reps &amp; Format</label>
+            <p className="text-xs text-gray-dark mb-1">Explain the reps and format of the workout (e.g. "12 reps each set" or "AMRAP on the last set")</p>
+            <input
+              type="text"
+              placeholder="e.g. 12 reps each set"
+              value={newWorkout.setNotes}
+              onChange={(e) => setNewWorkout({ ...newWorkout, setNotes: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-light focus:outline-none focus:border-primary placeholder:font-light placeholder:text-sm"
+            />
+          </div>
+        )}
+
+        {!newWorkout.bodyweight && !newWorkout.sameWeight && (
         <div className="relative">
           <label className="flex items-center gap-1 mb-1">
             Workout Type
-            <HelpCircle 
-              className="w-4 h-4 text-gray-dark cursor-pointer" 
+            <HelpCircle
+              className="w-4 h-4 text-gray-dark cursor-pointer"
               onClick={() => setShowModal(true)}
             />
           </label>
@@ -69,7 +135,7 @@ const AddWorkoutForm = ({ onClose, initialName = '' }) => {
             <option value="tensets">UFpwrLifterProgram Plan</option>
             <option value="tensetslight">UFpwrLifter Program Plan (Light)</option>
           </select>
-          
+
           {/* Modal */}
           <Modal
             isOpen={showModal}
@@ -127,7 +193,9 @@ const AddWorkoutForm = ({ onClose, initialName = '' }) => {
             </div>
           </Modal>
         </div>
-        
+        )}
+
+        {!newWorkout.bodyweight && !newWorkout.sameWeight && (
         <div>
           <label className="block mb-1">1 Rep Max</label>
           <input
@@ -138,8 +206,9 @@ const AddWorkoutForm = ({ onClose, initialName = '' }) => {
             className="w-full px-4 py-2 border border-gray-light focus:outline-none focus:border-primary placeholder:font-light placeholder:text-sm"
           />
         </div>
-        
-        {newWorkout.type === 'reverse' && (
+        )}
+
+        {!newWorkout.bodyweight && !newWorkout.sameWeight && newWorkout.type === 'reverse' && (
           <div>
             <label className="block mb-1">6 Rep Max</label>
             <input
@@ -151,7 +220,7 @@ const AddWorkoutForm = ({ onClose, initialName = '' }) => {
             />
           </div>
         )}
-        
+
         <div className="flex gap-2">
           <button
             onClick={handleSubmit}
