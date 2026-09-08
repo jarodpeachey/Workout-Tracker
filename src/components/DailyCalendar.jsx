@@ -705,11 +705,11 @@ const DailyCalendar = ({
                   if (!details) return null;
                   const { exercise, plan } = details;
 
-                  // Check if all pre-test sets are completed (sets 0-6 for 1RM mode)
+                  // Check if all warmup sets are completed (sets 0-5 for 1RM mode)
                   const preTestSetsCompleted =
                     scheduledWorkout?.is_1rm &&
                     plan
-                      .slice(0, 7)
+                      .slice(0, 6)
                       .every((_, i) => completedSets[`${exerciseId}-${i}`]);
 
                   // Check if this exercise has had its 1RM updated
@@ -763,9 +763,9 @@ const DailyCalendar = ({
                         const isSetCompleted = completedSets[setKey];
                         const isDisabled = isPastDate || isCompleted;
 
-                        // Show 1RM test indicator after the first 100% set (index 6)
+                        // Show 1RM test indicator before the 105% PR attempt set (index 6)
                         const show1RMIndicator =
-                        scheduledWorkout?.is_1rm && i === 7;
+                        scheduledWorkout?.is_1rm && i === 6;
 
                         return (
                         <React.Fragment key={i}>
@@ -773,7 +773,7 @@ const DailyCalendar = ({
                           <div className="flex items-center gap-2 py-2 my-2">
                             <div className={`flex-1 border-t-2 ${has1RMUpdated ? "border-success" : "border-primary"}`}></div>
                             <span className={`text-xs font-bold px-2 ${has1RMUpdated ? "text-success" : "text-primary"}`}>
-                            1RM TEST PROGRESSION
+                            1RM PR ATTEMPT
                             </span>
                             <div className={`flex-1 border-t-2 ${has1RMUpdated ? "border-success" : "border-primary"}`}></div>
                           </div>

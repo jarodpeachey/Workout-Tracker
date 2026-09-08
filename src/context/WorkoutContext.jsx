@@ -592,17 +592,13 @@ export const WorkoutProvider = ({ children }) => {
   const calculate1RMProgression = (oneRM) => {
     const rm = parseFloat(oneRM);
     return [
-      { sets: 1, reps: 10, weight: roundToNearestFive(rm * 0.33) },
-      { sets: 1, reps: 10, weight: roundToNearestFive(rm * 0.56) },
-      { sets: 1, reps: 5, weight: roundToNearestFive(rm * 0.79) },
-      { sets: 1, reps: 3, weight: roundToNearestFive(rm * 0.86) },
-      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 0.91) },
-      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 0.96) },
-      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 1.00) },
-      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 1.00) + 5 },
-      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 1.00) + 10 },
-      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 1.00) + 15 },
-      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 1.00) + 20 }
+      { sets: 1, reps: 10, weight: roundToNearestFive(rm * 0.20) },
+      { sets: 1, reps: 10, weight: roundToNearestFive(rm * 0.50) },
+      { sets: 1, reps: 5, weight: roundToNearestFive(rm * 0.58) },
+      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 0.79) },
+      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 0.88) },
+      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 0.95) },
+      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 1.05) }
     ];
   };
 
