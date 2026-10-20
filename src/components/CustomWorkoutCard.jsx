@@ -3,11 +3,13 @@ import { Trash2, Edit2, Check } from "lucide-react";
 import toast from "react-hot-toast";
 import { useWorkout } from "../context/WorkoutContext";
 import Modal from "./Modal";
+import BenchVariantSelect, { getBenchVariantLabel } from "./BenchVariantSelect";
 
 const CustomWorkoutCard = ({ workout }) => {
   const [editName, setEditName] = useState(workout.name);
   const [editExercises, setEditExercises] = useState(workout.exerciseIds || []);
   const [editIs1RM, setEditIs1RM] = useState(workout.is_1rm || false);
+  const [editBenchVariant, setEditBenchVariant] = useState(workout.bench_variant || "upf");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const {
     exercises,
@@ -15,8 +17,13 @@ const CustomWorkoutCard = ({ workout }) => {
     updateWorkout,
     editingWorkoutId,
     setEditingWorkoutId,
+    isBenchExercise,
+    getBenchVariant,
   } = useWorkout();
   const isEditing = editingWorkoutId === workout.id;
+  const editHasBench = editExercises.some((id) =>
+    isBenchExercise(exercises.find((ex) => ex.id === id))
+  );
 
   const items = workout.exerciseIds
     ?.map((id) => exercises.find((e) => e.id === id))
@@ -41,6 +48,7 @@ const CustomWorkoutCard = ({ workout }) => {
       name: editName,
       exerciseIds: editExercises,
       is_1rm: editIs1RM,
+      bench_variant: editBenchVariant,
     });
     setEditingWorkoutId(null);
   };
@@ -153,6 +161,12 @@ const CustomWorkoutCard = ({ workout }) => {
                 </label>
               ))}
             </div>
+            {editHasBench && !editIs1RM && (
+              <BenchVariantSelect
+                value={editBenchVariant}
+                onChange={setEditBenchVariant}
+              />
+            )}
           </div>
         ) : (
           <>
@@ -167,7 +181,9 @@ const CustomWorkoutCard = ({ workout }) => {
                   <li key={it.id}>
                     {it.name} —{" "}
                     <span className="text-gray-dark">
-                      {it.type === "reverse"
+                      {getBenchVariant(it, workout)
+                        ? getBenchVariantLabel(workout.bench_variant)
+                        : it.type === "reverse"
                         ? "Reverse Pyramid"
                         : it.type === "tensetslight"
                         ? "UFpwrLifter Program (Light)"

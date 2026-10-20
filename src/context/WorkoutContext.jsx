@@ -285,7 +285,7 @@ export const WorkoutProvider = ({ children }) => {
   };
 
   const updateExercise = (id, field, value) => {
-    const isNumericField = field === 'oneRM' || field === 'sixRM' || field === 'same_weight_value';
+    const isNumericField = field === 'oneRM' || field === 'sixRM' || field === 'threeRM' || field === 'same_weight_value';
     const parsedValue = isNumericField ? parseFloat(value) : value;
     setExercises(prev => prev.map(w => w.id === id ? { ...w, [field]: parsedValue } : w));
     (async () => {
@@ -589,6 +589,43 @@ export const WorkoutProvider = ({ children }) => {
     ];
   };
 
+  // Bench variant: 3 warmups, then 3 straight sets of 6-8 at the 6RM
+  const calculateBenchReversePyramid = (sixRM) => {
+    const rm = parseFloat(sixRM);
+    return [
+      { sets: 1, reps: 5, weight: roundToNearestFive(rm * 0.3) },
+      { sets: 1, reps: 5, weight: roundToNearestFive(rm * 0.5) },
+      { sets: 1, reps: 3, weight: roundToNearestFive(rm * 0.7) },
+      { sets: 1, reps: '6-8', weight: roundToNearestFive(rm * 1.0) },
+      { sets: 1, reps: '6-8', weight: roundToNearestFive(rm * 1.0) },
+      { sets: 1, reps: '6-8', weight: roundToNearestFive(rm * 1.0) }
+    ];
+  };
+
+  // Bench variant: 3 warmups, then 3 straight sets of 3-5 at the 3RM
+  const calculateBenchThrees = (threeRM) => {
+    const rm = parseFloat(threeRM);
+    return [
+      { sets: 1, reps: 5, weight: roundToNearestFive(rm * 0.4) },
+      { sets: 1, reps: 3, weight: roundToNearestFive(rm * 0.6) },
+      { sets: 1, reps: 1, weight: roundToNearestFive(rm * 0.8) },
+      { sets: 1, reps: '3-5', weight: roundToNearestFive(rm * 1.0) },
+      { sets: 1, reps: '3-5', weight: roundToNearestFive(rm * 1.0) },
+      { sets: 1, reps: '3-5', weight: roundToNearestFive(rm * 1.0) }
+    ];
+  };
+
+  const isBenchExercise = (exercise) =>
+    !!exercise?.name?.toLowerCase().includes('bench press');
+
+  // Returns the bench variant a workout uses for this exercise ('reverse' | 'threes'),
+  // or null when the exercise should use its own program (UFpwrLifter / default)
+  const getBenchVariant = (exercise, workout) => {
+    if (!isBenchExercise(exercise) || exercise.bodyweight || exercise.same_weight || workout?.is_1rm) return null;
+    const variant = workout?.bench_variant;
+    return variant === 'reverse' || variant === 'threes' ? variant : null;
+  };
+
   const calculate1RMProgression = (oneRM) => {
     const rm = parseFloat(oneRM);
     return [
@@ -628,6 +665,10 @@ export const WorkoutProvider = ({ children }) => {
       calculateReversePyramid,
       calculateTenSetsLight,
       calculate1RMProgression,
+      calculateBenchReversePyramid,
+      calculateBenchThrees,
+      isBenchExercise,
+      getBenchVariant,
       globalLoading,
       globalError,
       setGlobalLoading,

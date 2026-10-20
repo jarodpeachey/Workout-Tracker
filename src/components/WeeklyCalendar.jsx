@@ -20,7 +20,14 @@ const WeeklyCalendar = ({
   const [showModal, setShowModal] = useState(false);
   const [showRemoveWorkoutModal, setShowRemoveWorkoutModal] = useState(false);
   const navigate = useNavigate();
-  const { setShouldOpenAddWorkout, profileData, setDeload } = useWorkout();
+  const {
+    setShouldOpenAddWorkout,
+    profileData,
+    setDeload,
+    getBenchVariant,
+    calculateBenchReversePyramid,
+    calculateBenchThrees,
+  } = useWorkout();
 
   const dayNames = [
     "Sunday",
@@ -51,10 +58,15 @@ const WeeklyCalendar = ({
     if (!exercise) return null;
 
     const workout = workouts.find(w => w.id === workoutId);
+    const benchVariant = getBenchVariant(exercise, workout);
     let plan;
     // Check if workout has 1RM mode enabled
     if (workout?.is_1rm) {
       plan = calculate1RMProgression(exercise.oneRM);
+    } else if (benchVariant === "reverse") {
+      plan = calculateBenchReversePyramid(exercise.sixRM);
+    } else if (benchVariant === "threes") {
+      plan = calculateBenchThrees(exercise.threeRM);
     } else if (exercise.type === "reverse") {
       plan = calculateReversePyramid(exercise.sixRM);
     } else if (exercise.type === "tensetslight") {

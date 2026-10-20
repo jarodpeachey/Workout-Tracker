@@ -8,6 +8,7 @@ const ExerciseCard = ({ exercise }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [localSixRM, setLocalSixRM] = useState(exercise.sixRM);
   const [localOneRM, setLocalOneRM] = useState(exercise.oneRM);
+  const [localThreeRM, setLocalThreeRM] = useState(exercise.threeRM);
   const [localSameWeightValue, setLocalSameWeightValue] = useState(exercise.same_weight_value);
   const [localSetNotes, setLocalSetNotes] = useState(exercise.set_notes || '');
   const {
@@ -16,7 +17,9 @@ const ExerciseCard = ({ exercise }) => {
     calculateReversePyramid,
     calculateTenSets,
     calculateTenSetsLight,
+    isBenchExercise,
   } = useWorkout();
+  const isBench = isBenchExercise(exercise);
 
   const handleDelete = () => {
     deleteExercise(exercise.id);
@@ -48,6 +51,10 @@ const ExerciseCard = ({ exercise }) => {
   }, [exercise.oneRM]);
 
   useEffect(() => {
+    setLocalThreeRM(exercise.threeRM);
+  }, [exercise.threeRM]);
+
+  useEffect(() => {
     setLocalSameWeightValue(exercise.same_weight_value);
   }, [exercise.same_weight_value]);
 
@@ -74,6 +81,16 @@ const ExerciseCard = ({ exercise }) => {
       return () => clearTimeout(timer);
     }
   }, [localOneRM]);
+
+  // Debounce 3RM updates
+  useEffect(() => {
+    if (localThreeRM !== exercise.threeRM && localThreeRM !== "") {
+      const timer = setTimeout(() => {
+        updateExercise(exercise.id, "threeRM", localThreeRM);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [localThreeRM]);
 
   // Debounce same-weight value updates
   useEffect(() => {
@@ -264,6 +281,33 @@ const ExerciseCard = ({ exercise }) => {
                     className="input w-full"
                   />
                 </div>
+              )}
+              {isBench && !exercise.bodyweight && !exercise.same_weight && (
+                <>
+                  <p className="text-xs text-gray-dark mt-4 mb-2">
+                    Used by the bench variants you can pick per workout: 3x6-8 uses your 6RM, 3x3-5 uses your 3RM.
+                  </p>
+                  {exercise.type !== "reverse" && (
+                    <div className="flex-1 mb-3">
+                      <label className="block mb-1">6 Rep Max (lbs)</label>
+                      <input
+                        type="number"
+                        value={localSixRM ?? ""}
+                        onChange={(e) => setLocalSixRM(e.target.value)}
+                        className="input w-full"
+                      />
+                    </div>
+                  )}
+                  <div className="flex-1">
+                    <label className="block mb-1">3 Rep Max (lbs)</label>
+                    <input
+                      type="number"
+                      value={localThreeRM ?? ""}
+                      onChange={(e) => setLocalThreeRM(e.target.value)}
+                      className="input w-full"
+                    />
+                  </div>
+                </>
               )}
             </div>
 

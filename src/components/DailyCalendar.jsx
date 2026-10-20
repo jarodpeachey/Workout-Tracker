@@ -29,8 +29,16 @@ const DailyCalendar = ({
     "Saturday",
   ];
   const navigate = useNavigate();
-  const { saveSchedule, setShouldOpenAddWorkout, profileData, updateExercise, setDeload } =
-    useWorkout();
+  const {
+    saveSchedule,
+    setShouldOpenAddWorkout,
+    profileData,
+    updateExercise,
+    setDeload,
+    getBenchVariant,
+    calculateBenchReversePyramid,
+    calculateBenchThrees,
+  } = useWorkout();
   const [showWorkoutPicker, setShowWorkoutPicker] = useState(false);
   const [showNoWorkoutsModal, setShowNoWorkoutsModal] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
@@ -44,6 +52,8 @@ const DailyCalendar = ({
   const [updated1RMValues, setUpdated1RMValues] = useState({});
   const [show6RMUpdateModal, setShow6RMUpdateModal] = useState(false);
   const [selected6RMExercise, setSelected6RMExercise] = useState(null);
+  // Which rep-max field the RM modal edits ("sixRM" or "threeRM")
+  const [rmField, setRmField] = useState("sixRM");
   const [new6RMValue, setNew6RMValue] = useState("");
   const [isUpdating6RM, setIsUpdating6RM] = useState(false);
   const [isCompletingWorkout, setIsCompletingWorkout] = useState(false);
@@ -66,6 +76,10 @@ const DailyCalendar = ({
       plan = [0, 1, 2].map(() => ({ weight: exercise.same_weight_value, reps: null }));
     } else if (scheduledWorkout?.is_1rm) {
       plan = calculate1RMProgression(exercise.oneRM);
+    } else if (getBenchVariant(exercise, scheduledWorkout) === "reverse") {
+      plan = calculateBenchReversePyramid(exercise.sixRM);
+    } else if (getBenchVariant(exercise, scheduledWorkout) === "threes") {
+      plan = calculateBenchThrees(exercise.threeRM);
     } else if (exercise.type === "reverse") {
       plan = calculateReversePyramid(exercise.sixRM);
     } else if (exercise.type === "tensetslight") {
@@ -279,14 +293,17 @@ const DailyCalendar = ({
     }
   };
 
-  const handleOpen6RMUpdate = (exerciseId) => {
+  const handleOpen6RMUpdate = (exerciseId, field = "sixRM") => {
     const exercise = exercises.find((e) => e.id === exerciseId);
     if (exercise) {
       setSelected6RMExercise(exercise);
-      setNew6RMValue(exercise.sixRM || "");
+      setRmField(field);
+      setNew6RMValue(exercise[field] || "");
       setShow6RMUpdateModal(true);
     }
   };
+
+  const rmLabel = rmField === "threeRM" ? "3RM" : "6RM";
 
   const handleUpdate1RM = async () => {
     if (!selected1RMExercise || !new1RMValue) {
@@ -337,12 +354,12 @@ const DailyCalendar = ({
 
   const handleUpdate6RM = async () => {
     if (!selected6RMExercise || !new6RMValue) {
-      toast.error("Please enter a valid 6RM value");
+      toast.error(`Please enter a valid ${rmLabel} value`);
       return;
     }
     setIsUpdating6RM(true);
 
-    updateExercise(selected6RMExercise.id, "sixRM", new6RMValue);
+    updateExercise(selected6RMExercise.id, rmField, new6RMValue);
 
     // Wait for the update to complete
     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -474,7 +491,7 @@ const DailyCalendar = ({
         isOpen={show6RMUpdateModal}
         onClose={() => setShow6RMUpdateModal(false)}
         onConfirm={handleUpdate6RM}
-        title="Update 6RM Value"
+        title={`Update ${rmLabel} Value`}
         confirmText={
           isUpdating6RM ? (
             <span className="flex items-center justify-center gap-2">
@@ -500,7 +517,7 @@ const DailyCalendar = ({
               </svg>
             </span>
           ) : (
-            "Update 6RM"
+            `Update ${rmLabel}`
           )
         }
         cancelText="Cancel"
@@ -508,7 +525,7 @@ const DailyCalendar = ({
         variant="primary"
       >
         <p className="text-gray-dark mb-4">
-          Enter your new 6RM for{" "}
+          Enter your new {rmLabel} for{" "}
           <span className="text-black font-bold">
             {selected6RMExercise?.name}
           </span>
@@ -517,7 +534,7 @@ const DailyCalendar = ({
           type="number"
           value={new6RMValue}
           onChange={(e) => setNew6RMValue(e.target.value)}
-          placeholder="Enter 6RM (lbs)"
+          placeholder={`Enter ${rmLabel} (lbs)`}
           className="input w-full mb-6"
           autoFocus
         />
@@ -704,6 +721,22 @@ const DailyCalendar = ({
                   const details = getExerciseDetails(exerciseId);
                   if (!details) return null;
                   const { exercise, plan } = details;
+                  const benchVariant = getBenchVariant(exercise, scheduledWorkout);
+                  const canEditRM =
+                    !exercise.bodyweight && !exercise.same_weight && !isPastDate && !isCompleted;
+                  // Rep-max field the "Update" button edits, if this exercise's program uses one
+                  const editableRM =
+                    benchVariant === "threes"
+                      ? "threeRM"
+                      : benchVariant === "reverse" || (!benchVariant && exercise.type === "reverse")
+                        ? "sixRM"
+                        : null;
+                  const rmTip =
+                    benchVariant === "reverse"
+                      ? "💡 If you reach 8 reps on all 3 working sets, add 5 pounds to your 6 rep max."
+                      : benchVariant === "threes"
+                        ? "💡 If you reach 5 reps on all 3 working sets, add 5 pounds to your 3 rep max."
+                        : "💡 If you reach 8 reps on Set 4, update your 6 rep max by 5 pounds for every extra rep you did.";
 
                   // Check if all warmup sets are completed (sets 0-5 for 1RM mode)
                   const preTestSetsCompleted =
@@ -743,18 +776,18 @@ const DailyCalendar = ({
                       >
                         {exercise.name}
                       </h5>
-                      {exercise.type === 'reverse' && !exercise.bodyweight && !exercise.same_weight && !isPastDate && !isCompleted && (
+                      {editableRM && canEditRM && (
                         <button
-                        onClick={() => handleOpen6RMUpdate(exerciseId)}
+                        onClick={() => handleOpen6RMUpdate(exerciseId, editableRM)}
                         className="btn btn-sm btn-secondary"
                         >
-                        Update 6RM
+                        Update {editableRM === "threeRM" ? "3RM" : "6RM"}
                         </button>
                       )}
                       </div>
-                      {exercise.type === 'reverse' && !exercise.bodyweight && !exercise.same_weight && !isPastDate && !isCompleted && (
+                      {editableRM && canEditRM && (
                       <p className="text-xs text-gray-dark mb-3 font-mono italic">
-                        💡 If you reach 8 reps on Set 4, update your 6 rep max by 5 pounds for every extra rep you did.
+                        {rmTip}
                       </p>
                       )}
                       <div className="space-y-1 text-sm text-black">

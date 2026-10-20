@@ -1,12 +1,17 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useWorkout } from "../context/WorkoutContext";
+import BenchVariantSelect from "./BenchVariantSelect";
 
 const AddCustomWorkoutForm = ({ onClose }) => {
-  const { exercises, addWorkout } = useWorkout();
+  const { exercises, addWorkout, isBenchExercise } = useWorkout();
   const [name, setName] = useState("");
   const [selected, setSelected] = useState([]);
   const [is_1rm, setIs1RM] = useState(false);
+  const [benchVariant, setBenchVariant] = useState("upf");
+  const hasBench = selected.some((id) =>
+    isBenchExercise(exercises.find((ex) => ex.id === id))
+  );
 
   const toggleSelect = (id) => {
     setSelected((prev) =>
@@ -24,10 +29,11 @@ const AddCustomWorkoutForm = ({ onClose }) => {
       return;
     }
 
-    addWorkout({ name, exerciseIds: selected, is_1rm });
+    addWorkout({ name, exerciseIds: selected, is_1rm, bench_variant: benchVariant });
     setName("");
     setSelected([]);
     setIs1RM(false);
+    setBenchVariant("upf");
     onClose();
   };
 
@@ -91,6 +97,10 @@ const AddCustomWorkoutForm = ({ onClose }) => {
           </label>
         ))}
       </div>
+
+      {hasBench && !is_1rm && (
+        <BenchVariantSelect value={benchVariant} onChange={setBenchVariant} />
+      )}
 
       <div className="flex gap-2">
         <button onClick={handleSubmit} className="btn btn-primary flex-1">
