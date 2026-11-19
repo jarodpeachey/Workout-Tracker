@@ -12,6 +12,7 @@ const ProfilePage = () => {
     if (exercise.same_weight) return "Same Weight (3 sets)";
     if (exercise.type === "reverse") return "Reverse Pyramid";
     if (exercise.type === "tensetslight") return "UFpwrLifter (Light)";
+    if (exercise.type === "topset") return "Top Set + Back-Off";
     return "UFpwrLifter";
   };
 

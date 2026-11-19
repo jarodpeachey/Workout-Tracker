@@ -14,9 +14,8 @@ const ExerciseCard = ({ exercise }) => {
   const {
     updateExercise,
     deleteExercise,
-    calculateReversePyramid,
-    calculateTenSets,
-    calculateTenSetsLight,
+    calculateProgramPlan,
+    getProgramLabel,
     isBenchExercise,
   } = useWorkout();
   const isBench = isBenchExercise(exercise);
@@ -116,11 +115,39 @@ const ExerciseCard = ({ exercise }) => {
     ? [0, 1, 2].map(() => ({ weight: null, reps: null }))
     : exercise.same_weight
       ? [0, 1, 2].map(() => ({ weight: exercise.same_weight_value, reps: null }))
-      : exercise.type === "reverse"
-        ? calculateReversePyramid(exercise.sixRM)
-        : exercise.type === "tensetslight"
-          ? calculateTenSetsLight(exercise.oneRM)
-          : calculateTenSets(exercise.oneRM);
+      : calculateProgramPlan(exercise);
+
+  // Every editable weight field; each is shown in either the "used" or the
+  // "not used in current format" group depending on the selected format.
+  const weightFields = [
+    { key: "oneRM", label: "1 Rep Max (lbs)", value: localOneRM, setValue: setLocalOneRM },
+    { key: "sixRM", label: "6 Rep Max (lbs)", value: localSixRM, setValue: setLocalSixRM },
+    { key: "threeRM", label: "3 Rep Max (lbs)", value: localThreeRM, setValue: setLocalThreeRM },
+    { key: "same_weight_value", label: "Same Weight (lbs)", value: localSameWeightValue, setValue: setLocalSameWeightValue },
+  ];
+  const usedFieldKeys = exercise.bodyweight
+    ? []
+    : exercise.same_weight
+      ? ["same_weight_value"]
+      : [
+          exercise.type === "reverse" ? "sixRM" : "oneRM",
+          // Bench variants picked per workout use the 6RM and 3RM
+          ...(isBench ? ["sixRM", "threeRM"] : []),
+        ];
+  const usedFields = weightFields.filter((f) => usedFieldKeys.includes(f.key));
+  const unusedFields = weightFields.filter((f) => !usedFieldKeys.includes(f.key));
+
+  const renderWeightField = (field) => (
+    <div key={field.key} className="flex-1 mb-3">
+      <label className="block mb-1">{field.label}</label>
+      <input
+        type="number"
+        value={field.value ?? ""}
+        onChange={(e) => field.setValue(e.target.value)}
+        className="input w-full"
+      />
+    </div>
+  );
 
   return (
     <>
@@ -157,11 +184,7 @@ const ExerciseCard = ({ exercise }) => {
                   ? "Bodyweight"
                   : exercise.same_weight
                     ? "Same Weight (3 sets)"
-                    : exercise.type === "reverse"
-                      ? "Reverse Pyramid (6 sets)"
-                      : exercise.type === "tensetslight"
-                        ? "UFpwrLifter Program (Light)"
-                        : "UFpwrLifter Program"}
+                    : getProgramLabel(exercise.type)}
               </p>
             </div>
           </button>
@@ -209,18 +232,6 @@ const ExerciseCard = ({ exercise }) => {
                 )}
               </div>
 
-              {exercise.same_weight && !exercise.bodyweight && (
-                <div className="flex-1 mb-3">
-                  <label className="block mb-1">Weight (lbs)</label>
-                  <input
-                    type="number"
-                    value={localSameWeightValue}
-                    onChange={(e) => setLocalSameWeightValue(e.target.value)}
-                    className="input w-full"
-                  />
-                </div>
-              )}
-
               {(exercise.bodyweight || exercise.same_weight) && (
                 <div className="flex-1 mb-3">
                   <label className="block mb-1">Reps &amp; Format</label>
@@ -245,69 +256,26 @@ const ExerciseCard = ({ exercise }) => {
                     <option value="reverse">Reverse Pyramid (6 sets)</option>
                     <option value="tensets">UFpwrLifter Program</option>
                     <option value="tensetslight">UFpwrLifter Program (Light)</option>
+                    <option value="topset">Top Set + Back-Off Sets</option>
                   </select>
                 </div>
               )}
-              {!exercise.bodyweight && !exercise.same_weight && (
-                exercise.type === "reverse" ? (
-                  <div className="flex-1">
-                    <label className="block mb-1">6 Rep Max (lbs)</label>
-                    <input
-                      type="number"
-                      value={localSixRM}
-                      onChange={(e) => setLocalSixRM(e.target.value)}
-                      className="input w-full"
-                    />
-                  </div>
-                ) : (
-                  <div className="flex-1">
-                    <label className="block mb-1">1 Rep Max (lbs)</label>
-                    <input
-                      type="number"
-                      value={localOneRM}
-                      onChange={(e) => setLocalOneRM(e.target.value)}
-                      className="input w-full"
-                    />
-                  </div>
-                )
-              )}
-              {!exercise.bodyweight && !exercise.same_weight && exercise.type === "reverse" && exercise.oneRM > 0 && (
-                <div className="flex-1 mt-3">
-                  <label className="block mb-1">1 Rep Max (lbs)</label>
-                  <input
-                    type="number"
-                    value={localOneRM}
-                    onChange={(e) => setLocalOneRM(e.target.value)}
-                    className="input w-full"
-                  />
-                </div>
-              )}
+
+              {usedFields.map(renderWeightField)}
               {isBench && !exercise.bodyweight && !exercise.same_weight && (
-                <>
-                  <p className="text-xs text-gray-dark mt-4 mb-2">
-                    Used by the bench variants you can pick per workout: 3x6-8 uses your 6RM, 3x3-5 uses your 3RM.
+                <p className="text-xs text-gray-dark -mt-1 mb-3">
+                  Bench variants you can pick per workout: 3x6-8 uses your 6RM, 3x3-5 uses your 3RM.
+                </p>
+              )}
+
+              {unusedFields.length > 0 && (
+                <div className="mt-4 pt-3 border-t border-gray-light">
+                  <h4 className="font-semibold text-black mb-1">Not used in current format</h4>
+                  <p className="text-xs text-gray-dark mb-3">
+                    Kept up to date for when you switch formats.
                   </p>
-                  {exercise.type !== "reverse" && (
-                    <div className="flex-1 mb-3">
-                      <label className="block mb-1">6 Rep Max (lbs)</label>
-                      <input
-                        type="number"
-                        value={localSixRM ?? ""}
-                        onChange={(e) => setLocalSixRM(e.target.value)}
-                        className="input w-full"
-                      />
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    <label className="block mb-1">3 Rep Max (lbs)</label>
-                    <input
-                      type="number"
-                      value={localThreeRM ?? ""}
-                      onChange={(e) => setLocalThreeRM(e.target.value)}
-                      className="input w-full"
-                    />
-                  </div>
-                </>
+                  {unusedFields.map(renderWeightField)}
+                </div>
               )}
             </div>
 

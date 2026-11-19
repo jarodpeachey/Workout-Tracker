@@ -589,6 +589,39 @@ export const WorkoutProvider = ({ children }) => {
     ];
   };
 
+  // Top Set + Back-Off Sets: standard UFpwrLifter warmups, a heavy triple,
+  // two back-off sets of 6, then a final volume set of 8-10. Uses the 1RM.
+  const calculateTopSetBackoff = (oneRM) => {
+    const rm = parseFloat(oneRM);
+    return [
+      { sets: 1, reps: 10, weight: roundToNearestFive(rm * 0.33) },
+      { sets: 1, reps: 10, weight: roundToNearestFive(rm * 0.56) },
+      { sets: 1, reps: 5, weight: roundToNearestFive(rm * 0.79) },
+      { sets: 1, reps: 3, weight: roundToNearestFive(rm * 0.90) },
+      { sets: 1, reps: 6, weight: roundToNearestFive(rm * 0.82) },
+      { sets: 1, reps: 6, weight: roundToNearestFive(rm * 0.82) },
+      { sets: 1, reps: '8-10', weight: roundToNearestFive(rm * 0.75) }
+    ];
+  };
+
+  // Plan for an exercise's own program (ignores bodyweight/same-weight/workout overrides)
+  const calculateProgramPlan = (exercise) => {
+    switch (exercise?.type) {
+      case 'reverse': return calculateReversePyramid(exercise.sixRM);
+      case 'tensetslight': return calculateTenSetsLight(exercise.oneRM);
+      case 'topset': return calculateTopSetBackoff(exercise.oneRM);
+      default: return calculateTenSets(exercise?.oneRM);
+    }
+  };
+
+  const PROGRAM_LABELS = {
+    reverse: 'Reverse Pyramid (6 sets)',
+    tensets: 'UFpwrLifter Program',
+    tensetslight: 'UFpwrLifter Program (Light)',
+    topset: 'Top Set + Back-Off Sets',
+  };
+  const getProgramLabel = (type) => PROGRAM_LABELS[type] || PROGRAM_LABELS.tensets;
+
   // Bench variant: 3 warmups, then 3 straight sets of 6-8 at the 6RM
   const calculateBenchReversePyramid = (sixRM) => {
     const rm = parseFloat(sixRM);
@@ -664,6 +697,9 @@ export const WorkoutProvider = ({ children }) => {
       calculateTenSets,
       calculateReversePyramid,
       calculateTenSetsLight,
+      calculateTopSetBackoff,
+      calculateProgramPlan,
+      getProgramLabel,
       calculate1RMProgression,
       calculateBenchReversePyramid,
       calculateBenchThrees,

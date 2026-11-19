@@ -134,6 +134,7 @@ const AddWorkoutForm = ({ onClose, initialName = '' }) => {
             <option value="reverse">Reverse Pyramid (6 sets)</option>
             <option value="tensets">UFpwrLifterProgram Plan</option>
             <option value="tensetslight">UFpwrLifter Program Plan (Light)</option>
+            <option value="topset">Top Set + Back-Off Sets</option>
           </select>
 
           {/* Modal */}
@@ -188,6 +189,19 @@ const AddWorkoutForm = ({ onClose, initialName = '' }) => {
                   Set 8: 8 reps @ 85%<br/>
                   Set 9: 10 reps @ 60%<br/>
                   Set 10: 10 reps @ 33%
+                </p>
+              </div>
+              <div>
+                <p className="font-bold mb-1">Top Set + Back-Off Sets</p>
+                <p className="text-xs text-gray-dark mb-2">Uses your 1 Rep Max</p>
+                <p className="font-mono text-xs leading-relaxed text-gray-dark">
+                  Set 1: 10 reps @ 33% (warmup)<br/>
+                  Set 2: 10 reps @ 56% (warmup)<br/>
+                  Set 3: 5 reps @ 79% (warmup)<br/>
+                  Set 4: 3 reps @ 90% (top set)<br/>
+                  Set 5: 6 reps @ 82%<br/>
+                  Set 6: 6 reps @ 82%<br/>
+                  Set 7: 8-10 reps @ 75%
                 </p>
               </div>
             </div>

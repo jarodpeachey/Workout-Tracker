@@ -27,6 +27,7 @@ const WeeklyCalendar = ({
     getBenchVariant,
     calculateBenchReversePyramid,
     calculateBenchThrees,
+    calculateProgramPlan,
   } = useWorkout();
 
   const dayNames = [
@@ -67,12 +68,8 @@ const WeeklyCalendar = ({
       plan = calculateBenchReversePyramid(exercise.sixRM);
     } else if (benchVariant === "threes") {
       plan = calculateBenchThrees(exercise.threeRM);
-    } else if (exercise.type === "reverse") {
-      plan = calculateReversePyramid(exercise.sixRM);
-    } else if (exercise.type === "tensetslight") {
-      plan = calculateTenSetsLight(exercise.oneRM);
     } else {
-      plan = calculateTenSets(exercise.oneRM);
+      plan = calculateProgramPlan(exercise);
     }
 
     return { exercise, plan };

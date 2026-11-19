@@ -38,6 +38,7 @@ const DailyCalendar = ({
     getBenchVariant,
     calculateBenchReversePyramid,
     calculateBenchThrees,
+    calculateProgramPlan,
   } = useWorkout();
   const [showWorkoutPicker, setShowWorkoutPicker] = useState(false);
   const [showNoWorkoutsModal, setShowNoWorkoutsModal] = useState(false);
@@ -50,6 +51,7 @@ const DailyCalendar = ({
   const [new1RMValue, setNew1RMValue] = useState("");
   const [isUpdating1RM, setIsUpdating1RM] = useState(false);
   const [updated1RMValues, setUpdated1RMValues] = useState({});
+  const [prIncrements, setPrIncrements] = useState({}); // { [exerciseId]: 5 | 10 }
   const [show6RMUpdateModal, setShow6RMUpdateModal] = useState(false);
   const [selected6RMExercise, setSelected6RMExercise] = useState(null);
   // Which rep-max field the RM modal edits ("sixRM" or "threeRM")
@@ -80,12 +82,8 @@ const DailyCalendar = ({
       plan = calculateBenchReversePyramid(exercise.sixRM);
     } else if (getBenchVariant(exercise, scheduledWorkout) === "threes") {
       plan = calculateBenchThrees(exercise.threeRM);
-    } else if (exercise.type === "reverse") {
-      plan = calculateReversePyramid(exercise.sixRM);
-    } else if (exercise.type === "tensetslight") {
-      plan = calculateTenSetsLight(exercise.oneRM);
     } else {
-      plan = calculateTenSets(exercise.oneRM);
+      plan = calculateProgramPlan(exercise);
     }
 
     // Only the daily view lightens weights, and only when deload is toggled on for this day
@@ -164,7 +162,29 @@ const DailyCalendar = ({
       setCompletedSets({});
     }
     console.log("======================================");
+
+    // PR attempt choices (+5 / +10 lbs over current 1RM) for 1RM test days
+    try {
+      const storedPr = localStorage.getItem(`${storageKey}-1rm`);
+      setPrIncrements(storedPr ? JSON.parse(storedPr) : {});
+    } catch {
+      setPrIncrements({});
+    }
   }, [key, scheduledWorkoutId, isCompleted]);
+
+  const choosePrIncrement = (exerciseId, increment) => {
+    const next = { ...prIncrements, [exerciseId]: increment };
+    setPrIncrements(next);
+    try {
+      localStorage.setItem(`workout-${key}-${scheduledWorkoutId}-1rm`, JSON.stringify(next));
+    } catch {}
+  };
+
+  const getPrAttemptWeight = (exercise) => {
+    const increment = prIncrements[exercise.id];
+    const current = parseFloat(exercise.oneRM);
+    return increment && current ? current + increment : null;
+  };
 
   const toggleSetCompletion = async (exerciseId, setIndex) => {
     if (isPastDate || isCompleted) return; // Don't allow changes for past dates or completed workouts
@@ -288,7 +308,7 @@ const DailyCalendar = ({
     const exercise = exercises.find((e) => e.id === exerciseId);
     if (exercise) {
       setSelected1RMExercise(exercise);
-      setNew1RMValue(exercise.oneRM || "");
+      setNew1RMValue(getPrAttemptWeight(exercise) || exercise.oneRM || "");
       setShow1RMUpdateModal(true);
     }
   };
@@ -748,6 +768,11 @@ const DailyCalendar = ({
                   // Check if this exercise has had its 1RM updated
                   const has1RMUpdated = updated1RMValues[exerciseId] !== undefined;
 
+                  // Chosen PR attempt weight (current 1RM + 5 or 10), once picked
+                  const prAttemptWeight = scheduledWorkout?.is_1rm ? getPrAttemptWeight(exercise) : null;
+                  const canChoosePr =
+                    scheduledWorkout?.is_1rm && preTestSetsCompleted && !isCompleted && !isPastDate && !has1RMUpdated;
+
                   // Check if all sets for this exercise are completed
                   const allSetsCompleted = plan.every((_, i) => completedSets[`${exerciseId}-${i}`]);
 
@@ -811,6 +836,36 @@ const DailyCalendar = ({
                             <div className={`flex-1 border-t-2 ${has1RMUpdated ? "border-success" : "border-primary"}`}></div>
                           </div>
                           )}
+                          {show1RMIndicator && canChoosePr && (
+                          <div className="mb-3 text-center">
+                            <p className="text-sm text-black mb-2">
+                            How much over your current PR ({exercise.oneRM} lbs)?
+                            </p>
+                            <div className="flex justify-center gap-2">
+                            {[5, 10].map((inc) => (
+                              <button
+                              key={inc}
+                              onClick={() => choosePrIncrement(exerciseId, inc)}
+                              className={`btn btn-sm ${
+                                prIncrements[exerciseId] === inc ? "text-white" : "btn-secondary"
+                              }`}
+                              style={
+                                prIncrements[exerciseId] === inc
+                                ? { background: "linear-gradient(135deg, #BC3908 0%, #F6AA1C 100%)" }
+                                : {}
+                              }
+                              >
+                              +{inc} lbs
+                              </button>
+                            ))}
+                            </div>
+                          </div>
+                          )}
+                          {show1RMIndicator && prAttemptWeight && (
+                          <p className="text-center text-sm font-bold text-primary mb-2">
+                            Attempt: {prAttemptWeight} lbs
+                          </p>
+                          )}
                           <div
                           className={`flex items-center gap-2 ${
                             isDisabled ? "opacity-60" : has1RMUpdated && !isSetCompleted ? "opacity-40" : ""
@@ -847,7 +902,7 @@ const DailyCalendar = ({
                               ? `Bodyweight${exercise.set_notes ? ` — ${exercise.set_notes}` : ""}`
                               : exercise.same_weight
                               ? `${set.weight} lbs${exercise.set_notes ? ` — ${exercise.set_notes}` : ""}`
-                              : `${set.weight} lbs × ${set.reps} reps`}
+                              : `${show1RMIndicator && prAttemptWeight ? prAttemptWeight : set.weight} lbs × ${set.reps} reps`}
                             </span>
                           </div>
                           </div>

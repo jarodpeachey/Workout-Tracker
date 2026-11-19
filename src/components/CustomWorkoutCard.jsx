@@ -19,6 +19,7 @@ const CustomWorkoutCard = ({ workout }) => {
     setEditingWorkoutId,
     isBenchExercise,
     getBenchVariant,
+    getProgramLabel,
   } = useWorkout();
   const isEditing = editingWorkoutId === workout.id;
   const editHasBench = editExercises.some((id) =>
@@ -183,11 +184,7 @@ const CustomWorkoutCard = ({ workout }) => {
                     <span className="text-gray-dark">
                       {getBenchVariant(it, workout)
                         ? getBenchVariantLabel(workout.bench_variant)
-                        : it.type === "reverse"
-                        ? "Reverse Pyramid"
-                        : it.type === "tensetslight"
-                        ? "UFpwrLifter Program (Light)"
-                        : "UFpwrLifter Program"}
+                        : getProgramLabel(it.type)}
                     </span>
                   </li>
                 ))}
